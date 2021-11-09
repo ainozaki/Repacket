@@ -19,10 +19,16 @@ libbpf:
 	make install_headers DESTDIR=build OBJDIR=.
 
 run:
-	sudo ./xdp_loader
+	./xdp_loader
 
 unload:
-	sudo ip link set dev veth1 xdpgeneric off
+	ip link set dev veth1 xdpgeneric off
+
+ping:
+	ip netns exec router ping 172.16.10.1
 
 clean:
 	rm -rf *.o xdp_loader
+
+delete:
+	ip -all netns del
