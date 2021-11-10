@@ -45,3 +45,6 @@ clean:
 
 delete:
 	ip -all netns del
+
+format:
+	clang-format -i ./*.cc ./*.c
