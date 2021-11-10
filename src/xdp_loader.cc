@@ -12,20 +12,34 @@
 #include "cmdline.h"
 #include "define.h"
 
-int load_bpf_object_file(const char* filename) {
-    int first_prog_fd = -1;
-    struct bpf_object* obj;
+int load_bpf_object_file(const struct config& cfg) {
+    int prog_fd = -1;
+    struct bpf_object* bpf_obj;
+    struct bpf_program* bpf_prog;
 
-    // Use libbpf for loading BPF object file.
-    int err = bpf_prog_load(filename, BPF_PROG_TYPE_XDP, &obj, &first_prog_fd);
+    // Load the BPF-ELF file.
+    int err = bpf_prog_load(cfg.filename, BPF_PROG_TYPE_XDP, &bpf_obj, &prog_fd);
     if (err) {
         std::cout << "ERR: loading BPF-OBJ file." << std::endl;
-        std::cout << "prog_fd is: " << first_prog_fd << std::endl;
-        return EXIT_FAIL;
+        return EXIT_FAIL_BPF;
     }
+
+    // Find the selected prog section.
+    bpf_prog = bpf_object__find_program_by_title(bpf_obj, cfg.progsec.c_str());
+    if (!bpf_prog){
+        std::cout << "ERR: finding prog sec: " << cfg.progsec << std::endl;
+        return EXIT_FAIL_BPF;
+    }
+
+    prog_fd = bpf_program__fd(bpf_prog);
+    if (prog_fd <= 0){
+        std::cout << "ERR: bpf_program__fd" << std::endl;
+        return EXIT_FAIL_BPF;
+    }
+
     std::cout << "Success: loading BPF-OBJ file." << std::endl;
-    std::cout << "prog_fd is: " << first_prog_fd << std::endl;
-    return first_prog_fd;
+    std::cout << "prog_fd is: " << prog_fd << std::endl;
+    return prog_fd;
 }
 
 int xdp_link_attach(int ifindex, __u32 xdp_flags, int prog_fd) {
@@ -49,18 +63,22 @@ int xdp_link_detach(int ifindex, __u32 xdp_flags) {
 }
 
 int main(int argc, char** argv) {
-    const char kFilename[] = "xdpidms.o";
-    std::string ifname = "veth1";
+    char kFilename[] = "xdpidms.o";
+    char kIfname[] = "veth1";
+    char progsec[] = "xdp_drop";
 
     /* Make a rule of cmdline parser. */
     cmdline::parser parser;
     parser.add("unload", 'u', "Unload XDP object from veth1.");
+    parser.add<std::string>("sec", 's', "Specify the program SEC to load.", false, "xdp_drop");
     parser.parse(argc, argv);
 
     struct config cfg = {
         .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_DRV_MODE,
-        .ifindex = if_nametoindex(ifname.c_str()),
-        .ifname = ifname,
+        .ifindex = if_nametoindex(kIfname),
+        .ifname = kIfname,
+        .filename = kFilename,
+        .progsec = progsec,
     };
 
     /* Detach XDP object from veth1. */
@@ -74,8 +92,13 @@ int main(int argc, char** argv) {
         return EXIT_OK;
     }
 
+    /* Specify progsec to load. */
+    if (parser.exist("sec")){
+        cfg.progsec = parser.get<std::string>("sec");
+    }
+
     /* Load the BPF-ELF object file. */
-    int prog_fd = load_bpf_object_file(kFilename);
+    int prog_fd = load_bpf_object_file(cfg);
     if (prog_fd <= 0) {
         std::cout << "ERR: loading file: " << kFilename << std::endl;
         return EXIT_FAIL_BPF;
@@ -89,7 +112,8 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "Success: Loading XDP prog: " << kFilename;
-    std::cout << " on device: " << cfg.ifname << std::endl;
+    std::cout << ", on device: " << cfg.ifname;
+    std::cout << ", progsec: " << cfg.progsec << std::endl;
 
     return EXIT_OK;
 }

@@ -10,11 +10,17 @@ CFLAGS ?= -I../libbpf/src/build/usr/include
 CFLAGS += -I./common
 BPF_CFLAGS ?= -I../libbpf/src/build/usr/include
 
+TUTORIAL_PATH := ../../tutorial-xdp/basic01-xdp-pass
+
+
 $(TARGET): $(SRCS)
-	clang -S -target bpf $(BPF_CFLAGS) -g -Wall -O2 -c $(SRCS) -o $(OBJS)
+	cp ./xdpidms.c $(TUTORIAL_PATH)
+	cd $(TUTORIAL_PATH); make
+	mv $(TUTORIAL_PATH)/xdpidms.o ./
+	#clang -S -target bpf $(BPF_CFLAGS) -g -Wall -O2 -c $(SRCS) -o $(OBJS)
 
 loader:
-	 g++ -Wall $(CFLAGS) -g -L../libbpf/src/ -o xdp_loader xdp_loader.cc -l:libbpf.a -lelf
+	 g++ -std=c++11 -Wall $(CFLAGS) -g -L../libbpf/src/ -o xdp_loader xdp_loader.cc -l:libbpf.a -lelf
 
 libbpf:
 	cd ../libbpf/src
@@ -24,6 +30,9 @@ libbpf:
 
 load:
 	./xdp_loader
+
+load-pass:
+	./xdp_loader --sec xdp_pass
 
 unload:
 	./xdp_loader -unload

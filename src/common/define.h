@@ -6,7 +6,9 @@
 struct config {
 	__u32 xdp_flags;
 	unsigned int ifindex;
-	std::string ifname;
+	char *ifname;
+    char *filename;
+    std::string progsec;
 };
 
 #define EXIT_OK 0
