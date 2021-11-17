@@ -7,8 +7,8 @@
 #include <linux/if_link.h>
 #include <net/if.h>
 
-#include <bpf/bpf.h>
-#include <bpf/libbpf.h>
+#include <bpf.h>
+#include <libbpf.h>
 
 #include "cmdline.h"
 #include "common/common_kern_user.h"
@@ -241,7 +241,7 @@ void stats_poll(int map_fd, __u32 map_type) {
 
 int main(int argc, char** argv) {
     char kFilename[] = "xdpidms.o";
-    char kIfname[] = "veth1";
+    char kIfname[] = "eth1";
     char progsec[] = "xdp_drop";
     int err;
 
@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
     parser.parse(argc, argv);
 
     struct config cfg = {
-        .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_DRV_MODE,
+        .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
         .ifindex = if_nametoindex(kIfname),
         .ifname = kIfname,
         .filename = kFilename,

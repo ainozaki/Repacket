@@ -1,8 +1,6 @@
 #include <linux/bpf.h>
 
-#include <bpf/bpf_helpers.h>
-
-//#include "common/common_kern_user.h"
+#include <bpf_helpers.h>
 
 #define XDP_ACTION_MAX 5
 
