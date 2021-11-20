@@ -21,11 +21,15 @@ int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
   return map_fd;
 }
 
-int Map::CheckMapInfo(int map_fd,
-                      struct bpf_map_info* info,
-                      struct bpf_map_info* exp) {
+int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
+  std::cout << "Checking map information..." << std::endl;
   __u32 info_len = sizeof(*info);
   int err;
+
+  struct bpf_map_info exp = {0};
+  exp.key_size = sizeof(__u32);
+  exp.value_size = sizeof(struct datarec);
+  exp.max_entries = 5;
 
   if (map_fd < 0)
     return EXIT_FAIL;
@@ -36,19 +40,19 @@ int Map::CheckMapInfo(int map_fd,
     std::cout << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
   }
-  if (exp->key_size && exp->key_size != info->key_size) {
+  if (exp.key_size && exp.key_size != info->key_size) {
     std::cout << "ERR: Unexpected size." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp->value_size && exp->value_size != info->value_size) {
+  if (exp.value_size && exp.value_size != info->value_size) {
     std::cout << "ERR: Unexpected value size." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp->max_entries && exp->max_entries != info->max_entries) {
+  if (exp.max_entries && exp.max_entries != info->max_entries) {
     std::cout << "ERR: Unexpected max_entries value." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp->type && exp->type != info->type) {
+  if (exp.type && exp.type != info->type) {
     std::cout << "ERR: Unexpected type." << std::endl;
     return EXIT_FAIL;
   }
@@ -132,6 +136,7 @@ void Map::StatsPrint(struct stats_record* stats_rec,
 }
 
 void Map::StatsPoll(int map_fd, struct bpf_map_info* info) {
+  std::cout << "Polling stats..." << std::endl;
   struct stats_record prev, record = {0};
 
   // Initial reading

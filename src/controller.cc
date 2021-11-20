@@ -12,11 +12,7 @@ void Controller::Stats() {
 
 void Controller::MapSetup() {
   // Check map info.
-  struct bpf_map_info expect = {0};
-  expect.key_size = sizeof(__u32);
-  expect.value_size = sizeof(struct datarec);
-  expect.max_entries = 5;
-  int check_result = map_.CheckMapInfo(map_fd_, &map_info_, &expect);
+  int check_result = map_.CheckMapInfo(map_fd_, &map_info_);
   if (check_result) {
     exit(check_result);
   }

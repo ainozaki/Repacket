@@ -24,9 +24,7 @@ class Map {
 
   int FindMapFd(struct bpf_object* bpf_obj, const char* mapname);
 
-  int CheckMapInfo(int map_fd,
-                   struct bpf_map_info* info,
-                   struct bpf_map_info* exp);
+  int CheckMapInfo(int map_fd, struct bpf_map_info* info);
 
   void StatsPoll(int map_fd, struct bpf_map_info* info);
 
