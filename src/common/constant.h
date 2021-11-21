@@ -3,6 +3,6 @@
 
 char kFilename[] = "xdms.o";
 char kIfname[] = "eth1";
-char progsec[] = "xdp_drop";
+char progsec[] = "xdp_icmp_drop";
 
 #endif  // CONSTANT_H_

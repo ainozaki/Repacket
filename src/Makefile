@@ -16,7 +16,7 @@ LDFLAGS ?= -L../build/deps/lib
 LIBS := -l:libbpf.a -lelf
 
 CFLAGS := -I./common
-BPF_CFLAGS := -I../build/deps/include/bpf
+BPF_CFLAGS ?= -I../build/deps/include/bpf
 
 
 $(XDP_OBJ): $(XDP_C)

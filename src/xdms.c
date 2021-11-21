@@ -1,8 +1,17 @@
 #include <linux/bpf.h>
-
 #include <bpf_helpers.h>
+#include <bpf_endian.h>
+
+#include <linux/if_ether.h>
+#include <linux/ip.h>
+#include <linux/icmp.h>
+
 
 #define XDP_ACTION_MAX 5
+
+#define IP_PROTO_ICMP 0x01
+
+#define ETH_ALEN 6
 
 #ifndef datarec
 #define datrec
@@ -11,6 +20,10 @@ struct datarec {
     __u64 rx_bytes;
 };
 #endif
+
+struct hdr_cursor {
+	void *pos;
+};
 
 #ifndef lock_xadd
 #define lock_xadd(ptr, val) ((void)__sync_fetch_and_add(ptr, val))
@@ -44,6 +57,28 @@ static __always_inline __u32 xdp_stats_func(struct xdp_md* ctx, __u32 action) {
     rec->rx_bytes += bytes;
 
     return action;
+}
+
+SEC("xdp_icmp_drop")
+int xdp_parse_prog(struct xdp_md* ctx){
+	void *data = (void *)(long)ctx->data;
+	void *data_end = (void *)(long)ctx->data_end;
+	
+	__u32 action = XDP_PASS;
+	struct hdr_cursor nh;
+
+	nh.pos = data;
+
+	struct iphdr *iph = nh.pos;
+	if ( iph + 1 > data_end)
+		return -1;
+	int ip_proto = iph->protocol;
+	if (ip_proto != bpf_htons(IP_PROTO_ICMP)){
+		goto out;
+	}
+	action = XDP_DROP;
+out:
+	return xdp_stats_func(ctx, action);
 }
 
 SEC("xdp_pass")
