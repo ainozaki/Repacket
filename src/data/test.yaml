@@ -1,0 +1,9 @@
+access:
+  - priority: 1
+    ip_address: 192.168.33.1
+    protocol: icmp
+  - priority: 2
+    port: 65535
+deny:
+  - priority: 0
+    ip_address: 10.2.20.1

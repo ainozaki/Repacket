@@ -9,10 +9,10 @@
 
 #include "common/define.h"
 
-Generator::Generator(const std::string& file) : file_(file) {}
+Generator::Generator(const std::string& filename) : filename_(filename) {}
 
 void Generator::StartReadYaml() {
-  YAML::Node yaml = YAML::LoadFile("example.yaml");
+  YAML::Node yaml = YAML::LoadFile(filename_);
   if (yaml["access"]) {
     const YAML::Node& yaml_access_policies = yaml["access"];
     for (const auto& yaml_access_policy : yaml_access_policies) {

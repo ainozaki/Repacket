@@ -15,8 +15,11 @@ class Generator {
   // Read yaml file.
   void StartReadYaml();
 
+  std::vector<Policy> access_policies() { return access_policies_; }
+  std::vector<Policy> deny_policies() { return deny_policies_; }
+
  private:
-  std::string file_;
+  std::string filename_;
 
   std::vector<Policy> access_policies_;
   std::vector<Policy> deny_policies_;

@@ -59,21 +59,21 @@ static __always_inline __u32 xdp_stats_func(struct xdp_md* ctx, __u32 action) {
     return action;
 }
 
-SEC("xdp_icmp_drop")
+SEC("xdp_generated")
 int xdp_parse_prog(struct xdp_md* ctx){
 	void *data = (void *)(long)ctx->data;
 	void *data_end = (void *)(long)ctx->data_end;
 	
 	__u32 action = XDP_PASS;
 	struct hdr_cursor nh;
+	struct ethhdr eth;
 
-	nh.pos = data;
-
+	nh.pos = data + sizeof(eth);
 	struct iphdr *iph = nh.pos;
 	if ( iph + 1 > data_end)
 		return -1;
 	int ip_proto = iph->protocol;
-	if (ip_proto != bpf_htons(IP_PROTO_ICMP)){
+	if (ip_proto != IP_PROTO_ICMP){
 		goto out;
 	}
 	action = XDP_DROP;
