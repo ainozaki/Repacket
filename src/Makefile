@@ -1,23 +1,23 @@
 CLANG := clang
 LLC := llc
 
-XDP_C := xdms.c
+XDP_C := xdp-prog.c
 XDP_OBJ := $(XDP_C:.c=.o)
+
 USER := main.cc
 USER += controller.cc
+USER += generator.cc
 USER += loader.cc
 USER += map.cc
 USER += utils.cc
 USER_OBJ := $(USER:.cc=)
+LOADER := loader
 
-OBJECT_LIBBPF := ../libbpf/src/libbpf.a
-
-LDFLAGS ?= -L../build/deps/lib
-LIBS := -l:libbpf.a -lelf
+LDFLAGS := -L../build/deps/lib
+LIBS := -l:libbpf.a -lelf -lyaml-cpp
 
 CFLAGS := -I./common
 BPF_CFLAGS ?= -I../build/deps/include/bpf
-
 
 $(XDP_OBJ): $(XDP_C)
 	$(CLANG) -S \
@@ -33,7 +33,7 @@ $(XDP_OBJ): $(XDP_C)
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
 loader: $(USER)
-	 g++ -Wall $(BPF_CFLAGS) $(CFLAGS) -o loader $(LDFLAGS) $^ $(LIBS)
+	 g++ -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER) $(LDFLAGS) $^ $(LIBS)
 
 load:
 	./loader
@@ -43,6 +43,9 @@ load-pass:
 
 load-ip:
 	ip link set dev eth1 xdpgeneric obj kern.o sec xdp
+
+gen:
+	./loader --gen access.yaml 
 
 unload:
 	./loader -unload

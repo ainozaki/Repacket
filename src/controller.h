@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
+#include <string>
+
 #include <bpf.h>
 
 #include "common/define.h"
@@ -13,16 +15,23 @@ class Controller {
   ~Controller() = default;
   Controller(const Controller&) = delete;
 
-  // Load the BPF-ELF file and returns err code.
-  void StartLoading(struct config& cfg);
-
-  // Detach XDP program and returns err code.
-  void DetachXDP(struct config& cfg);
+  void ParseCmdline(int argc, char** argv);
 
  private:
+  // Detach XDP program.
+  void DetachXDP(struct config& cfg);
+
+  // Generate XDP program using specified yaml file.
+  void GenerateXDP(std::string& file);
+
+  // Collect status from map.
   void Stats();
 
+  // Setup map.
   void MapSetup();
+
+  // Load the BPF-ELF file.
+  void StartLoading(struct config& cfg);
 
   Loader loader_;
 

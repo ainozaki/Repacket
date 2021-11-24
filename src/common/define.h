@@ -4,6 +4,13 @@
 #include <cstdint>
 #include <string>
 
+struct Policy {
+  int priority = -1;
+  int port = -1;
+  std::string ip_address;
+  std::string protocol;
+};
+
 struct config {
   uint32_t xdp_flags;
   unsigned int ifindex;
