@@ -13,8 +13,7 @@
 #include <bpf.h>
 #include <libbpf.h>
 
-#include "common/common_kern_user.h"
-#include "define.h"
+#include "common/define.h"
 
 class Loader {
  public:

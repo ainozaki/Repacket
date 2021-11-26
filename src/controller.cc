@@ -56,7 +56,7 @@ void Controller::DetachXDP(struct config& cfg) {
 
 void Controller::GenerateXDP(std::string& file) {
   Generator generator(file);
-  generator.StartReadYaml();
+  generator.Start();
 }
 
 void Controller::Stats() {

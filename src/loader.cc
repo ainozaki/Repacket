@@ -12,9 +12,9 @@
 #include <bpf.h>
 #include <libbpf.h>
 
-#include "cmdline.h"
-#include "common/common_kern_user.h"
-#include "define.h"
+#include <cmdline.h>
+
+#include "common/define.h"
 
 struct bpf_object* Loader::LoadAndAttach(const struct config& cfg) {
   int prog_fd = -1;

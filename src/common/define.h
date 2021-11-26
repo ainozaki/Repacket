@@ -4,6 +4,11 @@
 #include <cstdint>
 #include <string>
 
+struct datarec {
+  uint64_t rx_packets;
+  uint64_t rx_bytes;
+};
+
 struct Policy {
   int priority = -1;
   int port = -1;

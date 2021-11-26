@@ -5,7 +5,7 @@
 
 #include "utils.h"
 
-#include "common/common_kern_user.h"
+#include "common/define.h"
 
 struct record {
   __u64 timestamp;
