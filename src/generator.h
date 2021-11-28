@@ -18,7 +18,7 @@ class Generator {
   std::vector<Policy> policies() { return policies_; }
 
  private:
-  // Read yaml file.
+  // Read yaml file and researve data into |policies_|.
   void ReadYaml();
 
   // Generate variable code from Policy.

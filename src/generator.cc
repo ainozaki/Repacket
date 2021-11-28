@@ -11,51 +11,54 @@
 #include "common/define.h"
 #include "common/xdp_base.h"
 
-Action ActionFromString(const std::string action) {
+// Convert enum class Action to String.
+Action ConvertActionFromString(const std::string& action) {
   if (action == "pass") {
     return Action::Pass;
   } else if (action == "drop") {
     return Action::Drop;
   } else {
-    std::cout << "action must be \"pass\" or \"drop\"" << std::endl;
+    std::cout << "action must be 'pass' or 'drop'" << std::endl;
     exit(EXIT_FAIL);
   }
 }
 
-std::string to_hexString(int val) {
-  if (!val)
+// Convert decimal int to hex string.
+std::string ConvertDecimalIntToHexString(int dec) {
+  if (!dec) {
     return std::string("0");
-  std::string str;
-  const char hc = 'a';
-  while (val != 0) {
-    int d = val & 15;
-    if (d < 10) {
-      str.insert(str.begin(), d + '0');
-    } else {
-      str.insert(str.begin(), d - 10 + hc);
-    }
-    val >>= 4;
   }
-	if (str.length() == 1){
-		return "0" + str;
-	}else{
-		return str;
-	}
+  std::string hex;
+  const char hc = 'a';
+  while (dec != 0) {
+    int d = dec & 15;
+    if (d < 10) {
+      hex.insert(hex.begin(), d + '0');
+    } else {
+      hex.insert(hex.begin(), d - 10 + hc);
+    }
+    dec >>= 4;
+  }
+  if (hex.length() == 1) {
+    return "0" + hex;
+  } else {
+    return hex;
+  }
 }
 
-std::string ConvertIPAddressTo16(std::string& addr) {
-  std::string addr16;
+// Convert String ip address to hex string.
+std::string ConvertIPAddressToHexString(std::string& address) {
   std::string::size_type pos;
   std::string splitter = ".";
-  std::string part;
-  std::stringstream ss;
+  std::string subpart;
+  std::string hex;
   for (int i = 0; i < 4; i++) {
-    pos = addr.find(splitter);
-    part = addr.substr(0, pos);
-    addr16 = to_hexString(stoi(part)) + addr16;
-    addr.erase(0, pos + splitter.size());
+    pos = address.find(splitter);
+    subpart = address.substr(0, pos);
+    hex = ConvertDecimalIntToHexString(stoi(subpart)) + hex;
+    address.erase(0, pos + splitter.size());
   }
-  return "0x" + addr16;
+  return "0x" + hex;
 };
 
 Generator::Generator(const std::string& yaml_file) : yaml_file_(yaml_file) {}
@@ -73,7 +76,8 @@ void Generator::ReadYaml() {
     if (!yaml_policy["action"]) {
       std::cout << "rule must have action value." << std::endl;
     }
-    policy.action = ActionFromString(yaml_policy["action"].as<std::string>());
+    policy.action =
+        ConvertActionFromString(yaml_policy["action"].as<std::string>());
     if (yaml_policy["port"]) {
       policy.port = yaml_policy["port"].as<int>();
     }
@@ -83,6 +87,7 @@ void Generator::ReadYaml() {
     if (yaml_policy["protocol"]) {
       policy.protocol = yaml_policy["protocol"].as<std::string>();
     }
+
     policies_.push_back(policy);
     priority++;
   }
@@ -92,20 +97,20 @@ void Generator::ReadYaml() {
 std::unique_ptr<std::string> Generator::CreateFromPolicy() {
   std::string t = "\t";
   std::string nl = "\n";
-  std::string verify;
+  std::string address_checking;
   std::string action_decition;
-  std::string inline__filter_addr;
   std::string ipaddr_definition;
   bool need_ip_parse = false;
 
   for (const auto& policy : policies_) {
     int condition_counter = 0;
     int index = policy.priority;
-    std::string prog;
-    prog += t + "// priority " + std::to_string(index) + nl;
 
-    // Create condition code.
+    // Create condition code reflecting policy.
+    // |policy_code| represents for one policy.
+    std::string policy_code = t + "// priority " + std::to_string(index) + nl;
     std::string condition;
+
     // protocol
     if (!policy.protocol.empty()) {
       if (policy.protocol == "ICMP" || policy.protocol == "icmp" ||
@@ -127,63 +132,72 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       }
     }
 
-    // ip address
+    // ip address conversion.
     if (!policy.ip_address.empty()) {
       need_ip_parse = true;
-      inline__filter_addr = "filter_addr_" + std::to_string(index);
-      condition +=
-          condition_counter
-              ? "&& (iph->saddr == " + inline__filter_addr + ")"
-              : "(iph->saddr == " + inline__filter_addr + ")";
+      std::string inline__filter_addr = "filter_addr_" + std::to_string(index);
+      condition += condition_counter
+                       ? "&& (iph->saddr == " + inline__filter_addr + ")"
+                       : "(iph->saddr == " + inline__filter_addr + ")";
       std::string ipaddr_string = policy.ip_address;
       ipaddr_definition += t + "__u32 " + inline__filter_addr + " = " +
-                           ConvertIPAddressTo16(ipaddr_string) + ";" + nl;
+                           ConvertIPAddressToHexString(ipaddr_string) + ";" +
+                           nl;
       condition_counter++;
     }
 
     if (condition_counter == 1) {
-      prog += t + "if " + condition + "{" + nl;
+      policy_code += t + "if " + condition + "{" + nl;
     } else {
-      prog += t + "if (" + condition + ") {" + nl;
+      policy_code += t + "if (" + condition + ") {" + nl;
     }
 
     // Create action code.
     switch (policy.action) {
       case Action::Pass:
-        prog += t + t + "goto out;" + nl;
+        policy_code += t + t + "goto out;" + nl;
         break;
       case Action::Drop:
-        prog += t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
+        policy_code +=
+            t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
     }
-    prog += t + "}" + nl;
-    action_decition += prog + nl;
-  }
+    policy_code += t + "}" + nl;
+
+    // |action_decition| is a set of |policy_code|.
+    action_decition += policy_code + nl;
+
+  }  // for (const auto& policy : policies_)
 
   // Create verify code.
   if (need_ip_parse) {
-    verify += xdp::verify_ip + nl;
+    address_checking += xdp::verify_ip + nl;
   }
 
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
-      verify + ipaddr_definition + nl + action_decition);
+      address_checking + ipaddr_definition + nl + action_decition);
   return code;
 }
 
 void Generator::Construct() {
   std::string nl = "\n";
-  // include
+
+  // include part.
   std::string include = xdp::include + nl + xdp::include_ip;
-  // define
+
+  // define part.
   std::string define = xdp::constant + nl + xdp::struct_datarec + nl +
                        xdp::struct_map + nl + xdp::struct_hdr_cursor;
-  // inline function
+
+  // inline function.
   std::string inline_func = xdp::inline_func_stats;
-  // xdp section
-  std::string func_made_from_policy = *CreateFromPolicy().get();
-  std::string func = xdp::func_name + xdp::func_fix + func_made_from_policy +
-                     xdp::func_out + xdp::r_bracket + xdp::nl;
+
+  // xdp section.
+  std::string policy = *CreateFromPolicy().get();
+  std::string func = xdp::func_name + xdp::func_fix + policy + xdp::func_out +
+                     xdp::r_bracket + xdp::nl;
   std::string sec = xdp::sec_name + func;
-  // license
+
+  // license.
   std::string license = xdp::license;
 
   xdp_prog_ =
