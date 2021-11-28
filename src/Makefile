@@ -1,7 +1,6 @@
 CLANG := clang
 LLC := llc
 
-#XDP_C := xdp-prog.c
 XDP_C := xdp-generated.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
@@ -71,4 +70,4 @@ ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ)
+	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

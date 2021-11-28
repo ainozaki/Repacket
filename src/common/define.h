@@ -9,7 +9,13 @@ struct datarec {
   uint64_t rx_bytes;
 };
 
+enum class Action {
+	Pass = 0,
+	Drop = 1,
+};
+
 struct Policy {
+	Action action = Action::Pass;
   int priority = -1;
   int port = -1;
   std::string ip_address;

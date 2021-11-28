@@ -11,6 +11,53 @@
 #include "common/define.h"
 #include "common/xdp_base.h"
 
+Action ActionFromString(const std::string action) {
+  if (action == "pass") {
+    return Action::Pass;
+  } else if (action == "drop") {
+    return Action::Drop;
+  } else {
+    std::cout << "action must be \"pass\" or \"drop\"" << std::endl;
+    exit(EXIT_FAIL);
+  }
+}
+
+std::string to_hexString(int val) {
+  if (!val)
+    return std::string("0");
+  std::string str;
+  const char hc = 'a';
+  while (val != 0) {
+    int d = val & 15;
+    if (d < 10) {
+      str.insert(str.begin(), d + '0');
+    } else {
+      str.insert(str.begin(), d - 10 + hc);
+    }
+    val >>= 4;
+  }
+	if (str.length() == 1){
+		return "0" + str;
+	}else{
+		return str;
+	}
+}
+
+std::string ConvertIPAddressTo16(std::string& addr) {
+  std::string addr16;
+  std::string::size_type pos;
+  std::string splitter = ".";
+  std::string part;
+  std::stringstream ss;
+  for (int i = 0; i < 4; i++) {
+    pos = addr.find(splitter);
+    part = addr.substr(0, pos);
+    addr16 = to_hexString(stoi(part)) + addr16;
+    addr.erase(0, pos + splitter.size());
+  }
+  return "0x" + addr16;
+};
+
 Generator::Generator(const std::string& yaml_file) : yaml_file_(yaml_file) {}
 
 void Generator::Start() {
@@ -18,51 +65,108 @@ void Generator::Start() {
 }
 
 void Generator::ReadYaml() {
-  YAML::Node yaml = YAML::LoadFile(yaml_file_);
-  if (yaml["access"]) {
-    const YAML::Node& yaml_access_policies = yaml["access"];
-    for (const auto& yaml_access_policy : yaml_access_policies) {
-      Policy policy;
-      if (!yaml_access_policy["priority"]) {
-        std::cout << "Policy must have priority value." << std::endl;
-        exit(EXIT_FAIL);
-      }
-      policy.priority = yaml_access_policy["priority"].as<int>();
-      if (yaml_access_policy["port"]) {
-        policy.port = yaml_access_policy["port"].as<int>();
-      }
-      if (yaml_access_policy["ip_address"]) {
-        policy.ip_address = yaml_access_policy["ip_address"].as<std::string>();
-      }
-      if (yaml_access_policy["protocol"]) {
-        policy.protocol = yaml_access_policy["protocol"].as<std::string>();
-      }
-      access_policies_.push_back(policy);
+  const YAML::Node& yaml_policies = YAML::LoadFile(yaml_file_);
+  int priority = 0;
+  for (const auto& yaml_policy : yaml_policies) {
+    Policy policy;
+    policy.priority = priority;
+    if (!yaml_policy["action"]) {
+      std::cout << "rule must have action value." << std::endl;
     }
-  }
-  if (yaml["deny"]) {
-    const YAML::Node& yaml_deny_policies = yaml["deny"];
-    for (const auto& yaml_deny_policy : yaml_deny_policies) {
-      Policy deny_policy;
-      if (!yaml_deny_policy["priority"]) {
-        std::cout << "Policy must have priority value." << std::endl;
-        exit(EXIT_FAIL);
-      }
-      deny_policy.priority = yaml_deny_policy["priority"].as<int>();
-      if (yaml_deny_policy["port"]) {
-        deny_policy.port = yaml_deny_policy["port"].as<int>();
-      }
-      if (yaml_deny_policy["ip_address"]) {
-        deny_policy.ip_address =
-            yaml_deny_policy["ip_address"].as<std::string>();
-      }
-      if (yaml_deny_policy["protocol"]) {
-        deny_policy.protocol = yaml_deny_policy["protocol"].as<std::string>();
-      }
-      deny_policies_.push_back(deny_policy);
+    policy.action = ActionFromString(yaml_policy["action"].as<std::string>());
+    if (yaml_policy["port"]) {
+      policy.port = yaml_policy["port"].as<int>();
     }
+    if (yaml_policy["ip_address"]) {
+      policy.ip_address = yaml_policy["ip_address"].as<std::string>();
+    }
+    if (yaml_policy["protocol"]) {
+      policy.protocol = yaml_policy["protocol"].as<std::string>();
+    }
+    policies_.push_back(policy);
+    priority++;
   }
   Construct();
+}
+
+std::unique_ptr<std::string> Generator::CreateFromPolicy() {
+  std::string t = "\t";
+  std::string nl = "\n";
+  std::string verify;
+  std::string action_decition;
+  std::string inline__filter_addr;
+  std::string ipaddr_definition;
+  bool need_ip_parse = false;
+
+  for (const auto& policy : policies_) {
+    int condition_counter = 0;
+    int index = policy.priority;
+    std::string prog;
+    prog += t + "// priority " + std::to_string(index) + nl;
+
+    // Create condition code.
+    std::string condition;
+    // protocol
+    if (!policy.protocol.empty()) {
+      if (policy.protocol == "ICMP" || policy.protocol == "icmp" ||
+          policy.protocol == "Icmp") {
+        need_ip_parse = true;
+        condition += condition_counter ? "&& (iph->protocol == IPPROTO_ICMP) "
+                                       : "(iph->protocol == IPPROTO_ICMP) ";
+        condition_counter++;
+      } else if (policy.protocol == "TCP" || policy.protocol == "tcp") {
+        need_ip_parse = true;
+        condition += condition_counter ? "&& (iph->protocol == IPPROTO_TCP) "
+                                       : "(iph->protocol == IPPROTO_TCP) ";
+        condition_counter++;
+      } else if (policy.protocol == "UDP" || policy.protocol == "udp") {
+        need_ip_parse = true;
+        condition += condition_counter ? "&& (iph->protocol == IPPROTO_UDP) "
+                                       : "(iph->protocol == IPPROTO_UDP) ";
+        condition_counter++;
+      }
+    }
+
+    // ip address
+    if (!policy.ip_address.empty()) {
+      need_ip_parse = true;
+      inline__filter_addr = "filter_addr_" + std::to_string(index);
+      condition +=
+          condition_counter
+              ? "&& (iph->saddr == " + inline__filter_addr + ")"
+              : "(iph->saddr == " + inline__filter_addr + ")";
+      std::string ipaddr_string = policy.ip_address;
+      ipaddr_definition += t + "__u32 " + inline__filter_addr + " = " +
+                           ConvertIPAddressTo16(ipaddr_string) + ";" + nl;
+      condition_counter++;
+    }
+
+    if (condition_counter == 1) {
+      prog += t + "if " + condition + "{" + nl;
+    } else {
+      prog += t + "if (" + condition + ") {" + nl;
+    }
+
+    // Create action code.
+    switch (policy.action) {
+      case Action::Pass:
+        prog += t + t + "goto out;" + nl;
+        break;
+      case Action::Drop:
+        prog += t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
+    }
+    prog += t + "}" + nl;
+    action_decition += prog + nl;
+  }
+
+  // Create verify code.
+  if (need_ip_parse) {
+    verify += xdp::verify_ip + nl;
+  }
+
+  std::unique_ptr<std::string> code = std::make_unique<std::string>(
+      verify + ipaddr_definition + nl + action_decition);
+  return code;
 }
 
 void Generator::Construct() {
@@ -75,8 +179,8 @@ void Generator::Construct() {
   // inline function
   std::string inline_func = xdp::inline_func_stats;
   // xdp section
-  std::string func_rule = xdp::func_rule;
-  std::string func = xdp::func_name + xdp::func_fix + func_rule +
+  std::string func_made_from_policy = *CreateFromPolicy().get();
+  std::string func = xdp::func_name + xdp::func_fix + func_made_from_policy +
                      xdp::func_out + xdp::r_bracket + xdp::nl;
   std::string sec = xdp::sec_name + func;
   // license

@@ -1,6 +1,7 @@
 #ifndef GENERATOR_H_
 #define GENERATOR_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,12 +15,14 @@ class Generator {
 
   void Start();
 
-  std::vector<Policy> access_policies() { return access_policies_; }
-  std::vector<Policy> deny_policies() { return deny_policies_; }
+  std::vector<Policy> policies() { return policies_; }
 
  private:
   // Read yaml file.
   void ReadYaml();
+
+  // Generate variable code from Policy.
+  std::unique_ptr<std::string> CreateFromPolicy();
 
   // Construct XDP program.
   void Construct();
@@ -31,8 +34,7 @@ class Generator {
 
   std::string yaml_file_;
 
-  std::vector<Policy> access_policies_;
-  std::vector<Policy> deny_policies_;
+  std::vector<Policy> policies_;
 };
 
 #endif  // GENERATOR_H_

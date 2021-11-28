@@ -104,8 +104,8 @@ void Map::StatsPrint(struct stats_record* stats_rec,
       "-------------------------------------\n");
   for (int i = 0; i < 2; i++) {
     const char* fmt =
-        "%-12s %'11lld pkts (%'10.0f pps)"
-        " %'11lld bytes (%'6.0f bytes/s)"
+        "%-12s %'11lld pkts (%'12.0f pps)"
+        " %'11lld bytes (%'12.0f bps)"
         " period:%f\n";
 
     const char* action;
