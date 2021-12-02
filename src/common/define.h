@@ -22,14 +22,20 @@ struct Policy {
   std::string protocol;
 };
 
+enum class Mode {
+	Generate,
+	Load,
+	Unload,
+	Status,
+};
+
 struct config {
+	Mode mode = Mode::Status;
   uint32_t xdp_flags;
   unsigned int ifindex;
 	std::string ifname;
 	std::string bpf_filepath;
   std::string progsec;
-	bool unload;
-	bool generate;
 	std::string yaml_filepath;
 };
 

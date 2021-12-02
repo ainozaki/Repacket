@@ -1,5 +1,6 @@
 #include "moctok_filter.h"
 
+#include <cassert>
 #include <memory>
 
 #include "common/define.h"
@@ -16,11 +17,17 @@ MoctokFilter::~MoctokFilter() {
 }
 
 void MoctokFilter::Load() {
-  if (config_.unload) {
-    loader_->UnloadBpf();
-    return;
+  switch (config_.mode) {
+    case Mode::Unload:
+      loader_->UnloadBpf();
+      break;
+    case Mode::Load:
+      loader_->LoadBpf();
+      bpf_obj_ = loader_->bpf_obj();
+      break;
+    default:
+      assert(false);
+      break;
   }
-  loader_->LoadBpf();
-  bpf_obj_ = loader_->bpf_obj();
   return;
 }

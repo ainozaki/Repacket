@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
                           "eth1");
   parser.add<std::string>("sec", 's', "Specify the program section.", false,
                           "xdp_drop");
+  parser.add("load", 'l', "Load XDP program to interface.");
   parser.add("unload", 'u', "Unload XDP program from interface.");
   parser.add("help", 'h', "Print usage.");
 
@@ -44,11 +45,17 @@ int main(int argc, char** argv) {
                           ? parser.get<std::string>("filepath")
                           : kBpfFilepath,
       .progsec = parser.exist("sec") ? parser.get<std::string>("sec") : kSec,
-      .unload = parser.exist("unload"),
-      .generate = parser.exist("gen"),
       .yaml_filepath =
           parser.exist("gen") ? parser.get<std::string>("gen") : "",
   };
+
+  if (parser.exist("load")) {
+    cfg.mode = Mode::Load;
+  } else if (parser.exist("unload")) {
+    cfg.mode = Mode::Unload;
+  } else if (parser.exist("gen")) {
+    cfg.mode = Mode::Generate;
+  }
 
   Controller controller(cfg);
   return 0;

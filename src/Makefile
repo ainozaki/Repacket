@@ -54,7 +54,7 @@ format:
 # find ./ -name "*.cc" -o -name "*.h" -o -path "./common" -name "xdp_base.h" -prune | xargs clang-format -i
 
 load:
-	./loader
+	./loader --load
 
 load-pass:
 	./loader --sec xdp_pass
