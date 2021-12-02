@@ -66,7 +66,7 @@ gen:
 	./loader --gen example.yaml 
 
 unload:
-	./loader -unload
+	./loader --unload
 
 ping:
 	ip netns exec router ping 172.16.10.1

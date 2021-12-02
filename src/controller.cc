@@ -21,6 +21,11 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
   }
 
   filter_ = std::make_unique<MoctokFilter>(cfg);
+
+  if (config_.unload) {
+    return;
+  }
+
   StartLoading();
 }
 

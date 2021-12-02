@@ -29,15 +29,25 @@ class Loader {
   Loader(const Loader&) = delete;
 
   // Load BPF-ELF file and attach it to an interface.
-  struct bpf_object* LoadAndAttach();
+  void LoadBpf();
 
-  // Detach BPF.
-  void Detach(int ifindex, __u32 xdp_flags);
+  void UnloadBpf();
+
+  void AttachBpf();
+
+  // Make sure to call this function after LoadBpf().
+  struct bpf_object* bpf_obj() {
+    return bpf_obj_;
+  }
 
  private:
   void SignalHandler(int signum);
 
   Controller* controller_;
+
+  struct bpf_object* bpf_obj_;
+
+  int prog_fd_;
 
   uint32_t xdp_flags_;
 

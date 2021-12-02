@@ -16,6 +16,11 @@ MoctokFilter::~MoctokFilter() {
 }
 
 void MoctokFilter::LoadBpf() {
-  bpf_obj_ = loader_->LoadAndAttach();
+  if (config_.unload) {
+    loader_->UnloadBpf();
+    return;
+  }
+  loader_->LoadBpf();
+  bpf_obj_ = loader_->bpf_obj();
   return;
 }
