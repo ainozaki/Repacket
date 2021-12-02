@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_H_
 #define CONTROLLER_H_
 
+#include <memory>
+#include <set>
 #include <string>
 
 #include <bpf.h>
@@ -8,22 +10,17 @@
 #include "common/define.h"
 #include "loader.h"
 #include "map.h"
+#include "moctok_filter.h"
+
+class Loader;
 
 class Controller {
  public:
-  Controller() = default;
+  Controller(struct config& cfg);
   ~Controller() = default;
   Controller(const Controller&) = delete;
 
-  void ParseCmdline(int argc, char** argv);
-
  private:
-  // Detach XDP program.
-  void DetachXDP(struct config& cfg);
-
-  // Generate XDP program using specified yaml file.
-  void GenerateXDP(std::string& file);
-
   // Collect status from map.
   void Stats();
 
@@ -31,9 +28,13 @@ class Controller {
   void MapSetup();
 
   // Load the BPF-ELF file.
-  void StartLoading(struct config& cfg);
+  void StartLoading();
 
-  Loader loader_;
+  std::unique_ptr<MoctokFilter> filter_;
+
+  struct bpf_object* bpf_obj_;
+
+  struct config config_;
 
   Map map_;
 

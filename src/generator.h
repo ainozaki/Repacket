@@ -10,10 +10,8 @@
 class Generator {
  public:
   Generator(const std::string& file);
-  ~Generator() = default;
+  ~Generator();
   Generator(const Generator&) = delete;
-
-  void Start();
 
   std::vector<Policy> policies() { return policies_; }
 
@@ -32,7 +30,7 @@ class Generator {
 
   std::string xdp_prog_;
 
-  std::string yaml_file_;
+  std::string yaml_filepath_;
 
   std::vector<Policy> policies_;
 };

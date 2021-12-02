@@ -11,6 +11,7 @@
 #include "common/define.h"
 #include "common/xdp_base.h"
 
+namespace {
 // Convert enum class Action to String.
 Action ConvertActionFromString(const std::string& action) {
   if (action == "pass") {
@@ -60,15 +61,19 @@ std::string ConvertIPAddressToHexString(std::string& address) {
   }
   return "0x" + hex;
 };
+}  // namespace
 
-Generator::Generator(const std::string& yaml_file) : yaml_file_(yaml_file) {}
-
-void Generator::Start() {
+Generator::Generator(const std::string& yaml_filepath)
+    : yaml_filepath_(yaml_filepath) {
   ReadYaml();
 }
 
+Generator::~Generator() {
+  std::cout << "Generator destructor" << std::endl;
+}
+
 void Generator::ReadYaml() {
-  const YAML::Node& yaml_policies = YAML::LoadFile(yaml_file_);
+  const YAML::Node& yaml_policies = YAML::LoadFile(yaml_filepath_);
   int priority = 0;
   for (const auto& yaml_policy : yaml_policies) {
     Policy policy;
@@ -92,6 +97,7 @@ void Generator::ReadYaml() {
     priority++;
   }
   Construct();
+  return;
 }
 
 std::unique_ptr<std::string> Generator::CreateFromPolicy() {
@@ -203,6 +209,7 @@ void Generator::Construct() {
   xdp_prog_ =
       include + nl + define + nl + inline_func + nl + sec + nl + license;
   Write();
+  return;
 }
 
 void Generator::Write() {
@@ -213,4 +220,5 @@ void Generator::Write() {
   }
   xdp_file << xdp_prog_ << std::endl;
   std::cout << "Writing to xdp-generated.c done! " << std::endl;
+  return;
 }

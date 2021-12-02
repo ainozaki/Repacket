@@ -25,9 +25,11 @@ struct Policy {
 struct config {
   uint32_t xdp_flags;
   unsigned int ifindex;
-  char* ifname;
-  char* filename;
+	std::string ifname;
+	std::string bpf_filepath;
   std::string progsec;
+	bool unload;
+	std::string yaml_filepath;
 };
 
 #define EXIT_OK 0
@@ -35,5 +37,6 @@ struct config {
 #define EXIT_FAIL_XDP 30
 #define EXIT_FAIL_BPF 40
 #define EXIT_FAIL_MAP 50
+#define EXIT_SIGNAL 100
 
 #endif /* _DEFINE_H_ */

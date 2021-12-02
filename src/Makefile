@@ -9,7 +9,9 @@ USER := controller.cc
 USER += generator.cc
 USER += loader.cc
 USER += map.cc
+USER += moctok_filter.cc
 USER += utils.cc
+USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
@@ -40,15 +42,15 @@ $(XDP_OBJ): $(XDP_C)
 	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
-loader: $(USER) $(COMMON_H) $(MAIN) common/xdp_base.h
-	 g++ -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
+loader: $(USER) $(USER_H) $(COMMON_H) $(MAIN) common/xdp_base.h
+	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
 
 test: $(TEST) $(USER)
-	 g++ -std=c++11 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread
+	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread
 
 format:
 # to exclude "common/xdp_base.h", use first command.
-	clang-format -i $(XDP_C) $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) 
+	clang-format -i $(XDP_C) $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc 
 # find ./ -name "*.cc" -o -name "*.h" -o -path "./common" -name "xdp_base.h" -prune | xargs clang-format -i
 
 load:
