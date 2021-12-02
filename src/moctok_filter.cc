@@ -8,14 +8,14 @@
 MoctokFilter::MoctokFilter(const struct config& cfg) : config_(cfg) {
   loader_ = std::make_unique<Loader>(cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                                      cfg.bpf_filepath, cfg.progsec);
-  LoadBpf();
+  Load();
 };
 
 MoctokFilter::~MoctokFilter() {
-  std::cout << "MoctokFilter destruction" << std::endl;
+  std::clog << "MoctokFilter destruction" << std::endl;
 }
 
-void MoctokFilter::LoadBpf() {
+void MoctokFilter::Load() {
   if (config_.unload) {
     loader_->UnloadBpf();
     return;

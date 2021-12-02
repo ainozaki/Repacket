@@ -14,14 +14,14 @@
 #include "moctok_filter.h"
 
 Controller::Controller(struct config& cfg) : config_(cfg) {
-  if (!config_.yaml_filepath.empty()) {
+  if (config_.generate) {
     // Generate XDP program according to rules in yaml file.
     Generator generator(config_.yaml_filepath);
     return;
   }
 
+  // MocktokFilter loads/unloads Bpf program.
   filter_ = std::make_unique<MoctokFilter>(cfg);
-
   if (config_.unload) {
     return;
   }

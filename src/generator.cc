@@ -19,7 +19,7 @@ Action ConvertActionFromString(const std::string& action) {
   } else if (action == "drop") {
     return Action::Drop;
   } else {
-    std::cout << "action must be 'pass' or 'drop'" << std::endl;
+    std::cerr << "action must be 'pass' or 'drop'" << std::endl;
     exit(EXIT_FAIL);
   }
 }
@@ -69,7 +69,7 @@ Generator::Generator(const std::string& yaml_filepath)
 }
 
 Generator::~Generator() {
-  std::cout << "Generator destructor" << std::endl;
+  std::clog << "Generator destructor" << std::endl;
 }
 
 void Generator::ReadYaml() {
@@ -79,7 +79,7 @@ void Generator::ReadYaml() {
     Policy policy;
     policy.priority = priority;
     if (!yaml_policy["action"]) {
-      std::cout << "rule must have action value." << std::endl;
+      std::cerr << "rule must have action value." << std::endl;
     }
     policy.action =
         ConvertActionFromString(yaml_policy["action"].as<std::string>());
@@ -219,6 +219,6 @@ void Generator::Write() {
     exit(EXIT_FAIL);
   }
   xdp_file << xdp_prog_ << std::endl;
-  std::cout << "Writing to xdp-generated.c done! " << std::endl;
+  std::cerr << "Writing to xdp-generated.c done! " << std::endl;
   return;
 }

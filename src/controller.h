@@ -32,8 +32,6 @@ class Controller {
 
   std::unique_ptr<MoctokFilter> filter_;
 
-  struct bpf_object* bpf_obj_;
-
   struct config config_;
 
   Map map_;

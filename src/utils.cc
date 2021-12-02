@@ -11,7 +11,7 @@ __u64 gettime() {
   int res;
   res = clock_gettime(CLOCK_MONOTONIC, &t);
   if (res < 0) {
-    std::cout << "ERR: gettime. " << std::endl;
+    std::cerr << "ERR: gettime. " << std::endl;
     exit(EXIT_FAIL);
   }
   return (__u64)t.tv_sec * 1000000000 + t.tv_nsec;

@@ -14,8 +14,9 @@ class MoctokFilter {
   ~MoctokFilter();
   MoctokFilter(const MoctokFilter&) = delete;
 
-  void LoadBpf();
+  void Load();
 
+  // Make sure to call this function after Load().
   struct bpf_object* bpf_obj() {
     return bpf_obj_;
   }

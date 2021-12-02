@@ -27,7 +27,12 @@ int main(int argc, char** argv) {
   parser.add<std::string>("sec", 's', "Specify the program section.", false,
                           "xdp_drop");
   parser.add("unload", 'u', "Unload XDP program from interface.");
-  parser.parse_check(argc, argv);
+  parser.add("help", 'h', "Print usage.");
+
+  if (!parser.parse(argc, argv) || parser.exist("help")) {
+    std::cerr << parser.error_full() << parser.usage();
+    return 0;
+  }
 
   struct config cfg = {
       .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
@@ -40,6 +45,7 @@ int main(int argc, char** argv) {
                           : kBpfFilepath,
       .progsec = parser.exist("sec") ? parser.get<std::string>("sec") : kSec,
       .unload = parser.exist("unload"),
+      .generate = parser.exist("gen"),
       .yaml_filepath =
           parser.exist("gen") ? parser.get<std::string>("gen") : "",
   };

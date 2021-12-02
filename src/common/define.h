@@ -29,6 +29,7 @@ struct config {
 	std::string bpf_filepath;
   std::string progsec;
 	bool unload;
+	bool generate;
 	std::string yaml_filepath;
 };
 

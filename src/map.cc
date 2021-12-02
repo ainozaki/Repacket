@@ -12,7 +12,7 @@ int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
   // Find the map object by name.
   struct bpf_map* map = bpf_object__find_map_by_name(bpf_obj, mapname);
   if (!map) {
-    std::cout << "ERR: find map failed." << std::endl;
+    std::cerr << "ERR: find map failed." << std::endl;
     exit(EXIT_FAIL_MAP);
   }
 
@@ -22,7 +22,7 @@ int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
 }
 
 int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
-  std::cout << "Checking map information..." << std::endl;
+  std::clog << "Checking map information..." << std::endl;
   __u32 info_len = sizeof(*info);
   int err;
 
@@ -37,23 +37,23 @@ int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
   // BPF-info via bpf-syscall
   err = bpf_obj_get_info_by_fd(map_fd, info, &info_len);
   if (err) {
-    std::cout << "ERR: Cannot get info." << std::endl;
+    std::cerr << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
   }
   if (exp.key_size && exp.key_size != info->key_size) {
-    std::cout << "ERR: Unexpected size." << std::endl;
+    std::cerr << "ERR: Unexpected size." << std::endl;
     return EXIT_FAIL;
   }
   if (exp.value_size && exp.value_size != info->value_size) {
-    std::cout << "ERR: Unexpected value size." << std::endl;
+    std::cerr << "ERR: Unexpected value size." << std::endl;
     return EXIT_FAIL;
   }
   if (exp.max_entries && exp.max_entries != info->max_entries) {
-    std::cout << "ERR: Unexpected max_entries value." << std::endl;
+    std::cerr << "ERR: Unexpected max_entries value." << std::endl;
     return EXIT_FAIL;
   }
   if (exp.type && exp.type != info->type) {
-    std::cout << "ERR: Unexpected type." << std::endl;
+    std::cerr << "ERR: Unexpected type." << std::endl;
     return EXIT_FAIL;
   }
   return 0;
@@ -61,7 +61,7 @@ int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
 
 void Map::MapGetValueArray(int fd, __u32 key, struct datarec* value) {
   if ((bpf_map_lookup_elem(fd, &key, value)) != 0) {
-    std::cout << "ERR: bpf_map_lookup_elem" << std::endl;
+    std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
   }
 }
 
@@ -73,7 +73,7 @@ bool Map::MapCollect(int fd, __u32 map_type, __u32 key, struct record* rec) {
       MapGetValueArray(fd, key, &value);
       break;
     default:
-      std::cout << "Unknown map type." << std::endl;
+      std::cerr << "Unknown map type." << std::endl;
       return false;
       break;
   }
@@ -136,7 +136,7 @@ void Map::StatsPrint(struct stats_record* stats_rec,
 }
 
 void Map::StatsPoll(int map_fd, struct bpf_map_info* info) {
-  std::cout << "Polling stats..." << std::endl;
+  std::clog << "Polling stats..." << std::endl;
   struct stats_record prev, record = {0};
 
   // Initial reading
