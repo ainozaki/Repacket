@@ -9,25 +9,28 @@
 #include "controller.h"
 
 namespace {
-std::string kBpfFilepath = "xdp-generated.o";
-std::string kIfname = "eth1";
-std::string kSec = "xdp_generated";
+std::string kDefaultYamlFilepath = "access.yaml";
+std::string kDefaultBpfFilepath = "xdp-generated.o";
+std::string kDefaultIfname = "eth1";
+std::string kDefaultSec = "xdp_generated";
 }  // namespace
 
 int main(int argc, char** argv) {
   // Make a rule of cmdline parser.
   cmdline::parser parser;
   parser.add<std::string>("gen", 'g',
-                          "Generate XDP program from specified yaml filed.",
-                          false, "access.yaml");
-  parser.add<std::string>("filepath", 'f', "Specify the BPF filepath.", false,
-                          "xdp-generated.o");
-  parser.add<std::string>("interface", 'i', "Specify the interface.", false,
-                          "eth1");
-  parser.add<std::string>("sec", 's', "Specify the program section.", false,
-                          "xdp_drop");
-  parser.add("load", 'l', "Load XDP program to interface.");
-  parser.add("unload", 'u', "Unload XDP program from interface.");
+                          "Generate XDP program. Specify yaml file's path.",
+                          false, kDefaultYamlFilepath);
+  parser.add("load", 'l', "Load XDP program.");
+  parser.add("unload", 'u', "Unload XDP program.");
+  parser.add("status", 's', "Display filtering status.");
+  parser.add<std::string>("filepath", 'f', "Specify BPF file's path.", false,
+                          kDefaultBpfFilepath);
+  parser.add<std::string>("interface", 'i', "Specify interface.", false,
+                          kDefaultIfname);
+  parser.add<std::string>("sec", '\0',
+                          "[Advanced option] Specify program section.", false,
+                          kDefaultSec);
   parser.add("help", 'h', "Print usage.");
 
   if (!parser.parse(argc, argv) || parser.exist("help")) {
@@ -38,13 +41,14 @@ int main(int argc, char** argv) {
   struct config cfg = {
       .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
       // TODO: Remove ifindex from cfg.
-      .ifindex = if_nametoindex(kIfname.c_str()),
+      .ifindex = if_nametoindex(kDefaultIfname.c_str()),
       .ifname = parser.exist("interface") ? parser.get<std::string>("interface")
-                                          : kIfname,
+                                          : kDefaultIfname,
       .bpf_filepath = parser.exist("filepath")
                           ? parser.get<std::string>("filepath")
-                          : kBpfFilepath,
-      .progsec = parser.exist("sec") ? parser.get<std::string>("sec") : kSec,
+                          : kDefaultBpfFilepath,
+      .progsec =
+          parser.exist("sec") ? parser.get<std::string>("sec") : kDefaultSec,
       .yaml_filepath =
           parser.exist("gen") ? parser.get<std::string>("gen") : "",
   };
@@ -55,6 +59,8 @@ int main(int argc, char** argv) {
     cfg.mode = Mode::Unload;
   } else if (parser.exist("gen")) {
     cfg.mode = Mode::Generate;
+  } else if (parser.exist("status")) {
+    cfg.mode = Mode::Status;
   }
 
   Controller controller(cfg);

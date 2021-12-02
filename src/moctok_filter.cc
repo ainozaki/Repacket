@@ -3,6 +3,8 @@
 #include <cassert>
 #include <memory>
 
+#include <unistd.h>
+
 #include "common/define.h"
 #include "loader.h"
 
@@ -24,10 +26,29 @@ void MoctokFilter::Load() {
     case Mode::Load:
       loader_->LoadBpf();
       bpf_obj_ = loader_->bpf_obj();
+      PinMaps();
       break;
     default:
       assert(false);
       break;
   }
   return;
+}
+
+void MoctokFilter::PinMaps() {
+  std::string pin_dir = "/sys/fs/bpf/" + config_.ifname;
+  int err;
+  if (access(pin_dir.c_str(), F_OK) != -1) {
+    err = bpf_object__unpin_maps(bpf_obj_, pin_dir.c_str());
+    if (err) {
+      std::cerr << "ERR: Unpinning maps." << std::endl;
+      return;
+    }
+  }
+
+  err = bpf_object__pin_maps(bpf_obj_, pin_dir.c_str());
+  if (err) {
+    std::cerr << "ERR: Pinning maps." << std::endl;
+    return;
+  }
 }

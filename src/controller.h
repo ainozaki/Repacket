@@ -21,14 +21,9 @@ class Controller {
   Controller(const Controller&) = delete;
 
  private:
-  // Collect status from map.
+  void StartStats();
+
   void Stats();
-
-  // Setup map.
-  void MapSetup();
-
-  // Load the BPF-ELF file.
-  void StartLoading();
 
   std::unique_ptr<MoctokFilter> filter_;
 

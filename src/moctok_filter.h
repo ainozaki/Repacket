@@ -22,6 +22,8 @@ class MoctokFilter {
   }
 
  private:
+  void PinMaps();
+
   struct bpf_object* bpf_obj_;
 
   struct config config_;

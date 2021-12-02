@@ -1,5 +1,6 @@
 #include "loader.h"
 
+#include <cassert>
 #include <csignal>
 #include <iostream>
 #include <memory>
@@ -36,7 +37,7 @@ Loader::~Loader() {
 
 void Loader::UnloadBpf() {
   prog_fd_ = -1;
-  AttachBpf();
+  DetachBpf();
   return;
 }
 
@@ -70,6 +71,11 @@ void Loader::LoadBpf() {
   return;
 }
 
+void Loader::DetachBpf() {
+  assert(prog_fd_ == -1);
+  AttachBpf();
+}
+
 void Loader::AttachBpf() {
   // Attach the FD to the interface `ifname`.
   std::clog << "Attaching to an interface..." << std::endl;
@@ -80,6 +86,15 @@ void Loader::AttachBpf() {
     return;
   }
 
-  std::clog << "Success: Change has applied to " << ifname_ << std::endl;
+  switch (prog_fd_) {
+    case -1:
+      std::clog << "Success: Bpf program detached from interface " << ifname_
+                << std::endl;
+      break;
+    default:
+      std::clog << "Success: Bpf program attached to interface " << ifname_
+                << std::endl;
+      break;
+  }
   return;
 }
