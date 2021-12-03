@@ -28,7 +28,7 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
       // MocktokFilter unloads Bpf program.
       filter_ = std::make_unique<MoctokFilter>(cfg);
       break;
-    case Mode::Status:
+    case Mode::Stats:
       StartStats();
       break;
     default:

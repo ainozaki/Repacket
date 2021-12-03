@@ -26,11 +26,11 @@ enum class Mode {
 	Generate,
 	Load,
 	Unload,
-	Status,
+	Stats,
 };
 
 struct config {
-	Mode mode = Mode::Status;
+	Mode mode = Mode::Stats;
   uint32_t xdp_flags;
   unsigned int ifindex;
 	std::string ifname;

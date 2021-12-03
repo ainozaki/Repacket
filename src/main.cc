@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
                           false, kDefaultYamlFilepath);
   parser.add("load", 'l', "Load XDP program.");
   parser.add("unload", 'u', "Unload XDP program.");
-  parser.add("status", 's', "Display filtering status.");
+  parser.add("stats", 's', "Display filtering stats.");
   parser.add<std::string>("filepath", 'f', "Specify BPF file's path.", false,
                           kDefaultBpfFilepath);
   parser.add<std::string>("interface", 'i', "Specify interface.", false,
@@ -33,6 +33,7 @@ int main(int argc, char** argv) {
                           kDefaultSec);
   parser.add("help", 'h', "Print usage.");
 
+  // TODO: Limit option combinations.
   if (!parser.parse(argc, argv) || parser.exist("help")) {
     std::cerr << parser.error_full() << parser.usage();
     return 0;
@@ -59,8 +60,8 @@ int main(int argc, char** argv) {
     cfg.mode = Mode::Unload;
   } else if (parser.exist("gen")) {
     cfg.mode = Mode::Generate;
-  } else if (parser.exist("status")) {
-    cfg.mode = Mode::Status;
+  } else if (parser.exist("stats")) {
+    cfg.mode = Mode::Stats;
   }
 
   Controller controller(cfg);

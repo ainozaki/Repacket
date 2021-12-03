@@ -68,8 +68,8 @@ gen:
 unload:
 	./loader --unload
 
-status:
-	./loader --status
+stats:
+	./loader --stats
 
 ping:
 	ip netns exec router ping 172.16.10.1
