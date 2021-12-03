@@ -8,6 +8,7 @@
 #include <bpf.h>
 
 #include "common/define.h"
+#include "generator.h"
 #include "loader.h"
 #include "map.h"
 #include "moctok_filter.h"
@@ -27,9 +28,11 @@ class Controller {
 
   std::unique_ptr<MoctokFilter> filter_;
 
-  struct config config_;
+  std::unique_ptr<Generator> generator_;
 
-  Map map_;
+  std::unique_ptr<Map> map_;
+
+  struct config config_;
 
   struct bpf_map_info map_info_ = {0};
 

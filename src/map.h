@@ -18,25 +18,27 @@ struct stats_record {
 
 class Map {
  public:
-  Map() = default;
+  Map(int map_fd);
   ~Map() = default;
   Map(const Map&) = delete;
 
-  int FindMapFd(struct bpf_object* bpf_obj, const char* mapname);
+  static int FindMapFd(struct bpf_object* bpf_obj, const char* mapname);
 
-  int CheckMapInfo(int map_fd, struct bpf_map_info* info);
+  int CheckMapInfo(struct bpf_map_info* info);
 
-  void StatsPoll(int map_fd, struct bpf_map_info* info);
+  void StatsPoll(struct bpf_map_info* info);
 
  private:
-  void MapGetValueArray(int fd, __u32 key, struct datarec* value);
+  void MapGetValueArray(__u32 key, struct datarec* value);
 
-  bool MapCollect(int fd, __u32 map_type, __u32 key, struct record* rec);
+  bool MapCollect(__u32 map_type, __u32 key, struct record* rec);
 
-  void StatsCollect(int map_fd, __u32 map_type, struct stats_record* stats_rec);
+  void StatsCollect(__u32 map_type, struct stats_record* stats_rec);
 
   void StatsPrint(struct stats_record* stats_rec,
                   struct stats_record* stats_prev);
+
+  int map_fd_;
 };
 
 #endif  // MAP_H_

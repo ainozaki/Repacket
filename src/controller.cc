@@ -18,7 +18,7 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
-      { Generator generator(config_.yaml_filepath); }
+      generator_ = std::make_unique<Generator>(config_.yaml_filepath);
       break;
     case Mode::Load:
       // MocktokFilter loads Bpf program.
@@ -37,7 +37,7 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
   }
 }
 
-// TODO: Improve Map constructor.
+// TODO: move this function into Map constructor.
 void Controller::StartStats() {
   // TODO: Make a constant for mapname.
   std::string map_path = "/sys/fs/bpf/" + config_.ifname + "/xdp_stats_map";
@@ -46,16 +46,18 @@ void Controller::StartStats() {
     std::cerr << "ERR: Failed to open " << map_path << std::endl;
     return;
   }
+  map_ = std::make_unique<Map>(map_fd_);
   Stats();
 }
 
+// TODO: move this function into Map constructor.
 void Controller::Stats() {
   // TODO: make map_info a member of Map
   struct bpf_map_info map_info = {0};
-  int check_result = map_.CheckMapInfo(map_fd_, &map_info);
+  int check_result = map_->CheckMapInfo(&map_info);
   if (check_result) {
     std::cerr << "ERR: Failed to get map info." << std::endl;
     return;
   }
-  map_.StatsPoll(map_fd_, &map_info);
+  map_->StatsPoll(&map_info);
 }

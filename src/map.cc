@@ -8,6 +8,10 @@
 #include "common/define.h"
 #include "utils.h"
 
+Map::Map(int map_fd) : map_fd_(map_fd){};
+
+// static
+// Doesn't called by anyone.
 int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
   // Find the map object by name.
   struct bpf_map* map = bpf_object__find_map_by_name(bpf_obj, mapname);
@@ -21,7 +25,7 @@ int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
   return map_fd;
 }
 
-int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
+int Map::CheckMapInfo(struct bpf_map_info* info) {
   std::clog << "Checking map information..." << std::endl;
   __u32 info_len = sizeof(*info);
   int err;
@@ -31,11 +35,11 @@ int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
   exp.value_size = sizeof(struct datarec);
   exp.max_entries = 5;
 
-  if (map_fd < 0)
+  if (map_fd_ < 0)
     return EXIT_FAIL;
 
   // BPF-info via bpf-syscall
-  err = bpf_obj_get_info_by_fd(map_fd, info, &info_len);
+  err = bpf_obj_get_info_by_fd(map_fd_, info, &info_len);
   if (err) {
     std::cerr << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
@@ -59,18 +63,18 @@ int Map::CheckMapInfo(int map_fd, struct bpf_map_info* info) {
   return 0;
 }
 
-void Map::MapGetValueArray(int fd, __u32 key, struct datarec* value) {
-  if ((bpf_map_lookup_elem(fd, &key, value)) != 0) {
+void Map::MapGetValueArray(__u32 key, struct datarec* value) {
+  if ((bpf_map_lookup_elem(map_fd_, &key, value)) != 0) {
     std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
   }
 }
 
-bool Map::MapCollect(int fd, __u32 map_type, __u32 key, struct record* rec) {
+bool Map::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
   struct datarec value;
   rec->timestamp = gettime();
   switch (map_type) {
     case BPF_MAP_TYPE_ARRAY:
-      MapGetValueArray(fd, key, &value);
+      MapGetValueArray(key, &value);
       break;
     default:
       std::cerr << "Unknown map type." << std::endl;
@@ -82,14 +86,12 @@ bool Map::MapCollect(int fd, __u32 map_type, __u32 key, struct record* rec) {
   return true;
 }
 
-void Map::StatsCollect(int map_fd,
-                       __u32 map_type,
-                       struct stats_record* stats_rec) {
+void Map::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
   __u32 key_pass = XDP_PASS;
   __u32 key_drop = XDP_DROP;
 
-  MapCollect(map_fd, map_type, key_pass, &stats_rec->stats[0]);
-  MapCollect(map_fd, map_type, key_drop, &stats_rec->stats[1]);
+  MapCollect(map_type, key_pass, &stats_rec->stats[0]);
+  MapCollect(map_type, key_drop, &stats_rec->stats[1]);
 }
 
 void Map::StatsPrint(struct stats_record* stats_rec,
@@ -135,17 +137,17 @@ void Map::StatsPrint(struct stats_record* stats_rec,
   }
 }
 
-void Map::StatsPoll(int map_fd, struct bpf_map_info* info) {
+void Map::StatsPoll(struct bpf_map_info* info) {
   std::clog << "Polling stats..." << std::endl;
   struct stats_record prev, record = {0};
 
   // Initial reading
-  StatsCollect(map_fd, info->type, &record);
+  StatsCollect(info->type, &record);
   usleep(1000000 / 4);
 
   while (1) {
     prev = record;
-    StatsCollect(map_fd, info->type, &record);
+    StatsCollect(info->type, &record);
     StatsPrint(&record, &prev);
     sleep(1);
   }
