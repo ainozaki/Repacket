@@ -5,7 +5,8 @@ XDP_C := xdp-generated.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
-USER := controller.cc
+USER := bpf_wrapper.cc
+USER += controller.cc
 USER += generator.cc
 USER += loader.cc
 USER += map.cc

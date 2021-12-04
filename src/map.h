@@ -5,6 +5,7 @@
 
 #include "utils.h"
 
+#include "bpf_wrapper.h"
 #include "common/define.h"
 
 struct record {
@@ -22,8 +23,6 @@ class Map {
   ~Map() = default;
   Map(const Map&) = delete;
 
-  static int FindMapFd(struct bpf_object* bpf_obj, const char* mapname);
-
   int CheckMapInfo(struct bpf_map_info* info);
 
   void StatsPoll(struct bpf_map_info* info);
@@ -37,6 +36,8 @@ class Map {
 
   void StatsPrint(struct stats_record* stats_rec,
                   struct stats_record* stats_prev);
+
+  BpfWrapper bpf_wrapper_;
 
   int map_fd_;
 };

@@ -8,6 +8,7 @@
 #include <bpf.h>
 #include <cmdline.h>
 
+#include "bpf_wrapper.h"
 #include "common/define.h"
 #include "generator.h"
 #include "loader.h"
@@ -41,7 +42,7 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
 void Controller::StartStats() {
   // TODO: Make a constant for mapname.
   std::string map_path = "/sys/fs/bpf/" + config_.ifname + "/xdp_stats_map";
-  map_fd_ = bpf_obj_get(map_path.c_str());
+  map_fd_ = bpf_wrapper_.BpfGetPinnedObjFd(map_path.c_str());
   if (map_fd_ < 0) {
     std::cerr << "ERR: Failed to open " << map_path << std::endl;
     return;

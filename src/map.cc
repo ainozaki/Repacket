@@ -10,26 +10,11 @@
 
 Map::Map(int map_fd) : map_fd_(map_fd){};
 
-// static
-// Doesn't called by anyone.
-int Map::FindMapFd(struct bpf_object* bpf_obj, const char* mapname) {
-  // Find the map object by name.
-  struct bpf_map* map = bpf_object__find_map_by_name(bpf_obj, mapname);
-  if (!map) {
-    std::cerr << "ERR: find map failed." << std::endl;
-    exit(EXIT_FAIL_MAP);
-  }
-
-  // Find the correspond FD.
-  int map_fd = bpf_map__fd(map);
-  return map_fd;
-}
-
 int Map::CheckMapInfo(struct bpf_map_info* info) {
   std::clog << "Checking map information..." << std::endl;
-  __u32 info_len = sizeof(*info);
   int err;
 
+  // TODO: It's strange to fix expected value.
   struct bpf_map_info exp = {0};
   exp.key_size = sizeof(__u32);
   exp.value_size = sizeof(struct datarec);
@@ -39,7 +24,7 @@ int Map::CheckMapInfo(struct bpf_map_info* info) {
     return EXIT_FAIL;
 
   // BPF-info via bpf-syscall
-  err = bpf_obj_get_info_by_fd(map_fd_, info, &info_len);
+  err = bpf_wrapper_.BpfGetMapInfoByFd(map_fd_, info);
   if (err) {
     std::cerr << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
@@ -64,7 +49,7 @@ int Map::CheckMapInfo(struct bpf_map_info* info) {
 }
 
 void Map::MapGetValueArray(__u32 key, struct datarec* value) {
-  if ((bpf_map_lookup_elem(map_fd_, &key, value)) != 0) {
+  if ((bpf_wrapper_.BpfMapLookupElem(map_fd_, &key, value)) != 0) {
     std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
   }
 }
@@ -101,6 +86,7 @@ void Map::StatsPrint(struct stats_record* stats_rec,
   __u64 packets, bytes;
   double pps, bps;
 
+  // TODO: Change this style.
   printf(
       "----------------------------------------------------------------------"
       "-------------------------------------\n");

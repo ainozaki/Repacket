@@ -7,6 +7,7 @@
 
 #include <bpf.h>
 
+#include "bpf_wrapper.h"
 #include "common/define.h"
 #include "generator.h"
 #include "loader.h"
@@ -25,6 +26,8 @@ class Controller {
   void StartStats();
 
   void Stats();
+
+  BpfWrapper bpf_wrapper_;
 
   std::unique_ptr<MoctokFilter> filter_;
 
