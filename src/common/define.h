@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <string>
 
+constexpr int kSuccess = 0;
+constexpr int kError = 1;
+
 struct datarec {
   uint64_t rx_packets;
   uint64_t rx_bytes;

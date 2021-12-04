@@ -28,9 +28,9 @@ class Loader {
   ~Loader();
   Loader(const Loader&) = delete;
 
-  void LoadBpf();
+  int LoadBpf();
 
-  void UnloadBpf();
+  int UnloadBpf();
 
   // Make sure to call this function after LoadBpf().
   struct bpf_object* bpf_obj() {
@@ -38,9 +38,9 @@ class Loader {
   }
 
  private:
-  void AttachBpf();
+  int AttachBpf();
 
-  void DetachBpf();
+  int DetachBpf();
 
   Controller* controller_;
 

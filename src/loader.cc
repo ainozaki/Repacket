@@ -31,17 +31,22 @@ Loader::Loader(uint32_t xdp_flags,
       bpf_filepath_(bpf_filepath),
       progsec_(progsec) {}
 
-Loader::~Loader() {
-  std::clog << "Loader destruction" << std::endl;
-}
+Loader::~Loader() {}
 
-void Loader::UnloadBpf() {
+int Loader::UnloadBpf() {
   prog_fd_ = -1;
-  DetachBpf();
-  return;
+  int err = DetachBpf();
+  if (err == kSuccess) {
+    std::clog << "Success: Bpf program is unloaded from interface " << ifname_
+              << std::endl;
+  } else {
+    std::clog << "Failed: Bpf program cannot be unloaded from interface "
+              << ifname_ << std::endl;
+  }
+  return err;
 }
 
-void Loader::LoadBpf() {
+int Loader::LoadBpf() {
   struct bpf_program* bpf_prog;
 
   // Load the BPF-ELF file.
@@ -49,52 +54,47 @@ void Loader::LoadBpf() {
   int err = bpf_prog_load(bpf_filepath_.c_str(), BPF_PROG_TYPE_XDP, &bpf_obj_,
                           &prog_fd_);
   if (err) {
-    std::cerr << "ERR: loading BPF-OBJ file." << std::endl;
-    exit(EXIT_FAIL_BPF);
+    std::cerr << "ERR: cannot load BPF-OBJ file at " << bpf_filepath_
+              << std::endl;
+    return kError;
   }
 
   // Find the selected prog section.
   bpf_prog = bpf_object__find_program_by_title(bpf_obj_, progsec_.c_str());
   if (!bpf_prog) {
     std::cerr << "ERR: finding prog sec: " << progsec_ << std::endl;
-    exit(EXIT_FAIL_BPF);
+    return kError;
   }
 
   // Find the correspond FD.
   prog_fd_ = bpf_program__fd(bpf_prog);
   if (prog_fd_ <= 0) {
     std::cerr << "ERR: bpf_program__fd" << std::endl;
-    exit(EXIT_FAIL_BPF);
+    return kError;
   }
 
-  AttachBpf();
-  return;
+  err = AttachBpf();
+  if (err == kSuccess) {
+    std::clog << "Success: Bpf program is loaded to interface " << ifname_
+              << std::endl;
+  } else {
+    std::clog << "Failed: Bpf program cannot be loaded to interface " << ifname_
+              << std::endl;
+  }
+  return err;
 }
 
-void Loader::DetachBpf() {
+int Loader::DetachBpf() {
   assert(prog_fd_ == -1);
-  AttachBpf();
+  return AttachBpf();
 }
 
-void Loader::AttachBpf() {
-  // Attach the FD to the interface `ifname`.
+int Loader::AttachBpf() {
   std::clog << "Attaching to an interface..." << std::endl;
   int err = bpf_set_link_xdp_fd(ifindex_, prog_fd_, xdp_flags_);
   if (err < 0) {
-    std::cerr << "ERR: link set xdp fd failed." << std::endl;
-    std::cerr << "errno is: " << err << std::endl;
-    return;
+    std::cerr << "ERR: set xdp fd to link failed. errno: " << err << std::endl;
+    return kError;
   }
-
-  switch (prog_fd_) {
-    case -1:
-      std::clog << "Success: Bpf program detached from interface " << ifname_
-                << std::endl;
-      break;
-    default:
-      std::clog << "Success: Bpf program attached to interface " << ifname_
-                << std::endl;
-      break;
-  }
-  return;
+  return kSuccess;
 }

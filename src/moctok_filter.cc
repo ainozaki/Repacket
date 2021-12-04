@@ -14,9 +14,7 @@ MoctokFilter::MoctokFilter(const struct config& cfg) : config_(cfg) {
   Load();
 };
 
-MoctokFilter::~MoctokFilter() {
-  std::clog << "MoctokFilter destruction" << std::endl;
-}
+MoctokFilter::~MoctokFilter() {}
 
 void MoctokFilter::Load() {
   switch (config_.mode) {
@@ -24,7 +22,10 @@ void MoctokFilter::Load() {
       loader_->UnloadBpf();
       break;
     case Mode::Load:
-      loader_->LoadBpf();
+      if (loader_->LoadBpf() != kSuccess) {
+        std::cerr << "Failed: suspend loading program," << std::endl;
+        return;
+      }
       bpf_obj_ = loader_->bpf_obj();
       PinMaps();
       break;
