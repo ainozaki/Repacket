@@ -9,21 +9,30 @@ COLOR_RED="\033[0;31m"
 COLOR_GREEN="\033[0;32m"
 COLOR_OFF="\033[0m"
 
-get_bpfhelper(){
-    wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${LINUX_VERSION}.tar.xz
-    tar xf linux-${LINUX_VERSION}.tar.xz
-    if [ ! -d "${ROOT_DIR}/include" ]; then
-	    mkdir "${ROOT_DIR}/include"
-    fi
-    pushd linux-${LINUX_VERSION}/
-    
-    make defconfig
-    ./scripts/bpf_helpers_doc.py --filename ./tools/include/uapi/linux/bpf.h > ../include/bpf_helper_defs.h
-    cp ./tools/testing/selftests/bpf/bpf_helpers.h ../include/bpf_helpers.h
-    cp ./tools/testing/selftests/bpf/bpf_endian.h ../include/bpf_endian.h
-    popd
-    rm linux-${LINUX_VERSION}.tar.xz
-    rm -rf linux-${LINUX_VERSION}/
+for_developper_ubuntu(){
+	sudo apt update
+	sudo apt install clang llvm libelf-dev libpcap-dev gcc-multilib build-essential
+	sudo apt install linux-tools-$(uname -r) linux-headers-$(uname -r)
+	sudo apt install cmake clang-format
+}
+
+get_yaml_cpp(){
+	cd ~
+	git clone https://github.com/jbeder/yaml-cpp.git
+	cd ~/yaml-cpp
+	mkdir build
+	cd ~/yaml-cpp/build
+	cmake ..
+	make
+	sudo make install
+	echo -e "${COLOR_GREEN}[ INFO ] yaml-cpp installed ${COLOR_OFF}"
+}
+
+get_cmdline(){
+	cd ~
+	git clone https://github.com/tanakh/cmdline.git
+	sudo mv ~/cmdline/cmdline.h /usr/local/include
+	echo -e "${COLOR_GREEN}[ INFO ] cmdline installed ${COLOR_OFF}"
 }
 
 get_libbpf() {
@@ -62,5 +71,7 @@ get_libbpf() {
     touch "${DEPS_DIR}/libbpf_installed"
 }
 
-get_bpfhelper
-get_libbpf
+#for_developper_ubuntu
+#get_libbpf
+#get_yaml_cpp
+get_cmdline
