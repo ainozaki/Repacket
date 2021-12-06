@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include <bpf.h>
+#include <bpf/bpf.h>
 
 #include "common/define.h"
 #include "loader.h"

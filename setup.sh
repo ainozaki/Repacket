@@ -36,7 +36,7 @@ get_cmdline(){
 }
 
 get_libbpf() {
-    DEPS_DIR="${ROOT_DIR}/build/deps"
+    DEPS_DIR="${ROOT_DIR}/deps"
     mkdir -p "${DEPS_DIR}"
     if [ -f "${DEPS_DIR}/libbpf_installed" ]; then
         return
@@ -72,6 +72,6 @@ get_libbpf() {
 }
 
 #for_developper_ubuntu
-#get_libbpf
+get_libbpf
 #get_yaml_cpp
-get_cmdline
+#get_cmdline

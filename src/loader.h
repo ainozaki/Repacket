@@ -11,7 +11,7 @@
 #include <linux/if_link.h>
 #include <net/if.h>
 
-#include <bpf.h>
+#include <bpf/bpf.h>
 #include <libbpf.h>
 
 #include "common/define.h"

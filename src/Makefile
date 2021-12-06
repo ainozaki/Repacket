@@ -24,12 +24,12 @@ TEST_OBJ := test
 COMMON_H := common/define.h
 COMMON_H += common/constant.h
 
-LDFLAGS := -L../build/deps/lib
+LDFLAGS := -L../deps/lib
 LIBS := -l:libbpf.a -lelf -lyaml-cpp
 LIBS_TEST := -lgtest -lgtest_main
 
 CFLAGS := -I./common
-BPF_CFLAGS ?= -I../build/deps/include/bpf
+BPF_CFLAGS ?= -I../deps/include/ -I../deps/include/bpf
 
 $(XDP_OBJ): $(XDP_C)
 	$(CLANG) -S \

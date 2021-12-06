@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <bpf.h>
+#include <bpf/bpf.h>
 
 int BpfWrapper::BpfGetMapInfoByFd(int fd, struct bpf_map_info* info) {
   __u32 info_len = sizeof(*info);

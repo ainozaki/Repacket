@@ -5,7 +5,7 @@
 #include <set>
 #include <string>
 
-#include <bpf.h>
+#include <bpf/bpf.h>
 
 #include "bpf_wrapper.h"
 #include "common/define.h"

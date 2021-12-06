@@ -1,4 +1,3 @@
-build/deps/libbpf_installed
-build/deps/libbpf/
+deps/
 src/for-demo/
 src/benri_commands.sh
