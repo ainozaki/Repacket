@@ -64,7 +64,7 @@ load-ip:
 	ip link set dev eth1 xdpgeneric obj kern.o sec xdp
 
 gen:
-	./loader --gen example.yaml 
+	./loader --gen moctok.yaml 
 
 unload:
 	./loader --unload

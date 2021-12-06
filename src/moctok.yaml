@@ -1,0 +1,5 @@
+all:
+ - action: pass
+   protocol: tcp
+ - protocol: udp
+   action: pass

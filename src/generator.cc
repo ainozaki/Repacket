@@ -60,7 +60,17 @@ std::string ConvertIPAddressToHexString(std::string& address) {
     address.erase(0, pos + splitter.size());
   }
   return "0x" + hex;
-};
+}
+
+void StringToPolicy(const std::string& key,
+                    const std::string& value,
+                    std::shared_ptr<Policy> policy) {
+  if (key == "action") {
+    policy->action = ConvertActionFromString(value);
+  } else if (key == "protocol") {
+    policy->protocol = value;
+  }
+}
 }  // namespace
 
 Generator::Generator(const std::string& yaml_filepath)
@@ -73,28 +83,20 @@ Generator::~Generator() {
 }
 
 void Generator::ReadYaml() {
-  const YAML::Node& yaml_policies = YAML::LoadFile(yaml_filepath_);
+  YAML::Node node = YAML::LoadFile(yaml_filepath_);
   int priority = 0;
-  for (const auto& yaml_policy : yaml_policies) {
-    Policy policy;
-    policy.priority = priority;
-    if (!yaml_policy["action"]) {
-      std::cerr << "rule must have action value." << std::endl;
+  if (node["all"]) {
+    YAML::Node all = node["all"];
+    for (std::size_t i = 0; i < all.size(); i++) {
+      std::shared_ptr<Policy> policy = std::make_shared<Policy>();
+      policy->priority = priority;
+      for (YAML::const_iterator it = all[i].begin(); it != all[i].end(); ++it) {
+        std::string key = it->first.as<std::string>();
+        std::string value = it->second.as<std::string>();
+        StringToPolicy(key, value, policy);
+      }
+      policies_.push_back(*policy);
     }
-    policy.action =
-        ConvertActionFromString(yaml_policy["action"].as<std::string>());
-    if (yaml_policy["port"]) {
-      policy.port = yaml_policy["port"].as<int>();
-    }
-    if (yaml_policy["ip_address"]) {
-      policy.ip_address = yaml_policy["ip_address"].as<std::string>();
-    }
-    if (yaml_policy["protocol"]) {
-      policy.protocol = yaml_policy["protocol"].as<std::string>();
-    }
-
-    policies_.push_back(policy);
-    priority++;
   }
   Construct();
   return;
