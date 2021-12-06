@@ -6,24 +6,11 @@
 #include <string>
 #include <vector>
 
-#include <yaml-cpp/yaml.h>
-
 #include "common/define.h"
 #include "common/xdp_base.h"
+#include "yaml_handler.h"
 
 namespace {
-// Convert enum class Action to String.
-Action ConvertActionFromString(const std::string& action) {
-  if (action == "pass") {
-    return Action::Pass;
-  } else if (action == "drop") {
-    return Action::Drop;
-  } else {
-    std::cerr << "action must be 'pass' or 'drop'" << std::endl;
-    exit(EXIT_FAIL);
-  }
-}
-
 // Convert decimal int to hex string.
 std::string ConvertDecimalIntToHexString(int dec) {
   if (!dec) {
@@ -62,44 +49,17 @@ std::string ConvertIPAddressToHexString(std::string& address) {
   return "0x" + hex;
 }
 
-void StringToPolicy(const std::string& key,
-                    const std::string& value,
-                    std::shared_ptr<Policy> policy) {
-  if (key == "action") {
-    policy->action = ConvertActionFromString(value);
-  } else if (key == "protocol") {
-    policy->protocol = value;
-  }
-}
 }  // namespace
 
 Generator::Generator(const std::string& yaml_filepath)
-    : yaml_filepath_(yaml_filepath) {
-  ReadYaml();
+    : yaml_filepath_(yaml_filepath),
+      // TODO: Think whether this causes copy.
+      policies_(YamlHandler::ReadYaml(yaml_filepath)) {
+  Construct();
 }
 
 Generator::~Generator() {
   std::clog << "Generator destructor" << std::endl;
-}
-
-void Generator::ReadYaml() {
-  YAML::Node node = YAML::LoadFile(yaml_filepath_);
-  int priority = 0;
-  if (node["all"]) {
-    YAML::Node all = node["all"];
-    for (std::size_t i = 0; i < all.size(); i++) {
-      std::shared_ptr<Policy> policy = std::make_shared<Policy>();
-      policy->priority = priority;
-      for (YAML::const_iterator it = all[i].begin(); it != all[i].end(); ++it) {
-        std::string key = it->first.as<std::string>();
-        std::string value = it->second.as<std::string>();
-        StringToPolicy(key, value, policy);
-      }
-      policies_.push_back(*policy);
-    }
-  }
-  Construct();
-  return;
 }
 
 std::unique_ptr<std::string> Generator::CreateFromPolicy() {
@@ -120,19 +80,19 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     std::string condition;
 
     // protocol
-    if (!policy.protocol.empty()) {
-      if (policy.protocol == "ICMP" || policy.protocol == "icmp" ||
-          policy.protocol == "Icmp") {
+    if (!policy.ip_protocol.empty()) {
+      if (policy.ip_protocol == "ICMP" || policy.ip_protocol == "icmp" ||
+          policy.ip_protocol == "Icmp") {
         need_ip_parse = true;
         condition += condition_counter ? "&& (iph->protocol == IPPROTO_ICMP) "
                                        : "(iph->protocol == IPPROTO_ICMP) ";
         condition_counter++;
-      } else if (policy.protocol == "TCP" || policy.protocol == "tcp") {
+      } else if (policy.ip_protocol == "TCP" || policy.ip_protocol == "tcp") {
         need_ip_parse = true;
         condition += condition_counter ? "&& (iph->protocol == IPPROTO_TCP) "
                                        : "(iph->protocol == IPPROTO_TCP) ";
         condition_counter++;
-      } else if (policy.protocol == "UDP" || policy.protocol == "udp") {
+      } else if (policy.ip_protocol == "UDP" || policy.ip_protocol == "udp") {
         need_ip_parse = true;
         condition += condition_counter ? "&& (iph->protocol == IPPROTO_UDP) "
                                        : "(iph->protocol == IPPROTO_UDP) ";

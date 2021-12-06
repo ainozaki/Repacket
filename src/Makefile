@@ -12,6 +12,7 @@ USER += loader.cc
 USER += map.cc
 USER += moctok_filter.cc
 USER += utils.cc
+USER += yaml_handler.cc
 USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
