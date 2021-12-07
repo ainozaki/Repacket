@@ -4,3 +4,5 @@ all:
  - action: drop
    ip_saddr: 192.168.33.1
    ip_daddr: 192.168.44.1
+   ip_ttl_min: 0
+   ip_ttl_max: 64

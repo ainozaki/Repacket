@@ -18,4 +18,6 @@ TEST(GeneratorTest, ReadYaml) {
   EXPECT_EQ("tcp", policy[1].ip_protocol);
   EXPECT_EQ("192.168.33.10", policy[1].ip_saddr);
   EXPECT_EQ("192.168.44.10", policy[1].ip_daddr);
+  EXPECT_EQ(0, policy[1].ip_ttl_min);
+  EXPECT_EQ(64, policy[1].ip_ttl_max);
 }

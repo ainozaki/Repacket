@@ -81,7 +81,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     std::string policy_code = t + "// priority " + std::to_string(index) + nl;
     std::string condition;
 
-    // protocol
+    // ip_protocol
     if (!policy.ip_protocol.empty()) {
       if (policy.ip_protocol == "ICMP" || policy.ip_protocol == "icmp" ||
           policy.ip_protocol == "Icmp") {
@@ -102,7 +102,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       }
     }
 
-    // ip_saddr conversion.
+    // ip_saddr
     if (!policy.ip_saddr.empty()) {
       need_ip_parse = true;
       std::string ip_saddr_x = "ip_saddr" + std::to_string(index);
@@ -114,7 +114,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       condition_counter++;
     }
 
-    // ip_daddr conversion.
+    // ip_daddr
     if (!policy.ip_daddr.empty()) {
       need_ip_parse = true;
       std::string ip_daddr_x = "ip_daddr" + std::to_string(index);
@@ -123,6 +123,26 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       ipaddr_definition += t + "__u32 " + ip_daddr_x + " = " +
                            ConvertIPAddressToHexString(policy.ip_daddr) + ";" +
                            nl;
+      condition_counter++;
+    }
+
+    // ip_ttl_min
+    if (policy.ip_ttl_min != -1) {
+      need_ip_parse = true;
+      if (condition_counter) {
+        condition += "&& ";
+      }
+      condition += "(iph->ttl < " + std::to_string(policy.ip_ttl_min) + ") ";
+      condition_counter++;
+    }
+
+    // ip_ttl_max
+    if (policy.ip_ttl_max != -1) {
+      need_ip_parse = true;
+      condition +=
+          condition_counter
+              ? "&& (iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") "
+              : "(iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") ";
       condition_counter++;
     }
 

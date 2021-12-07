@@ -33,6 +33,10 @@ void StringToPolicy(const std::string& key,
     policy->ip_saddr = value;
   } else if (key == "ip_daddr") {
     policy->ip_daddr = value;
+  } else if (key == "ip_ttl_min") {
+    policy->ip_ttl_min = std::stoi(value);
+  } else if (key == "ip_ttl_max") {
+    policy->ip_ttl_max = std::stoi(value);
   }
 }
 

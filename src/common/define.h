@@ -23,6 +23,8 @@ struct Policy {
   std::string ip_protocol;
   std::string ip_saddr;
   std::string ip_daddr;
+	int ip_ttl_min = -1;
+	int ip_ttl_max = -1;
   int port = -1;
 };
 

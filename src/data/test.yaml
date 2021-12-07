@@ -5,3 +5,5 @@ all:
    ip_protocol: tcp
    ip_saddr: 192.168.33.10
    ip_daddr: 192.168.44.10
+   ip_ttl_min: 0
+   ip_ttl_max: 64
