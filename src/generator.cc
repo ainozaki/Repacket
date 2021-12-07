@@ -101,14 +101,13 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     }
 
     // ip address conversion.
-    if (!policy.ip_address.empty()) {
+    if (!policy.ip_saddr.empty()) {
       need_ip_parse = true;
-      std::string inline__filter_addr = "filter_addr_" + std::to_string(index);
-      condition += condition_counter
-                       ? "&& (iph->saddr == " + inline__filter_addr + ")"
-                       : "(iph->saddr == " + inline__filter_addr + ")";
-      std::string ipaddr_string = policy.ip_address;
-      ipaddr_definition += t + "__u32 " + inline__filter_addr + " = " +
+      std::string ip_saddr_x = "ip_saddr" + std::to_string(index);
+      condition += condition_counter ? "&& (iph->saddr == " + ip_saddr_x + ")"
+                                     : "(iph->saddr == " + ip_saddr_x + ")";
+      std::string ipaddr_string = policy.ip_saddr;
+      ipaddr_definition += t + "__u32 " + ip_saddr_x + " = " +
                            ConvertIPAddressToHexString(ipaddr_string) + ";" +
                            nl;
       condition_counter++;

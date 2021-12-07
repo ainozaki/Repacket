@@ -4,29 +4,16 @@
 
 #include "common/define.h"
 #include "generator.h"
+#include "yaml_handler.h"
 
 TEST(GeneratorTest, ReadYaml) {
-  Generator generator("data/test.yaml");
-  generator.StartReadYaml();
-  std::vector<Policy> access_policies = generator.access_policies();
-  std::vector<Policy> deny_policies = generator.deny_policies();
-  EXPECT_EQ(2, access_policies.size());
-  EXPECT_EQ(1, deny_policies.size());
-  // first access policy.
-  EXPECT_EQ(1, access_policies[0].priority);
-  EXPECT_EQ(-1, access_policies[0].port);
-  EXPECT_EQ("192.168.33.1", access_policies[0].ip_address);
-  EXPECT_EQ("icmp", access_policies[0].protocol);
+  std::vector<Policy> policy = YamlHandler::ReadYaml("data/test.yaml");
+  EXPECT_EQ(2, policy.size());
+  // first policy.
+  EXPECT_EQ(Action::Pass, policy[0].action);
+  EXPECT_EQ("tcp", policy[0].ip_protocol);
 
-  // second access polixy.
-  EXPECT_EQ(2, access_policies[1].priority);
-  EXPECT_EQ(65535, access_policies[1].port);
-  EXPECT_EQ("", access_policies[1].ip_address);
-  EXPECT_EQ("", access_policies[1].protocol);
-
-  // first deny polixy.
-  EXPECT_EQ(0, deny_policies[0].priority);
-  EXPECT_EQ(-1, deny_policies[0].port);
-  EXPECT_EQ("10.2.20.1", deny_policies[0].ip_address);
-  EXPECT_EQ("", deny_policies[0].protocol);
+  // second policy.
+  EXPECT_EQ(Action::Drop, policy[1].action);
+  EXPECT_EQ("192.168.33.10", policy[1].ip_saddr);
 }

@@ -27,8 +27,10 @@ void StringToPolicy(const std::string& key,
                     std::shared_ptr<Policy> policy) {
   if (key == "action") {
     policy->action = ConvertActionFromString(value);
-  } else if (key == "protocol") {
+  } else if (key == "ip_protocol") {
     policy->ip_protocol = value;
+  } else if (key == "ip_saddr") {
+    policy->ip_saddr = value;
   }
 }
 
