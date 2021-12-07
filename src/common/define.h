@@ -18,10 +18,11 @@ enum class Action {
 };
 
 struct Policy {
+  int priority = -1;
 	Action action = Action::Pass;
   std::string ip_protocol;
   std::string ip_saddr;
-  int priority = -1;
+  std::string ip_daddr;
   int port = -1;
 };
 

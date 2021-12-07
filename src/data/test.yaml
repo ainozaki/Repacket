@@ -1,5 +1,7 @@
 all:
  - action: pass
-   ip_protocol: tcp
+   ip_protocol: udp
  - action: drop
+   ip_protocol: tcp
    ip_saddr: 192.168.33.10
+   ip_daddr: 192.168.44.10

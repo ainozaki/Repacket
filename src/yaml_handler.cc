@@ -31,6 +31,8 @@ void StringToPolicy(const std::string& key,
     policy->ip_protocol = value;
   } else if (key == "ip_saddr") {
     policy->ip_saddr = value;
+  } else if (key == "ip_daddr") {
+    policy->ip_daddr = value;
   }
 }
 
@@ -52,6 +54,7 @@ std::vector<Policy> YamlHandler::ReadYaml(const std::string& filepath) {
         StringToPolicy(key, value, policy);
       }
       policies.push_back(*policy);
+      priority++;
     }
   }
   return policies;

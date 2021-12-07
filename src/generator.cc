@@ -35,16 +35,18 @@ std::string ConvertDecimalIntToHexString(int dec) {
 }
 
 // Convert String ip address to hex string.
-std::string ConvertIPAddressToHexString(std::string& address) {
+std::string ConvertIPAddressToHexString(const std::string& address) {
   std::string::size_type pos;
   std::string splitter = ".";
   std::string subpart;
   std::string hex;
+  // TODO: Rethinking!
+  std::string str_address = address;
   for (int i = 0; i < 4; i++) {
-    pos = address.find(splitter);
-    subpart = address.substr(0, pos);
+    pos = str_address.find(splitter);
+    subpart = str_address.substr(0, pos);
     hex = ConvertDecimalIntToHexString(stoi(subpart)) + hex;
-    address.erase(0, pos + splitter.size());
+    str_address.erase(0, pos + splitter.size());
   }
   return "0x" + hex;
 }
@@ -100,19 +102,31 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       }
     }
 
-    // ip address conversion.
+    // ip_saddr conversion.
     if (!policy.ip_saddr.empty()) {
       need_ip_parse = true;
       std::string ip_saddr_x = "ip_saddr" + std::to_string(index);
-      condition += condition_counter ? "&& (iph->saddr == " + ip_saddr_x + ")"
-                                     : "(iph->saddr == " + ip_saddr_x + ")";
-      std::string ipaddr_string = policy.ip_saddr;
+      condition += condition_counter ? "&& (iph->saddr == " + ip_saddr_x + ") "
+                                     : "(iph->saddr == " + ip_saddr_x + ") ";
       ipaddr_definition += t + "__u32 " + ip_saddr_x + " = " +
-                           ConvertIPAddressToHexString(ipaddr_string) + ";" +
+                           ConvertIPAddressToHexString(policy.ip_saddr) + ";" +
                            nl;
       condition_counter++;
     }
 
+    // ip_daddr conversion.
+    if (!policy.ip_daddr.empty()) {
+      need_ip_parse = true;
+      std::string ip_daddr_x = "ip_daddr" + std::to_string(index);
+      condition += condition_counter ? "&& (iph->daddr == " + ip_daddr_x + ") "
+                                     : "(iph->daddr == " + ip_daddr_x + ") ";
+      ipaddr_definition += t + "__u32 " + ip_daddr_x + " = " +
+                           ConvertIPAddressToHexString(policy.ip_daddr) + ";" +
+                           nl;
+      condition_counter++;
+    }
+
+    // if statement
     if (condition_counter == 1) {
       policy_code += t + "if " + condition + "{" + nl;
     } else {
