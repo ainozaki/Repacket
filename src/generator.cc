@@ -68,105 +68,107 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
   std::string t = "\t";
   std::string nl = "\n";
   std::string address_checking;
-  std::string action_decition;
   std::string ipaddr_definition;
+  std::string action_codes;
   bool need_ip_parse = false;
 
   for (const auto& policy : policies_) {
-    int condition_counter = 0;
+    int counter = 0;
     int index = policy.priority;
 
-    // Create condition code reflecting policy.
-    // |policy_code| represents for one policy.
-    std::string policy_code = t + "// priority " + std::to_string(index) + nl;
+    // Generate code which judges action according to the policy.
+    // |action_code| is the judging code for one policy.
+    std::string action_code = t + "// priority " + std::to_string(index) + nl;
     std::string condition;
 
     // ip_protocol
     if (!policy.ip_protocol.empty()) {
+      if (counter) {
+        condition += "&& ";
+      }
       if (policy.ip_protocol == "ICMP" || policy.ip_protocol == "icmp" ||
           policy.ip_protocol == "Icmp") {
         need_ip_parse = true;
-        condition += condition_counter ? "&& (iph->protocol == IPPROTO_ICMP) "
-                                       : "(iph->protocol == IPPROTO_ICMP) ";
-        condition_counter++;
+        condition += "(iph->protocol == IPPROTO_ICMP) ";
+        counter++;
       } else if (policy.ip_protocol == "TCP" || policy.ip_protocol == "tcp") {
         need_ip_parse = true;
-        condition += condition_counter ? "&& (iph->protocol == IPPROTO_TCP) "
-                                       : "(iph->protocol == IPPROTO_TCP) ";
-        condition_counter++;
+        condition += "(iph->protocol == IPPROTO_TCP) ";
+        counter++;
       } else if (policy.ip_protocol == "UDP" || policy.ip_protocol == "udp") {
         need_ip_parse = true;
-        condition += condition_counter ? "&& (iph->protocol == IPPROTO_UDP) "
-                                       : "(iph->protocol == IPPROTO_UDP) ";
-        condition_counter++;
+        condition += "(iph->protocol == IPPROTO_UDP) ";
+        counter++;
       }
     }
 
     // ip_saddr
     if (!policy.ip_saddr.empty()) {
       need_ip_parse = true;
+      if (counter) {
+        condition += "&& ";
+      }
       std::string ip_saddr_x = "ip_saddr" + std::to_string(index);
-      condition += condition_counter ? "&& (iph->saddr == " + ip_saddr_x + ") "
-                                     : "(iph->saddr == " + ip_saddr_x + ") ";
+      condition += "(iph->saddr == " + ip_saddr_x + ") ";
       ipaddr_definition += t + "__u32 " + ip_saddr_x + " = " +
                            ConvertIPAddressToHexString(policy.ip_saddr) + ";" +
                            nl;
-      condition_counter++;
+      counter++;
     }
 
     // ip_daddr
     if (!policy.ip_daddr.empty()) {
       need_ip_parse = true;
+      if (counter) {
+        condition += "&& ";
+      }
       std::string ip_daddr_x = "ip_daddr" + std::to_string(index);
-      condition += condition_counter ? "&& (iph->daddr == " + ip_daddr_x + ") "
-                                     : "(iph->daddr == " + ip_daddr_x + ") ";
+      condition += "(iph->daddr == " + ip_daddr_x + ") ";
       ipaddr_definition += t + "__u32 " + ip_daddr_x + " = " +
                            ConvertIPAddressToHexString(policy.ip_daddr) + ";" +
                            nl;
-      condition_counter++;
+      counter++;
     }
 
     // ip_ttl_min
     if (policy.ip_ttl_min != -1) {
       need_ip_parse = true;
-      if (condition_counter) {
+      if (counter) {
         condition += "&& ";
       }
       condition += "(iph->ttl < " + std::to_string(policy.ip_ttl_min) + ") ";
-      condition_counter++;
+      counter++;
     }
 
     // ip_ttl_max
     if (policy.ip_ttl_max != -1) {
       need_ip_parse = true;
-      condition +=
-          condition_counter
-              ? "&& (iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") "
-              : "(iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") ";
-      condition_counter++;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") ";
+      counter++;
     }
 
     // if statement
-    if (condition_counter == 1) {
-      policy_code += t + "if " + condition + "{" + nl;
+    if (counter == 1) {
+      action_code += t + "if " + condition + "{" + nl;
     } else {
-      policy_code += t + "if (" + condition + ") {" + nl;
+      action_code += t + "if (" + condition + ") {" + nl;
     }
 
     // Create action code.
     switch (policy.action) {
       case Action::Pass:
-        policy_code += t + t + "goto out;" + nl;
+        action_code += t + t + "goto out;" + nl;
         break;
       case Action::Drop:
-        policy_code +=
+        action_code +=
             t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
     }
-    policy_code += t + "}" + nl;
+    action_code += t + "}" + nl;
 
-    // |action_decition| is a set of |policy_code|.
-    action_decition += policy_code + nl;
-
+    action_codes += action_code + nl;
   }  // for (const auto& policy : policies_)
 
   // Create verify code.
@@ -175,7 +177,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
   }
 
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
-      address_checking + ipaddr_definition + nl + action_decition);
+      address_checking + ipaddr_definition + nl + action_codes);
   return code;
 }
 
@@ -193,27 +195,26 @@ void Generator::Construct() {
   std::string inline_func = xdp::inline_func_stats;
 
   // xdp section.
-  std::string policy = *CreateFromPolicy().get();
-  std::string func = xdp::func_name + xdp::func_fix + policy + xdp::func_out +
-                     xdp::r_bracket + xdp::nl;
-  std::string sec = xdp::sec_name + func;
+  std::string judge_action = *CreateFromPolicy().get();
+  std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix +
+                        judge_action + xdp::func_out + xdp::r_bracket + xdp::nl;
 
   // license.
   std::string license = xdp::license;
 
   xdp_prog_ =
-      include + nl + define + nl + inline_func + nl + sec + nl + license;
+      include + nl + define + nl + inline_func + nl + section + nl + license;
   Write();
   return;
 }
 
 void Generator::Write() {
-  std::ofstream xdp_file("xdp-generated.c");
+  std::ofstream xdp_file(output_filepath_);
   if (!xdp_file) {
-    std::cerr << "Cannot open xdp-generated.c" << std::endl;
+    std::cerr << "Cannot open " << output_filepath_ << std::endl;
     exit(EXIT_FAIL);
   }
   xdp_file << xdp_prog_ << std::endl;
-  std::cerr << "Writing to xdp-generated.c done! " << std::endl;
+  std::cerr << "Writing to " << output_filepath_ << " done!" << std::endl;
   return;
 }

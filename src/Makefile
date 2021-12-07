@@ -52,8 +52,8 @@ test: $(TEST) $(USER)
 
 format:
 # to exclude "common/xdp_base.h", use first command.
-	clang-format -i $(XDP_C) $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc 
-# find ./ -name "*.cc" -o -name "*.h" -o -path "./common" -name "xdp_base.h" -prune | xargs clang-format -i
+	clang-format -i $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc 
+# find ./ -name "*.cc" -o -name "*.h" -o -path "./common" | xargs clang-format -i
 
 load:
 	./loader --load
