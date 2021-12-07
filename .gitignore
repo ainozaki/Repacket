@@ -1,3 +1,4 @@
 deps/
 src/for-demo/
 src/benri_commands.sh
+src/xdp-goal.c

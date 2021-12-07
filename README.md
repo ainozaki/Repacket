@@ -62,12 +62,12 @@ udp_dest:
 
 
 ### Respectful Implementation
-[facebookincubator/katran](https://github.com/facebookincubator/katran)
-[linux/samples/bpf](https://github.com/torvalds/linux/tree/master/samples/bpf)
-[xdp-project/xdp-tutorial](https://github.com/xdp-project/xdp-tutorial)
-[takehaya/Vinbero](https://github.com/takehaya/Vinbero)
+[facebookincubator/katran](https://github.com/facebookincubator/katran)  
+[linux/samples/bpf](https://github.com/torvalds/linux/tree/master/samples/bpf)  
+[xdp-project/xdp-tutorial](https://github.com/xdp-project/xdp-tutorial)  
+[takehaya/Vinbero](https://github.com/takehaya/Vinbero)  
 
 
 ### Libs
-[tanakh/cmdline](https://github.com/tanakh/cmdline)
-[jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)
+[tanakh/cmdline](https://github.com/tanakh/cmdline)  
+[jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)  
