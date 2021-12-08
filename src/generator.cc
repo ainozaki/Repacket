@@ -150,6 +150,28 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       counter++;
     }
 
+    // ip_tot_len_min
+    if (policy.ip_tot_len_min != -1) {
+      need_ip_parse = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition +=
+          "(iph->tot_len < " + std::to_string(policy.ip_tot_len_min) + ") ";
+      counter++;
+    }
+
+    // ip_tot_len_min
+    if (policy.ip_tot_len_max != -1) {
+      need_ip_parse = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition +=
+          "(iph->tot_len > " + std::to_string(policy.ip_tot_len_max) + ") ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;

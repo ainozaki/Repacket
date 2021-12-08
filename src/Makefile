@@ -20,6 +20,8 @@ LOADER_OBJ := loader
 TEST := generator_unittest.cc
 TEST_OBJ := test
 
+DATA := data/test.yaml
+
 # for format
 COMMON_H := common/define.h
 COMMON_H += common/constant.h
