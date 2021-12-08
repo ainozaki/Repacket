@@ -172,6 +172,16 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       counter++;
     }
 
+    // ip_tos
+    if (!policy.ip_tos.empty()) {
+      need_ip_parse = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(iph->tos == " + policy.ip_tos + ") ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;
