@@ -28,24 +28,24 @@ filter:
 Filtering rules are specified using following parameter.
 
 ```
-action: pass/drop
+action: Action to apply to the filtered packets. [pass/drop]
 pps:
 bps:
 
-ip_protocol: tcp/udp
-ip_saddr: 192.168.10.1
-ip_daddr: 192.168.20.1
-ip_tos: 0x03		// please use prefix
-ip_ttl_min: 10
-ip_ttl_max: 64
-ip_tot_len_min: 32
-ip_tot_len_max: 1024
+ip_protocol: Protocol name. [tcp/udp/icmp]
+ip_saddr: Source address. [ex.192.168.10.1]
+ip_daddr: Destination address. [ex.192.168.20.1]
+ip_tos: Type of value. Please use prefix. [ex.0x03]
+ip_ttl_min: Min value of ttl. [ex.10]
+ip_ttl_max: Max value of ttl. [ex.64]
+ip_tot_len_min: Min value of total length.(byte) [ex.32]
+ip_tot_len_max: Max value of total length.(byte) [ex.1024]
 
-icmp_type: echo-reply/destination-unreachable/redirect/echo-request/time-exceeded
-icmp_code: 3
+icmp_type: Icmp type. [echo-reply/destination-unreachable/redirect/echo-request/time-exceeded]
+icmp_code: Icmp code. [ex.3]
 
-tcp_src:
-tcp_dest:
+tcp_src: Source port. [ex.10000]
+tcp_dest: Destination port. [ex.22]
 tcp_res:
 tcp_urg:
 tcp_ack:

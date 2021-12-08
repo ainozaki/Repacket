@@ -99,6 +99,13 @@ const std::string verify_icmp =
 		+ t + "}" + nl
 		+ t + "nh.pos += sizeof(*icmph);" + nl;
 
+const std::string verify_tcp = 
+		t + "struct tcphdr *tcph = nh.pos;" + nl
+		+ t + "if ( tcph + 1 > data_end){" + nl
+		+ t + t + "return -1;" + nl
+		+ t + "}" + nl
+		+ t + "nh.pos += sizeof(*tcph);" + nl;
+
 const std::string func_rule = 
 	t + "int ip_proto = iph->protocol;" + nl
 	+ t + "if (ip_proto == IPPROTO_ICMP){" + nl

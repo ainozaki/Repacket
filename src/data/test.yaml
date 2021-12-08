@@ -10,5 +10,7 @@ filter:
    ip_tos: 0x03
    icmp_type: destination-unreachable
    icmp_code: 1
+   tcp_src: 22
+   tcp_dst: 22
  - action: pass
    ip_protocol: udp

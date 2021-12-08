@@ -70,6 +70,10 @@ void YamlHandler::StringToFilter(const std::string& key,
     policy->icmp_type = ConvertIcmpTypeFromString(value);
   } else if (key == "icmp_code") {
     policy->icmp_code = std::stoi(value);
+  } else if (key == "tcp_src") {
+    policy->tcp_src = std::stoi(value);
+  } else if (key == "tcp_dst") {
+    policy->tcp_dst = std::stoi(value);
   }
 }
 

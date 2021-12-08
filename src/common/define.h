@@ -20,6 +20,7 @@ enum class Action {
 struct Filter {
   int priority = -1;
 	Action action = Action::Pass;
+	// ip header property
   std::string ip_protocol;
   std::string ip_saddr;
   std::string ip_daddr;
@@ -28,9 +29,12 @@ struct Filter {
 	int16_t ip_tot_len_min = -1;
 	int16_t ip_tot_len_max = -1;
 	std::string ip_tos;
+	// icmp header property
 	int icmp_type = -1;
 	int icmp_code = -1;
-  int port = -1;
+	// tcp header property
+  int16_t tcp_src = -1;
+  int16_t tcp_dst = -1;
 };
 
 enum class Mode {

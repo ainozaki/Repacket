@@ -198,6 +198,26 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
       counter++;
     }
 
+    // tcp_src
+    if (filter.tcp_src != -1) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->source == " + std::to_string(filter.tcp_src) + ") ";
+      counter++;
+    }
+
+    // tcp_dst
+    if (filter.tcp_dst != -1) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->dest == " + std::to_string(filter.tcp_dst) + ") ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;
@@ -220,11 +240,14 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
   }  // for (const auto& filter : filters_)
 
   // Create verify code.
-  if (need_ip_parse_ || need_icmp_parse_) {
+  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
     address_checking += xdp::verify_ip + nl;
   }
   if (need_icmp_parse_) {
     address_checking += xdp::verify_icmp + nl;
+  }
+  if (need_tcp_parse_) {
+    address_checking += xdp::verify_tcp + nl;
   }
 
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
@@ -241,11 +264,14 @@ void Generator::Construct() {
   // Must call CreateFromFilter() first to use need_x_parse_.
   std::string include = xdp::include + nl;
 
-  if (need_ip_parse_ || need_icmp_parse_) {
+  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
     include += xdp::include_ip + nl;
   }
   if (need_icmp_parse_) {
     include += xdp::include_icmp + nl;
+  }
+  if (need_tcp_parse_) {
+    include += xdp::include_tcp + nl;
   }
 
   // define part.
