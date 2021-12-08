@@ -228,6 +228,56 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
       counter++;
     }
 
+    // tcp_ack
+    if (filter.tcp_ack) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->ack == 0b1) ";
+      counter++;
+    }
+
+    // tcp_psh
+    if (filter.tcp_psh) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->psh == 0b1) ";
+      counter++;
+    }
+
+    // tcp_rst
+    if (filter.tcp_rst) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->rst == 0b1) ";
+      counter++;
+    }
+
+    // tcp_syn
+    if (filter.tcp_syn) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->syn == 0b1) ";
+      counter++;
+    }
+
+    // tcp_fin
+    if (filter.tcp_fin) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->fin == 0b1) ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;

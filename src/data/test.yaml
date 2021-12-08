@@ -13,5 +13,10 @@ filter:
    tcp_src: 22
    tcp_dst: 22
    tcp_urg: true
+   tcp_ack: true
+   tcp_psh: true
+   tcp_rst: true
+   tcp_syn: true
+   tcp_fin: true
  - action: pass
    ip_protocol: udp

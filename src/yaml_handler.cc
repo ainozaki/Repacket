@@ -26,7 +26,7 @@ Action ConvertActionFromString(const std::string& action) {
 int ConvertIcmpTypeFromString(const std::string& type) {
   if (type == "echo-reply") {
     return 0;
-  } else if (type == "destination-unreachable") {
+  } else if (type == "unreachable") {
     return 3;
   } else if (type == "redirect") {
     return 5;
@@ -89,6 +89,16 @@ void YamlHandler::StringToFilter(const std::string& key,
     policy->tcp_dst = std::stoi(value);
   } else if (key == "tcp_urg") {
     policy->tcp_urg = ConvertBoolFromString(value);
+  } else if (key == "tcp_ack") {
+    policy->tcp_ack = ConvertBoolFromString(value);
+  } else if (key == "tcp_psh") {
+    policy->tcp_psh = ConvertBoolFromString(value);
+  } else if (key == "tcp_rst") {
+    policy->tcp_rst = ConvertBoolFromString(value);
+  } else if (key == "tcp_syn") {
+    policy->tcp_syn = ConvertBoolFromString(value);
+  } else if (key == "tcp_fin") {
+    policy->tcp_fin = ConvertBoolFromString(value);
   }
 }
 

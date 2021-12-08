@@ -23,6 +23,11 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(22, filter[0].tcp_src);
   EXPECT_EQ(22, filter[0].tcp_dst);
   EXPECT_EQ(true, filter[0].tcp_urg);
+  EXPECT_EQ(true, filter[0].tcp_ack);
+  EXPECT_EQ(true, filter[0].tcp_psh);
+  EXPECT_EQ(true, filter[0].tcp_rst);
+  EXPECT_EQ(true, filter[0].tcp_syn);
+  EXPECT_EQ(true, filter[0].tcp_fin);
 
   // first filter.
   EXPECT_EQ(Action::Pass, filter[1].action);
@@ -39,4 +44,9 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(-1, filter[1].tcp_src);
   EXPECT_EQ(-1, filter[1].tcp_dst);
   EXPECT_EQ(false, filter[1].tcp_urg);
+  EXPECT_EQ(false, filter[1].tcp_ack);
+  EXPECT_EQ(false, filter[1].tcp_psh);
+  EXPECT_EQ(false, filter[1].tcp_rst);
+  EXPECT_EQ(false, filter[1].tcp_syn);
+  EXPECT_EQ(false, filter[1].tcp_fin);
 }

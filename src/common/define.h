@@ -36,6 +36,11 @@ struct Filter {
   int16_t tcp_src = -1;
   int16_t tcp_dst = -1;
   bool tcp_urg;
+  bool tcp_ack;
+  bool tcp_psh;
+  bool tcp_rst;
+  bool tcp_syn;
+  bool tcp_fin;
 };
 
 enum class Mode {

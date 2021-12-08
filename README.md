@@ -29,30 +29,30 @@ Filtering rules are specified using following parameter.
 
  **Parameter** | **Example** | **Explanation** 
 ---|---|---
- action | pass | Action to apply to the filtered packets. [pass/drop] 
+ action | pass | action to apply to the filtered packets. [pass/drop] 
  pps |  |  
  bps |  |  
   |  |  
- ip_protocol | tcp | Protocol name. [tcp/udp/icmp] 
- ip_saddr | 192.168.10.1 | Source address. 
- ip_daddr | 192.168.20.1 | Destination address. 
- ip_tos | 0x03 | Type of value. Please use prefix. 
- ip_ttl_min | 10 | Min value of ttl. 
- ip_ttl_max | 64 | Max value of ttl. 
- ip_tot_len_min | 32 | Min value of total length.(byte) 
- ip_tot_len_max | 1024 | Max value of total length.(byte) 
+ ip_protocol | tcp | protocol name. [tcp/udp/icmp] 
+ ip_saddr | 192.168.10.1 | source address. 
+ ip_daddr | 192.168.20.1 | destination address. 
+ ip_tos | 0x03 | type of value. Please use prefix. 
+ ip_ttl_min | 10 | min value of ttl. 
+ ip_ttl_max | 64 | max value of ttl. 
+ ip_tot_len_min | 32 | min value of total length.(byte) 
+ ip_tot_len_max | 1024 | max value of total length.(byte) 
   |  |  
- icmp_type | echo-request | Icmp type. [echo-reply/destination-unreachable/redirect/echo-request/time-exceeded] 
- icmp_code | 0 | Icmp code. 
+ icmp_type | echo-request | ICMP type. [echo-reply/unreachable/redirect/echo-request/time-exceeded] 
+ icmp_code | 0 | ICMP code. 
   |  |  
- tcp_src | 10000 | Source port. 
- tcp_dest | 22 | Destination port. 
- tcp_urg |  |  
- tcp_ack |  |  
- tcp_psh |  |  
- tcp_rst |  |  
- tcp_syn |  |  
- tcp_fin |  |  
+ tcp_src | 10000 | source port. 
+ tcp_dest | 22 | destination port. 
+ tcp_urg | true | controll flag URG.  
+ tcp_ack | true | controll flag ACK. 
+ tcp_psh | true | controll flag PSH.
+ tcp_rst | true | controll flag RST.
+ tcp_syn | true | controll flag SYN.
+ tcp_fin | true | controll flag FIN.
  tcp_res |  |  
  tcp_opt |  |  
   |  |  
