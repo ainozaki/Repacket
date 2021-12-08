@@ -28,6 +28,7 @@ struct Filter {
 	int16_t ip_tot_len_min = -1;
 	int16_t ip_tot_len_max = -1;
 	std::string ip_tos;
+	int icmp_type = -1;
   int port = -1;
 };
 

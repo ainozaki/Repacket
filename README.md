@@ -41,8 +41,8 @@ ip_ttl_max: 64
 ip_tot_len_min: 32
 ip_tot_len_max: 1024
 
-icmp_type:
-icmp_code:
+icmp_type: echo-reply/destination-unreachable/redirect/echo-request/time-exceeded
+icmp_code: 3
 
 tcp_src:
 tcp_dest:

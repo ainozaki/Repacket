@@ -22,9 +22,32 @@ Action ConvertActionFromString(const std::string& action) {
   }
 }
 
-void StringToFilter(const std::string& key,
-                    const std::string& value,
-                    std::shared_ptr<Filter> policy) {
+// Convert string to according ICMP type.
+int ConvertIcmpTypeFromString(const std::string& type) {
+  if (type == "echo-reply") {
+    return 0;
+  } else if (type == "destination-unreachable") {
+    return 3;
+  } else if (type == "redirect") {
+    return 5;
+  } else if (type == "echo-request") {
+    return 8;
+  } else if (type == "time-exceeded") {
+    return 11;
+  } else {
+    std::cerr << "ICMP type specified in filter config is invalid."
+              << std::endl;
+    exit(EXIT_FAIL);
+  }
+  return -1;
+}
+
+}  // namespace
+
+// static
+void YamlHandler::StringToFilter(const std::string& key,
+                                 const std::string& value,
+                                 std::shared_ptr<Filter> policy) {
   if (key == "action") {
     policy->action = ConvertActionFromString(value);
   } else if (key == "ip_protocol") {
@@ -43,10 +66,10 @@ void StringToFilter(const std::string& key,
     policy->ip_tot_len_max = std::stoi(value);
   } else if (key == "ip_tos") {
     policy->ip_tos = value;
+  } else if (key == "icmp_type") {
+    policy->icmp_type = ConvertIcmpTypeFromString(value);
   }
 }
-
-}  // namespace
 
 // static
 std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {

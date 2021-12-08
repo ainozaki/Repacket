@@ -30,6 +30,10 @@ class Generator {
   std::vector<Filter> filters_;
 
   std::string output_filepath_ = "xdp-generated.c";
+
+  bool need_ip_parse_;
+
+  bool need_icmp_parse_;
 };
 
 #endif  // GENERATOR_H_

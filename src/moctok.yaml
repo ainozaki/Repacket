@@ -7,3 +7,4 @@ filter:
    ip_ttl_max: 64
    ip_tot_len_min: 32
    ip_tos: 0x03
+   icmp_type: echo-reply

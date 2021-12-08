@@ -70,7 +70,6 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
   std::string address_checking;
   std::string ipaddr_definition;
   std::string action_codes;
-  bool need_ip_parse = false;
 
   for (const auto& filter : filters_) {
     int counter = 0;
@@ -83,20 +82,17 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_protocol
     if (!filter.ip_protocol.empty()) {
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
-      if (filter.ip_protocol == "ICMP" || filter.ip_protocol == "icmp" ||
-          filter.ip_protocol == "Icmp") {
-        need_ip_parse = true;
+      if (filter.ip_protocol == "ICMP" || filter.ip_protocol == "icmp") {
         condition += "(iph->protocol == IPPROTO_ICMP) ";
         counter++;
       } else if (filter.ip_protocol == "TCP" || filter.ip_protocol == "tcp") {
-        need_ip_parse = true;
         condition += "(iph->protocol == IPPROTO_TCP) ";
         counter++;
       } else if (filter.ip_protocol == "UDP" || filter.ip_protocol == "udp") {
-        need_ip_parse = true;
         condition += "(iph->protocol == IPPROTO_UDP) ";
         counter++;
       }
@@ -104,7 +100,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_saddr
     if (!filter.ip_saddr.empty()) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -118,7 +114,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_daddr
     if (!filter.ip_daddr.empty()) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -132,7 +128,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_ttl_min
     if (filter.ip_ttl_min != -1) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -142,7 +138,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_ttl_max
     if (filter.ip_ttl_max != -1) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -152,7 +148,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_tot_len_min
     if (filter.ip_tot_len_min != -1) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -163,7 +159,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_tot_len_min
     if (filter.ip_tot_len_max != -1) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -174,11 +170,21 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     // ip_tos
     if (!filter.ip_tos.empty()) {
-      need_ip_parse = true;
+      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
       condition += "(iph->tos == " + filter.ip_tos + ") ";
+      counter++;
+    }
+
+    // icmp_type
+    if (filter.icmp_type != -1) {
+      need_icmp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(icmph->type == " + std::to_string(filter.icmp_type) + ") ";
       counter++;
     }
 
@@ -204,8 +210,11 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
   }  // for (const auto& filter : filters_)
 
   // Create verify code.
-  if (need_ip_parse) {
+  if (need_ip_parse_ || need_icmp_parse_) {
     address_checking += xdp::verify_ip + nl;
+  }
+  if (need_icmp_parse_) {
+    address_checking += xdp::verify_icmp + nl;
   }
 
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
@@ -215,9 +224,19 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
 void Generator::Construct() {
   std::string nl = "\n";
+  std::string judge_action = *CreateFromFilter().get();
+  std::cerr << "CreateFromFilter finished" << std::endl;
 
   // include part.
-  std::string include = xdp::include + nl + xdp::include_ip;
+  // Must call CreateFromFilter() first to use need_x_parse_.
+  std::string include = xdp::include + nl;
+
+  if (need_ip_parse_ || need_icmp_parse_) {
+    include += xdp::include_ip + nl;
+  }
+  if (need_icmp_parse_) {
+    include += xdp::include_icmp + nl;
+  }
 
   // define part.
   std::string define = xdp::constant + nl + xdp::struct_datarec + nl +
@@ -227,9 +246,8 @@ void Generator::Construct() {
   std::string inline_func = xdp::inline_func_stats;
 
   // xdp section.
-  std::string judge_action = *CreateFromFilter().get();
-  std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix +
-                        judge_action + xdp::func_out + xdp::r_bracket + xdp::nl;
+  std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix + nl +
+                        judge_action + xdp::func_out + xdp::r_bracket + nl;
 
   // license.
   std::string license = xdp::license;

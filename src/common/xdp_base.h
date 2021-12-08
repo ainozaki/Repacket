@@ -16,10 +16,10 @@ const std::string include =
 	+ "#include <bpf_helpers.h>" + nl
 	+ "#include <bpf_endian.h>" + nl
 	+ "#include <linux/if_ether.h>" + nl;
-const std::string include_ip = "#include <linux/ip.h>" + nl + "#include <linux/in.h>" + nl;
-const std::string include_tcp = "#include <linux/tcp.h>" + nl;
-const std::string include_udp = "#include <linux/udp.h>" + nl;
-const std::string include_icmp = "#include <linux/icmp.h>" + nl;
+const std::string include_ip = "#include <linux/ip.h>" + nl + "#include <linux/in.h>";
+const std::string include_tcp = "#include <linux/tcp.h>";
+const std::string include_udp = "#include <linux/udp.h>";
+const std::string include_icmp = "#include <linux/icmp.h>";
 
 // define constants
 const std::string constant = "#define XDP_ACTION_MAX 5" + nl;
@@ -89,7 +89,15 @@ const std::string verify_ip =
 		t + "struct iphdr *iph = nh.pos;" + nl
 		+ t + "if ( iph + 1 > data_end){" + nl
 		+ t + t + "return -1;" + nl
-		+ t + "}" + nl;
+		+ t + "}" + nl
+		+ t + "nh.pos += sizeof(*iph);" + nl;
+
+const std::string verify_icmp = 
+		t + "struct icmphdr *icmph = nh.pos;" + nl
+		+ t + "if ( icmph + 1 > data_end){" + nl
+		+ t + t + "return -1;" + nl
+		+ t + "}" + nl
+		+ t + "nh.pos += sizeof(*icmph);" + nl;
 
 const std::string func_rule = 
 	t + "int ip_proto = iph->protocol;" + nl
