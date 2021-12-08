@@ -188,6 +188,16 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
       counter++;
     }
 
+    // icmp_code
+    if (filter.icmp_code != -1) {
+      need_icmp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(icmph->code == " + std::to_string(filter.icmp_code) + ") ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;

@@ -18,7 +18,8 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(32, filter[0].ip_tot_len_min);
   EXPECT_EQ(1024, filter[0].ip_tot_len_max);
   EXPECT_EQ("0x03", filter[0].ip_tos);
-  EXPECT_EQ(8, filter[0].icmp_type);
+  EXPECT_EQ(3, filter[0].icmp_type);
+  EXPECT_EQ(1, filter[0].icmp_code);
 
   // first filter.
   EXPECT_EQ(Action::Pass, filter[1].action);
@@ -31,4 +32,5 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(-1, filter[1].ip_tot_len_max);
   EXPECT_EQ("", filter[1].ip_tos);
   EXPECT_EQ(-1, filter[1].icmp_type);
+  EXPECT_EQ(-1, filter[1].icmp_code);
 }

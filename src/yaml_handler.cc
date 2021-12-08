@@ -68,6 +68,8 @@ void YamlHandler::StringToFilter(const std::string& key,
     policy->ip_tos = value;
   } else if (key == "icmp_type") {
     policy->icmp_type = ConvertIcmpTypeFromString(value);
+  } else if (key == "icmp_code") {
+    policy->icmp_code = std::stoi(value);
   }
 }
 
