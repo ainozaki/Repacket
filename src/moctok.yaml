@@ -6,3 +6,4 @@ all:
    ip_daddr: 192.168.44.1
    ip_ttl_max: 64
    ip_tot_len_min: 32
+   ip_tos: 0x03

@@ -18,6 +18,7 @@ TEST(GeneratorTest, ReadYaml) {
   EXPECT_EQ(64, policy[0].ip_ttl_max);
   EXPECT_EQ(32, policy[0].ip_tot_len_min);
   EXPECT_EQ(1024, policy[0].ip_tot_len_max);
+  EXPECT_EQ("0x03", policy[0].ip_tos);
 
   // first policy.
   EXPECT_EQ(Action::Pass, policy[1].action);
@@ -28,4 +29,5 @@ TEST(GeneratorTest, ReadYaml) {
   EXPECT_EQ(-1, policy[1].ip_ttl_max);
   EXPECT_EQ(-1, policy[1].ip_tot_len_min);
   EXPECT_EQ(-1, policy[1].ip_tot_len_max);
+  EXPECT_EQ("", policy[1].ip_tos);
 }

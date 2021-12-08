@@ -27,6 +27,7 @@ struct Policy {
 	int ip_ttl_max = -1;
 	int16_t ip_tot_len_min = -1;
 	int16_t ip_tot_len_max = -1;
+	std::string ip_tos;
   int port = -1;
 };
 

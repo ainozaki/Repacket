@@ -41,6 +41,8 @@ void StringToPolicy(const std::string& key,
     policy->ip_tot_len_min = std::stoi(value);
   } else if (key == "ip_tot_len_max") {
     policy->ip_tot_len_max = std::stoi(value);
+  } else if (key == "ip_tos") {
+    policy->ip_tos = value;
   }
 }
 
