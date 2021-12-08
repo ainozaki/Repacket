@@ -35,6 +35,7 @@ struct Filter {
 	// tcp header property
   int16_t tcp_src = -1;
   int16_t tcp_dst = -1;
+  bool tcp_urg;
 };
 
 enum class Mode {

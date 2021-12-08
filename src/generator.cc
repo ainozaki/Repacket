@@ -218,6 +218,16 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
       counter++;
     }
 
+    // tcp_urg
+    if (filter.tcp_urg) {
+      need_tcp_parse_ = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition += "(tcph->urg == 0b1) ";
+      counter++;
+    }
+
     // if statement
     if (counter == 1) {
       action_code += t + "if " + condition + "{" + nl;

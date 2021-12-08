@@ -42,6 +42,19 @@ int ConvertIcmpTypeFromString(const std::string& type) {
   return -1;
 }
 
+// Convert string to bool.
+bool ConvertBoolFromString(const std::string& value) {
+  if (value == "true") {
+    return true;
+  } else if (value == "false") {
+    return false;
+  } else {
+    std::cerr << "Unknown value: " << value << std::endl;
+    exit(EXIT_FAIL);
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -74,6 +87,8 @@ void YamlHandler::StringToFilter(const std::string& key,
     policy->tcp_src = std::stoi(value);
   } else if (key == "tcp_dst") {
     policy->tcp_dst = std::stoi(value);
+  } else if (key == "tcp_urg") {
+    policy->tcp_urg = ConvertBoolFromString(value);
   }
 }
 

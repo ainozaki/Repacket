@@ -12,5 +12,6 @@ filter:
    icmp_code: 1
    tcp_src: 22
    tcp_dst: 22
+   tcp_urg: true
  - action: pass
    ip_protocol: udp

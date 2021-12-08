@@ -28,24 +28,25 @@ filter:
 Filtering rules are specified using following parameter.
 
 ```
-action: Action to apply to the filtered packets. [pass/drop]
+[parameter]:[example]		// [Explanation]
+action: pass						// Action to apply to the filtered packets. [pass/drop]
 pps:
 bps:
 
-ip_protocol: Protocol name. [tcp/udp/icmp]
-ip_saddr: Source address. [ex.192.168.10.1]
-ip_daddr: Destination address. [ex.192.168.20.1]
-ip_tos: Type of value. Please use prefix. [ex.0x03]
-ip_ttl_min: Min value of ttl. [ex.10]
-ip_ttl_max: Max value of ttl. [ex.64]
-ip_tot_len_min: Min value of total length.(byte) [ex.32]
-ip_tot_len_max: Max value of total length.(byte) [ex.1024]
+ip_protocol: tcp				// Protocol name. [tcp/udp/icmp]
+ip_saddr: 192.168.10.1	// Source address.
+ip_daddr: 192.168.20.1	// Destination address.
+ip_tos: 0x03						// Type of value. Please use prefix.
+ip_ttl_min: 10					// Min value of ttl.
+ip_ttl_max: 64					// Max value of ttl.
+ip_tot_len_min: 32			// Min value of total length.(byte)
+ip_tot_len_max: 1024		// Max value of total length.(byte)
 
-icmp_type: Icmp type. [echo-reply/destination-unreachable/redirect/echo-request/time-exceeded]
-icmp_code: Icmp code. [ex.3]
+icmp_type: echo-request	// Icmp type. [echo-reply/destination-unreachable/redirect/echo-request/time-exceeded]
+icmp_code: 0						// Icmp code.
 
-tcp_src: Source port. [ex.10000]
-tcp_dest: Destination port. [ex.22]
+tcp_src: 10000					// Source port.
+tcp_dest: 22						// Destination port.
 tcp_res:
 tcp_urg:
 tcp_ack:
