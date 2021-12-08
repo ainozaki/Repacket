@@ -12,6 +12,6 @@ class YamlHandler {
   ~YamlHandler() = default;
   YamlHandler(const YamlHandler&) = delete;
 
-  static std::vector<Policy> ReadYaml(const std::string& filepath);
+  static std::vector<Filter> ReadYaml(const std::string& filepath);
 };
 #endif

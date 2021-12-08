@@ -18,7 +18,7 @@ options:
 Example of `moctok.yaml`. 
 
 ```
-policy:
+filter:
  - action: pass
    ip_protocol: icmp
  - action: drop
@@ -28,7 +28,6 @@ policy:
 Filtering rules are specified using following parameter.
 
 ```
-[rule]	[example]
 action: pass/drop
 pps:
 bps:
@@ -36,7 +35,7 @@ bps:
 ip_protocol: tcp/udp
 ip_saddr: 192.168.10.1
 ip_daddr: 192.168.20.1
-ip_tos: 0x03 (please use prefix)
+ip_tos: 0x03		// please use prefix
 ip_ttl_min: 10
 ip_ttl_max: 64
 ip_tot_len_min: 32

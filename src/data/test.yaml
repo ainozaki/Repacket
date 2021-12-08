@@ -1,4 +1,4 @@
-all:
+filter:
  - action: drop
    ip_protocol: tcp
    ip_saddr: 192.168.33.10

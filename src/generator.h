@@ -13,11 +13,9 @@ class Generator {
   ~Generator();
   Generator(const Generator&) = delete;
 
-  std::vector<Policy> policies() { return policies_; }
-
  private:
   // Generate Action judging code from Policy.
-  std::unique_ptr<std::string> CreateFromPolicy();
+  std::unique_ptr<std::string> CreateFromFilter();
 
   // Construct XDP program.
   void Construct();
@@ -29,7 +27,7 @@ class Generator {
 
   std::string yaml_filepath_;
 
-  std::vector<Policy> policies_;
+  std::vector<Filter> filters_;
 
   std::string output_filepath_ = "xdp-generated.c";
 };

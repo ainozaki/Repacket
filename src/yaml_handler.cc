@@ -22,9 +22,9 @@ Action ConvertActionFromString(const std::string& action) {
   }
 }
 
-void StringToPolicy(const std::string& key,
+void StringToFilter(const std::string& key,
                     const std::string& value,
-                    std::shared_ptr<Policy> policy) {
+                    std::shared_ptr<Filter> policy) {
   if (key == "action") {
     policy->action = ConvertActionFromString(value);
   } else if (key == "ip_protocol") {
@@ -49,23 +49,24 @@ void StringToPolicy(const std::string& key,
 }  // namespace
 
 // static
-std::vector<Policy> YamlHandler::ReadYaml(const std::string& filepath) {
-  std::vector<Policy> policies;
+std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
+  std::vector<Filter> filters;
   YAML::Node node = YAML::LoadFile(filepath);
   int priority = 0;
-  if (node["all"]) {
-    YAML::Node all = node["all"];
-    for (std::size_t i = 0; i < all.size(); i++) {
-      std::shared_ptr<Policy> policy = std::make_shared<Policy>();
+  if (node["filter"]) {
+    YAML::Node filter = node["filter"];
+    for (std::size_t i = 0; i < filter.size(); i++) {
+      std::shared_ptr<Filter> policy = std::make_shared<Filter>();
       policy->priority = priority;
-      for (YAML::const_iterator it = all[i].begin(); it != all[i].end(); ++it) {
+      for (YAML::const_iterator it = filter[i].begin(); it != filter[i].end();
+           ++it) {
         std::string key = it->first.as<std::string>();
         std::string value = it->second.as<std::string>();
-        StringToPolicy(key, value, policy);
+        StringToFilter(key, value, policy);
       }
-      policies.push_back(*policy);
+      filters.push_back(*policy);
       priority++;
     }
   }
-  return policies;
+  return filters;
 }

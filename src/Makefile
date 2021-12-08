@@ -17,7 +17,7 @@ USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
-TEST := generator_unittest.cc
+TEST := yaml_handler_unittest.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml

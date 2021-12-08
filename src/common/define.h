@@ -17,7 +17,7 @@ enum class Action {
 	Drop = 1,
 };
 
-struct Policy {
+struct Filter {
   int priority = -1;
 	Action action = Action::Pass;
   std::string ip_protocol;

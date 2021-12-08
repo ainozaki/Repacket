@@ -56,7 +56,7 @@ std::string ConvertIPAddressToHexString(const std::string& address) {
 Generator::Generator(const std::string& yaml_filepath)
     : yaml_filepath_(yaml_filepath),
       // TODO: Think whether this causes copy.
-      policies_(YamlHandler::ReadYaml(yaml_filepath)) {
+      filters_(YamlHandler::ReadYaml(yaml_filepath)) {
   Construct();
 }
 
@@ -64,7 +64,7 @@ Generator::~Generator() {
   std::clog << "Generator destructor" << std::endl;
 }
 
-std::unique_ptr<std::string> Generator::CreateFromPolicy() {
+std::unique_ptr<std::string> Generator::CreateFromFilter() {
   std::string t = "\t";
   std::string nl = "\n";
   std::string address_checking;
@@ -72,30 +72,30 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
   std::string action_codes;
   bool need_ip_parse = false;
 
-  for (const auto& policy : policies_) {
+  for (const auto& filter : filters_) {
     int counter = 0;
-    int index = policy.priority;
+    int index = filter.priority;
 
-    // Generate code which judges action according to the policy.
-    // |action_code| is the judging code for one policy.
+    // Generate code which judges action according to the filter.
+    // |action_code| is the judging code for one filter.
     std::string action_code = t + "// priority " + std::to_string(index) + nl;
     std::string condition;
 
     // ip_protocol
-    if (!policy.ip_protocol.empty()) {
+    if (!filter.ip_protocol.empty()) {
       if (counter) {
         condition += "&& ";
       }
-      if (policy.ip_protocol == "ICMP" || policy.ip_protocol == "icmp" ||
-          policy.ip_protocol == "Icmp") {
+      if (filter.ip_protocol == "ICMP" || filter.ip_protocol == "icmp" ||
+          filter.ip_protocol == "Icmp") {
         need_ip_parse = true;
         condition += "(iph->protocol == IPPROTO_ICMP) ";
         counter++;
-      } else if (policy.ip_protocol == "TCP" || policy.ip_protocol == "tcp") {
+      } else if (filter.ip_protocol == "TCP" || filter.ip_protocol == "tcp") {
         need_ip_parse = true;
         condition += "(iph->protocol == IPPROTO_TCP) ";
         counter++;
-      } else if (policy.ip_protocol == "UDP" || policy.ip_protocol == "udp") {
+      } else if (filter.ip_protocol == "UDP" || filter.ip_protocol == "udp") {
         need_ip_parse = true;
         condition += "(iph->protocol == IPPROTO_UDP) ";
         counter++;
@@ -103,7 +103,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     }
 
     // ip_saddr
-    if (!policy.ip_saddr.empty()) {
+    if (!filter.ip_saddr.empty()) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
@@ -111,13 +111,13 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       std::string ip_saddr_x = "ip_saddr" + std::to_string(index);
       condition += "(iph->saddr == " + ip_saddr_x + ") ";
       ipaddr_definition += t + "__u32 " + ip_saddr_x + " = " +
-                           ConvertIPAddressToHexString(policy.ip_saddr) + ";" +
+                           ConvertIPAddressToHexString(filter.ip_saddr) + ";" +
                            nl;
       counter++;
     }
 
     // ip_daddr
-    if (!policy.ip_daddr.empty()) {
+    if (!filter.ip_daddr.empty()) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
@@ -125,60 +125,60 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
       std::string ip_daddr_x = "ip_daddr" + std::to_string(index);
       condition += "(iph->daddr == " + ip_daddr_x + ") ";
       ipaddr_definition += t + "__u32 " + ip_daddr_x + " = " +
-                           ConvertIPAddressToHexString(policy.ip_daddr) + ";" +
+                           ConvertIPAddressToHexString(filter.ip_daddr) + ";" +
                            nl;
       counter++;
     }
 
     // ip_ttl_min
-    if (policy.ip_ttl_min != -1) {
+    if (filter.ip_ttl_min != -1) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
       }
-      condition += "(iph->ttl < " + std::to_string(policy.ip_ttl_min) + ") ";
+      condition += "(iph->ttl < " + std::to_string(filter.ip_ttl_min) + ") ";
       counter++;
     }
 
     // ip_ttl_max
-    if (policy.ip_ttl_max != -1) {
+    if (filter.ip_ttl_max != -1) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
       }
-      condition += "(iph->ttl > " + std::to_string(policy.ip_ttl_max) + ") ";
+      condition += "(iph->ttl > " + std::to_string(filter.ip_ttl_max) + ") ";
       counter++;
     }
 
     // ip_tot_len_min
-    if (policy.ip_tot_len_min != -1) {
+    if (filter.ip_tot_len_min != -1) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
       }
       condition +=
-          "(iph->tot_len < " + std::to_string(policy.ip_tot_len_min) + ") ";
+          "(iph->tot_len < " + std::to_string(filter.ip_tot_len_min) + ") ";
       counter++;
     }
 
     // ip_tot_len_min
-    if (policy.ip_tot_len_max != -1) {
+    if (filter.ip_tot_len_max != -1) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
       }
       condition +=
-          "(iph->tot_len > " + std::to_string(policy.ip_tot_len_max) + ") ";
+          "(iph->tot_len > " + std::to_string(filter.ip_tot_len_max) + ") ";
       counter++;
     }
 
     // ip_tos
-    if (!policy.ip_tos.empty()) {
+    if (!filter.ip_tos.empty()) {
       need_ip_parse = true;
       if (counter) {
         condition += "&& ";
       }
-      condition += "(iph->tos == " + policy.ip_tos + ") ";
+      condition += "(iph->tos == " + filter.ip_tos + ") ";
       counter++;
     }
 
@@ -190,7 +190,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     }
 
     // Create action code.
-    switch (policy.action) {
+    switch (filter.action) {
       case Action::Pass:
         action_code += t + t + "goto out;" + nl;
         break;
@@ -201,7 +201,7 @@ std::unique_ptr<std::string> Generator::CreateFromPolicy() {
     action_code += t + "}" + nl;
 
     action_codes += action_code + nl;
-  }  // for (const auto& policy : policies_)
+  }  // for (const auto& filter : filters_)
 
   // Create verify code.
   if (need_ip_parse) {
@@ -227,7 +227,7 @@ void Generator::Construct() {
   std::string inline_func = xdp::inline_func_stats;
 
   // xdp section.
-  std::string judge_action = *CreateFromPolicy().get();
+  std::string judge_action = *CreateFromFilter().get();
   std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix +
                         judge_action + xdp::func_out + xdp::r_bracket + xdp::nl;
 

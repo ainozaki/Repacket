@@ -1,4 +1,4 @@
-all:
+filter:
  - action: pass
    ip_protocol: tcp
  - action: drop
