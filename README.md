@@ -28,18 +28,19 @@ policy:
 Filtering rules are specified using following parameter.
 
 ```
-action:
+[rule]	[example]
+action: pass/drop
 pps:
 bps:
 
-ip_protocol: 
-ip_saddr:
-ip_daddr:
-ip_tos:
-ip_ttl_min:
-ip_ttl_max:
-ip_tot_len_min:
-ip_tot_len_max:
+ip_protocol: tcp/udp
+ip_saddr: 192.168.10.1
+ip_daddr: 192.168.20.1
+ip_tos: 0x03 (please use prefix)
+ip_ttl_min: 10
+ip_ttl_max: 64
+ip_tot_len_min: 32
+ip_tot_len_max: 1024
 
 icmp_type:
 icmp_code:
