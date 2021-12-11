@@ -3,6 +3,7 @@
 #include <bpf.h>
 #include <libbpf.h>
 
+#include <cassert>
 #include <iostream>
 
 #include "base/bpf_wrapper.h"
@@ -15,63 +16,81 @@ Map::Map(const std::string& ifname) : ifname_(ifname) {
   map_fd_ = bpf_wrapper_.BpfGetPinnedObjFd(map_path_.c_str());
   if (map_fd_ < 0) {
     std::cerr << "ERR: Failed to open " << map_path_ << std::endl;
-    return;
+    exit(EXIT_FAIL);
   }
 }
 
 void Map::Stats() {
   // TODO: make map_info a member of Map
-  struct bpf_map_info map_info = {0};
-  int check_result = CheckMapInfo(&map_info);
+  struct bpf_map_info exp_info, info;
+  exp_info.key_size = sizeof(__u32);
+  exp_info.value_size = sizeof(struct datarec);
+  // TODO: decide max_entries dynamically.
+  exp_info.max_entries = 5;
+  exp_info.type = BPF_MAP_TYPE_ARRAY;
+
+  int check_result = CheckMapInfo(&exp_info, &info);
   if (check_result) {
     std::cerr << "ERR: Failed to get map info." << std::endl;
     return;
   }
-  StatsPoll(&map_info);
+
+  StatsPoll(&info);
 }
 
-int Map::CheckMapInfo(struct bpf_map_info* info) {
-  std::clog << "Checking map information..." << std::endl;
+int Map::CheckMapInfo(struct bpf_map_info* exp_info,
+                      struct bpf_map_info* info) {
+  assert(map_fd_ >= 0);
+
   int err;
-
-  // TODO: It's strange to fix expected value.
-  struct bpf_map_info exp = {0};
-  exp.key_size = sizeof(__u32);
-  exp.value_size = sizeof(struct datarec);
-  exp.max_entries = 5;
-
-  if (map_fd_ < 0)
-    return EXIT_FAIL;
-
   // BPF-info via bpf-syscall
   err = bpf_wrapper_.BpfGetMapInfoByFd(map_fd_, info);
   if (err) {
     std::cerr << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
   }
-  if (exp.key_size && exp.key_size != info->key_size) {
+  if (exp_info->key_size && exp_info->key_size != info->key_size) {
     std::cerr << "ERR: Unexpected size." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp.value_size && exp.value_size != info->value_size) {
+  if (exp_info->value_size && exp_info->value_size != info->value_size) {
     std::cerr << "ERR: Unexpected value size." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp.max_entries && exp.max_entries != info->max_entries) {
+  if (exp_info->max_entries && exp_info->max_entries != info->max_entries) {
     std::cerr << "ERR: Unexpected max_entries value." << std::endl;
     return EXIT_FAIL;
   }
-  if (exp.type && exp.type != info->type) {
+  if (exp_info->type && exp_info->type != info->type) {
     std::cerr << "ERR: Unexpected type." << std::endl;
     return EXIT_FAIL;
   }
   return 0;
 }
 
-void Map::MapGetValueArray(__u32 key, struct datarec* value) {
-  if ((bpf_wrapper_.BpfMapLookupElem(map_fd_, &key, value)) != 0) {
-    std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
+void Map::StatsPoll(struct bpf_map_info* info) {
+  std::clog << "Polling stats..." << std::endl;
+  struct stats_record prev, record = {0};
+
+  // Initial reading
+  StatsCollect(info->type, &record);
+  usleep(1000000 / 4);
+
+  while (1) {
+    prev = record;
+    StatsCollect(info->type, &record);
+    StatsPrint(&record, &prev);
+    sleep(1);
   }
+}
+
+void Map::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
+  __u32 key_pass = XDP_PASS;
+  __u32 key_drop = XDP_DROP;
+
+  // TODO: reflect moctok.yaml
+  MapCollect(map_type, key_pass, &stats_rec->stats[0]);
+  MapCollect(map_type, key_drop, &stats_rec->stats[1]);
 }
 
 bool Map::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
@@ -91,12 +110,10 @@ bool Map::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
   return true;
 }
 
-void Map::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
-  __u32 key_pass = XDP_PASS;
-  __u32 key_drop = XDP_DROP;
-
-  MapCollect(map_type, key_pass, &stats_rec->stats[0]);
-  MapCollect(map_type, key_drop, &stats_rec->stats[1]);
+void Map::MapGetValueArray(__u32 key, struct datarec* value) {
+  if ((bpf_wrapper_.BpfMapLookupElem(map_fd_, &key, value)) != 0) {
+    std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
+  }
 }
 
 void Map::StatsPrint(struct stats_record* stats_rec,
@@ -140,21 +157,5 @@ void Map::StatsPrint(struct stats_record* stats_rec,
 
     printf(fmt, action, rec->total.rx_packets, pps, rec->total.rx_bytes, bps,
            period);
-  }
-}
-
-void Map::StatsPoll(struct bpf_map_info* info) {
-  std::clog << "Polling stats..." << std::endl;
-  struct stats_record prev, record = {0};
-
-  // Initial reading
-  StatsCollect(info->type, &record);
-  usleep(1000000 / 4);
-
-  while (1) {
-    prev = record;
-    StatsCollect(info->type, &record);
-    StatsPrint(&record, &prev);
-    sleep(1);
   }
 }

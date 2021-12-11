@@ -27,15 +27,15 @@ class Map {
   void Stats();
 
  private:
-  int CheckMapInfo(struct bpf_map_info* info);
+  int CheckMapInfo(struct bpf_map_info* exp_info, struct bpf_map_info* info);
 
   void StatsPoll(struct bpf_map_info* info);
 
-  void MapGetValueArray(__u32 key, struct datarec* value);
+  void StatsCollect(__u32 map_type, struct stats_record* stats_rec);
 
   bool MapCollect(__u32 map_type, __u32 key, struct record* rec);
 
-  void StatsCollect(__u32 map_type, struct stats_record* stats_rec);
+  void MapGetValueArray(__u32 key, struct datarec* value);
 
   void StatsPrint(struct stats_record* stats_rec,
                   struct stats_record* stats_prev);
