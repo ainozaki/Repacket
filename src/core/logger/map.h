@@ -1,6 +1,8 @@
 #ifndef MAP_H_
 #define MAP_H_
 
+#include <string>
+
 #include <libbpf.h>
 
 #include "base/bpf_wrapper.h"
@@ -18,15 +20,17 @@ struct stats_record {
 
 class Map {
  public:
-  Map(int map_fd);
+  Map(const std::string& ifname);
   ~Map() = default;
   Map(const Map&) = delete;
 
+  void Stats();
+
+ private:
   int CheckMapInfo(struct bpf_map_info* info);
 
   void StatsPoll(struct bpf_map_info* info);
 
- private:
   void MapGetValueArray(__u32 key, struct datarec* value);
 
   bool MapCollect(__u32 map_type, __u32 key, struct record* rec);
@@ -39,6 +43,10 @@ class Map {
   BpfWrapper bpf_wrapper_;
 
   int map_fd_;
+
+  std::string ifname_;
+
+  std::string map_path_;
 };
 
 #endif  // MAP_H_

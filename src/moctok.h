@@ -7,10 +7,8 @@
 
 #include <bpf/bpf.h>
 
-#include "base/bpf_wrapper.h"
 #include "base/define/define.h"
 #include "core/generator/generator.h"
-#include "core/loader/loader.h"
 #include "core/loader/moctok_filter.h"
 #include "core/logger/map.h"
 
@@ -23,10 +21,6 @@ class MocTok {
   MocTok(const MocTok&) = delete;
 
  private:
-  void StartStats();
-
-  void Stats();
-
   BpfWrapper bpf_wrapper_;
 
   std::unique_ptr<MoctokFilter> filter_;
