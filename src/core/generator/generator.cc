@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "common/define.h"
-#include "common/xdp_base.h"
-#include "yaml_handler.h"
+#include "base/define/define.h"
+#include "base/yaml_handler.h"
+#include "core/generator/xdp_base.h"
 
 namespace {
 // Convert decimal int to hex string.

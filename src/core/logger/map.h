@@ -3,10 +3,9 @@
 
 #include <libbpf.h>
 
-#include "utils.h"
-
-#include "bpf_wrapper.h"
-#include "common/define.h"
+#include "base/bpf_wrapper.h"
+#include "base/define/define.h"
+#include "base/utils.h"
 
 struct record {
   __u64 timestamp;

@@ -3,17 +3,3 @@ filter:
    ip_protocol: tcp
  - action: drop
    ip_saddr: 192.168.33.1
-   ip_daddr: 192.168.44.1
-   ip_ttl_max: 64
-   ip_tot_len_min: 32
-   ip_tos: 0x03
-   icmp_type: unreachable
-   icmp_code: 3
-   tcp_src: 22
-   tcp_dst: 22
-   tcp_urg: true
-   tcp_ack: true
-   tcp_psh: true
-   tcp_rst: true
-   tcp_syn: true
-   tcp_fin: true

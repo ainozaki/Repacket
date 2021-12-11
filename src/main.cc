@@ -5,8 +5,8 @@
 
 #include <cmdline.h>
 
-#include "common/define.h"
-#include "controller.h"
+#include "base/define/define.h"
+#include "moctok.h"
 
 namespace {
 std::string kDefaultYamlFilepath = "access.yaml";
@@ -64,6 +64,6 @@ int main(int argc, char** argv) {
     cfg.mode = Mode::Stats;
   }
 
-  Controller controller(cfg);
+  MocTok moctok(cfg);
   return 0;
 }

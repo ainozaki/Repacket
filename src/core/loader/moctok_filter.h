@@ -5,8 +5,8 @@
 
 #include <bpf/bpf.h>
 
-#include "common/define.h"
-#include "loader.h"
+#include "base/define/define.h"
+#include "core/loader/loader.h"
 
 class MoctokFilter {
  public:

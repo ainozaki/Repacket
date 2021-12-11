@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "common/define.h"
+#include "base/define/define.h"
 
 class Generator {
  public:

@@ -4,7 +4,7 @@
 
 #include <time.h>
 
-#include "common/define.h"
+#include "base/define/define.h"
 
 __u64 gettime() {
   struct timespec t;

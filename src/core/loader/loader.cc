@@ -17,8 +17,7 @@
 
 #include <cmdline.h>
 
-#include "common/define.h"
-#include "controller.h"
+#include "base/define/define.h"
 
 Loader::Loader(uint32_t xdp_flags,
                unsigned int ifindex,

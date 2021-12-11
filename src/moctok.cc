@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "moctok.h"
 
 #include <cassert>
 #include <cstdint>
@@ -8,14 +8,14 @@
 #include <bpf.h>
 #include <cmdline.h>
 
-#include "bpf_wrapper.h"
-#include "common/define.h"
-#include "generator.h"
-#include "loader.h"
-#include "map.h"
-#include "moctok_filter.h"
+#include "base/bpf_wrapper.h"
+#include "base/define/define.h"
+#include "core/generator/generator.h"
+#include "core/loader/loader.h"
+#include "core/loader/moctok_filter.h"
+#include "core/logger/map.h"
 
-Controller::Controller(struct config& cfg) : config_(cfg) {
+MocTok::MocTok(struct config& cfg) : config_(cfg) {
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
@@ -39,7 +39,7 @@ Controller::Controller(struct config& cfg) : config_(cfg) {
 }
 
 // TODO: move this function into Map constructor.
-void Controller::StartStats() {
+void MocTok::StartStats() {
   // TODO: Make a constant for mapname.
   std::string map_path = "/sys/fs/bpf/" + config_.ifname + "/xdp_stats_map";
   map_fd_ = bpf_wrapper_.BpfGetPinnedObjFd(map_path.c_str());
@@ -52,7 +52,7 @@ void Controller::StartStats() {
 }
 
 // TODO: move this function into Map constructor.
-void Controller::Stats() {
+void MocTok::Stats() {
   // TODO: make map_info a member of Map
   struct bpf_map_info map_info = {0};
   int check_result = map_->CheckMapInfo(&map_info);

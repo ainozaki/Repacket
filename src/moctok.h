@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_H_
-#define CONTROLLER_H_
+#ifndef MOCTOK_H_
+#define MOCTOK_H_
 
 #include <memory>
 #include <set>
@@ -7,20 +7,20 @@
 
 #include <bpf/bpf.h>
 
-#include "bpf_wrapper.h"
-#include "common/define.h"
-#include "generator.h"
-#include "loader.h"
-#include "map.h"
-#include "moctok_filter.h"
+#include "base/bpf_wrapper.h"
+#include "base/define/define.h"
+#include "core/generator/generator.h"
+#include "core/loader/loader.h"
+#include "core/loader/moctok_filter.h"
+#include "core/logger/map.h"
 
 class Loader;
 
-class Controller {
+class MocTok {
  public:
-  Controller(struct config& cfg);
-  ~Controller() = default;
-  Controller(const Controller&) = delete;
+  MocTok(struct config& cfg);
+  ~MocTok() = default;
+  MocTok(const MocTok&) = delete;
 
  private:
   void StartStats();
@@ -42,4 +42,4 @@ class Controller {
   int map_fd_;
 };
 
-#endif  // CONTROLLER_H_
+#endif  // MOCTOK_H_

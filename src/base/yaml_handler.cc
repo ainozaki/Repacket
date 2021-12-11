@@ -7,7 +7,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "common/define.h"
+#include "base/define/define.h"
 
 namespace {
 // Convert enum class Action to String.

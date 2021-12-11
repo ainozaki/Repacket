@@ -5,32 +5,32 @@ XDP_C := xdp-generated.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
-USER := bpf_wrapper.cc
-USER += controller.cc
-USER += generator.cc
-USER += loader.cc
-USER += map.cc
-USER += moctok_filter.cc
-USER += utils.cc
-USER += yaml_handler.cc
+USER := moctok.cc
+USER += base/bpf_wrapper.cc
+USER += base/utils.cc
+USER += base/yaml_handler.cc
+USER += core/generator/generator.cc
+USER += core/loader/loader.cc
+USER += core/loader/moctok_filter.cc
+USER += core/logger/map.cc
 USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
-TEST := yaml_handler_unittest.cc
+TEST := base/yaml_handler_unittest.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml
 
 # for format
-COMMON_H := common/define.h
-COMMON_H += common/constant.h
+COMMON_H := base/define/define.h
+COMMON_H += base/define/constant.h
 
 LDFLAGS := -L../deps/lib
 LIBS := -l:libbpf.a -lelf -lyaml-cpp
 LIBS_TEST := -lgtest -lgtest_main
 
-CFLAGS := -I./common
+CFLAGS := -I.
 BPF_CFLAGS ?= -I../deps/include/ -I../deps/include/bpf
 
 $(XDP_OBJ): $(XDP_C)
@@ -46,7 +46,7 @@ $(XDP_OBJ): $(XDP_C)
 	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
-loader: $(USER) $(USER_H) $(COMMON_H) $(MAIN) common/xdp_base.h
+moctok: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
 	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
 
 test: $(TEST) $(USER)

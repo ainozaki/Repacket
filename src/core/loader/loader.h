@@ -14,7 +14,7 @@
 #include <bpf/bpf.h>
 #include <libbpf.h>
 
-#include "common/define.h"
+#include "base/define/define.h"
 
 class Controller;
 

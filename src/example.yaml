@@ -1,5 +1,0 @@
-- action: drop
-  ip_address: 192.168.33.1
-  protocol: icmp
-- action: pass
-  ip_address: 192.168.33.1

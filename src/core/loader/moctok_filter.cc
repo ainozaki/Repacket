@@ -5,8 +5,8 @@
 
 #include <unistd.h>
 
-#include "common/define.h"
-#include "loader.h"
+#include "base/define/define.h"
+#include "core/loader/loader.h"
 
 MoctokFilter::MoctokFilter(const struct config& cfg) : config_(cfg) {
   loader_ = std::make_unique<Loader>(cfg.xdp_flags, cfg.ifindex, cfg.ifname,

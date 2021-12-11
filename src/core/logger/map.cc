@@ -5,8 +5,8 @@
 
 #include <iostream>
 
-#include "common/define.h"
-#include "utils.h"
+#include "base/define/define.h"
+#include "base/utils.h"
 
 Map::Map(int map_fd) : map_fd_(map_fd){};
 
