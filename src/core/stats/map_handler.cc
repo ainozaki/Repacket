@@ -1,4 +1,4 @@
-#include "map.h"
+#include "core/stats/map_handler.h"
 
 #include <bpf.h>
 #include <libbpf.h>
@@ -11,16 +11,9 @@
 #include "base/define/define.h"
 #include "base/utils.h"
 
-Map::Map(const std::string& ifname) : ifname_(ifname) {
-  map_path_ = "/sys/fs/bpf/" + ifname_ + "/" + kMapName;
-  map_fd_ = bpf_wrapper_.BpfGetPinnedObjFd(map_path_.c_str());
-  if (map_fd_ < 0) {
-    std::cerr << "ERR: Failed to open " << map_path_ << std::endl;
-    exit(EXIT_FAIL);
-  }
-}
+MapHandler::MapHandler(int map_fd) : map_fd_(map_fd) {}
 
-void Map::Stats() {
+void MapHandler::Start() {
   // TODO: make map_info a member of Map
   struct bpf_map_info exp_info, info;
   exp_info.key_size = sizeof(__u32);
@@ -38,8 +31,8 @@ void Map::Stats() {
   StatsPoll(&info);
 }
 
-int Map::CheckMapInfo(struct bpf_map_info* exp_info,
-                      struct bpf_map_info* info) {
+int MapHandler::CheckMapInfo(struct bpf_map_info* exp_info,
+                             struct bpf_map_info* info) {
   assert(map_fd_ >= 0);
 
   int err;
@@ -68,7 +61,7 @@ int Map::CheckMapInfo(struct bpf_map_info* exp_info,
   return 0;
 }
 
-void Map::StatsPoll(struct bpf_map_info* info) {
+void MapHandler::StatsPoll(struct bpf_map_info* info) {
   std::clog << "Polling stats..." << std::endl;
   struct stats_record prev, record = {0};
 
@@ -84,7 +77,7 @@ void Map::StatsPoll(struct bpf_map_info* info) {
   }
 }
 
-void Map::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
+void MapHandler::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
   __u32 key_pass = XDP_PASS;
   __u32 key_drop = XDP_DROP;
 
@@ -93,7 +86,7 @@ void Map::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
   MapCollect(map_type, key_drop, &stats_rec->stats[1]);
 }
 
-bool Map::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
+bool MapHandler::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
   struct datarec value;
   rec->timestamp = gettime();
   switch (map_type) {
@@ -110,14 +103,14 @@ bool Map::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
   return true;
 }
 
-void Map::MapGetValueArray(__u32 key, struct datarec* value) {
+void MapHandler::MapGetValueArray(__u32 key, struct datarec* value) {
   if ((bpf_wrapper_.BpfMapLookupElem(map_fd_, &key, value)) != 0) {
     std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
   }
 }
 
-void Map::StatsPrint(struct stats_record* stats_rec,
-                     struct stats_record* stats_prev) {
+void MapHandler::StatsPrint(struct stats_record* stats_rec,
+                            struct stats_record* stats_prev) {
   struct record *rec, *prev;
   double period;
   __u64 packets, bytes;

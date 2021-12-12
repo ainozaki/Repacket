@@ -10,7 +10,7 @@
 #include "base/define/define.h"
 #include "core/generator/generator.h"
 #include "core/loader/moctok_filter.h"
-#include "core/logger/map.h"
+#include "core/stats/stats.h"
 
 class Loader;
 
@@ -27,13 +27,11 @@ class MocTok {
 
   std::unique_ptr<Generator> generator_;
 
-  std::unique_ptr<Map> map_;
+  std::unique_ptr<Stats> stats_;
 
   struct config config_;
 
   struct bpf_map_info map_info_ = {0};
-
-  int map_fd_;
 };
 
 #endif  // MOCTOK_H_

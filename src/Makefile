@@ -12,7 +12,8 @@ USER += base/yaml_handler.cc
 USER += core/generator/generator.cc
 USER += core/loader/loader.cc
 USER += core/loader/moctok_filter.cc
-USER += core/logger/map.cc
+USER += core/stats/map_handler.cc
+USER += core/stats/stats.cc
 USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader

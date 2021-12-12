@@ -10,9 +10,10 @@
 #include "base/define/define.h"
 #include "core/generator/generator.h"
 #include "core/loader/moctok_filter.h"
-#include "core/logger/map.h"
+#include "core/stats/stats.h"
 
 MocTok::MocTok(struct config& cfg) : config_(cfg) {
+  int err;
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
@@ -29,8 +30,12 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
       filter_ = std::make_unique<MoctokFilter>(cfg);
       break;
     case Mode::Stats:
-      map_ = std::make_unique<Map>(config_.ifname);
-      map_->Stats();
+      // Get statics on |config_.ifname|.
+      stats_ = std::make_unique<Stats>(config_.ifname);
+      err = stats_->Start();
+      if (err) {
+        std::cerr << "Error detected. Finish getting stats." << std::endl;
+      }
       break;
     default:
       assert(false);

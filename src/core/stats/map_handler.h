@@ -18,13 +18,13 @@ struct stats_record {
   struct record stats[2];
 };
 
-class Map {
+class MapHandler {
  public:
-  Map(const std::string& ifname);
-  ~Map() = default;
-  Map(const Map&) = delete;
+  MapHandler(int map_fd);
+  ~MapHandler() = default;
+  MapHandler(const MapHandler&) = delete;
 
-  void Stats();
+  void Start();
 
  private:
   int CheckMapInfo(struct bpf_map_info* exp_info, struct bpf_map_info* info);

@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 // TODO: /base dir shouldn't include any upper directory.
-#include "core/logger/map.h"
+#include "core/stats/map_handler.h"
 
 __u64 gettime();
 
