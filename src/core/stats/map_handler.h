@@ -20,7 +20,7 @@ struct stats_record {
 
 class MapHandler {
  public:
-  MapHandler(int map_fd);
+  MapHandler(int map_fd, int filter_size);
   ~MapHandler() = default;
   MapHandler(const MapHandler&) = delete;
 
@@ -43,6 +43,8 @@ class MapHandler {
   BpfWrapper bpf_wrapper_;
 
   int map_fd_;
+
+  int filter_size_;
 
   std::string ifname_;
 

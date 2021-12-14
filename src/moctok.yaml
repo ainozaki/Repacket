@@ -3,3 +3,5 @@ filter:
    ip_protocol: tcp
  - action: drop
    ip_saddr: 192.168.33.1
+ - action: pass
+   ip_saddr: 192.168.44.1

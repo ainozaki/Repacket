@@ -11,7 +11,8 @@
 #include "base/define/define.h"
 #include "base/utils.h"
 
-MapHandler::MapHandler(int map_fd) : map_fd_(map_fd) {}
+MapHandler::MapHandler(int map_fd, int filter_size)
+    : map_fd_(map_fd), filter_size_(filter_size) {}
 
 void MapHandler::Start() {
   // TODO: make map_info a member of Map
@@ -19,6 +20,7 @@ void MapHandler::Start() {
   exp_info.key_size = sizeof(__u32);
   exp_info.value_size = sizeof(struct datarec);
   // TODO: decide max_entries dynamically.
+  exp_info.max_entries = filter_size_;
   exp_info.max_entries = 5;
   exp_info.type = BPF_MAP_TYPE_ARRAY;
 

@@ -105,6 +105,7 @@ void YamlHandler::StringToFilter(const std::string& key,
 // static
 std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
   std::vector<Filter> filters;
+  // TODO: Why this filepath works?
   YAML::Node node = YAML::LoadFile(filepath);
   int priority = 0;
   if (node["filter"]) {
@@ -123,4 +124,15 @@ std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
     }
   }
   return filters;
+}
+
+// static
+std::vector<Action> YamlHandler::ReadYamlAndGetActions() {
+  std::vector<Action> actions;
+  YAML::Node filter = YAML::LoadFile("moctok.yaml")["filter"];
+  for (std::size_t i = 0; i < filter.size(); i++) {
+    std::string action = filter[i]["action"].as<std::string>();
+    actions.push_back(ConvertActionFromString(action));
+  }
+  return actions;
 }
