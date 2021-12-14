@@ -45,8 +45,8 @@ struct Filter {
 
 enum class Mode {
 	Generate,
-	Load,
-	Unload,
+	Attach,
+	Detach,
 	Stats,
 };
 

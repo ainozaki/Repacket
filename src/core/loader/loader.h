@@ -40,13 +40,11 @@ class Loader {
  private:
   void Load(const Mode mode);
 
-  int LoadBpf();
-
-  int UnloadBpf();
-
   int AttachBpf();
 
   int DetachBpf();
+
+  int SetBpf();
 
   void PinMaps();
 

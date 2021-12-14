@@ -20,13 +20,13 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
       generator_ = std::make_unique<Generator>(config_.yaml_filepath);
       break;
       // TODO: rename Load/Unload to Attach/Detach
-    case Mode::Load:
+    case Mode::Attach:
       // MocktokFilter loads Bpf program.
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname,
                                          config_.bpf_filepath, config_.progsec);
       break;
-    case Mode::Unload:
+    case Mode::Detach:
       // MocktokFilter unloads Bpf program.
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname);

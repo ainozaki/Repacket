@@ -45,15 +45,15 @@ Loader::~Loader() {}
 
 void Loader::Load(const Mode mode) {
   switch (mode) {
-    case Mode::Load:
-      if (LoadBpf() != kSuccess) {
+    case Mode::Attach:
+      if (AttachBpf() != kSuccess) {
         std::cerr << "Failed: suspend loading program," << std::endl;
         return;
       }
       PinMaps();
       break;
-    case Mode::Unload:
-      UnloadBpf();
+    case Mode::Detach:
+      DetachBpf();
       break;
     default:
       assert(false);
@@ -62,9 +62,9 @@ void Loader::Load(const Mode mode) {
   return;
 }
 
-int Loader::UnloadBpf() {
+int Loader::DetachBpf() {
   prog_fd_ = -1;
-  int err = DetachBpf();
+  int err = SetBpf();
   if (err == kSuccess) {
     std::clog << "Success: Bpf program is unloaded from interface " << ifname_
               << std::endl;
@@ -75,7 +75,7 @@ int Loader::UnloadBpf() {
   return err;
 }
 
-int Loader::LoadBpf() {
+int Loader::AttachBpf() {
   struct bpf_program* bpf_prog;
 
   // Load the BPF-ELF file.
@@ -102,7 +102,7 @@ int Loader::LoadBpf() {
     return kError;
   }
 
-  err = AttachBpf();
+  err = SetBpf();
   if (err == kSuccess) {
     std::clog << "Success: Bpf program is loaded to interface " << ifname_
               << std::endl;
@@ -131,12 +131,7 @@ void Loader::PinMaps() {
   }
 }
 
-int Loader::DetachBpf() {
-  assert(prog_fd_ == -1);
-  return AttachBpf();
-}
-
-int Loader::AttachBpf() {
+int Loader::SetBpf() {
   std::clog << "Attaching to an interface..." << std::endl;
   int err = bpf_set_link_xdp_fd(ifindex_, prog_fd_, xdp_flags_);
   if (err < 0) {

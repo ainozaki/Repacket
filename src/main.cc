@@ -21,8 +21,8 @@ int main(int argc, char** argv) {
   parser.add<std::string>("gen", 'g',
                           "Generate XDP program. Specify yaml file's path.",
                           false, kDefaultYamlFilepath);
-  parser.add("load", 'l', "Load XDP program.");
-  parser.add("unload", 'u', "Unload XDP program.");
+  parser.add("attach", 'a', "Attach XDP program.");
+  parser.add("detach", 'd', "Detach XDP program.");
   parser.add("stats", 's', "Display filtering stats.");
   parser.add<std::string>("filepath", 'f', "Specify BPF file's path.", false,
                           kDefaultBpfFilepath);
@@ -54,10 +54,10 @@ int main(int argc, char** argv) {
           parser.exist("gen") ? parser.get<std::string>("gen") : "",
   };
 
-  if (parser.exist("load")) {
-    cfg.mode = Mode::Load;
-  } else if (parser.exist("unload")) {
-    cfg.mode = Mode::Unload;
+  if (parser.exist("attach")) {
+    cfg.mode = Mode::Attach;
+  } else if (parser.exist("detach")) {
+    cfg.mode = Mode::Detach;
   } else if (parser.exist("gen")) {
     cfg.mode = Mode::Generate;
   } else if (parser.exist("stats")) {

@@ -57,20 +57,17 @@ format:
 	clang-format -i $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc $(XDP_C) 
 # find ./ -name "*.cc" -o -name "*.h" -o -path "./common" | xargs clang-format -i
 
-load:
-	./loader --load
-
-load-pass:
-	./loader --sec xdp_pass
+attach:
+	./loader --attach
 
 load-ip:
 	ip link set dev eth1 xdpgeneric obj kern.o sec xdp
 
+detach:
+	./loader --detach
+
 gen:
 	./loader --gen moctok.yaml 
-
-unload:
-	./loader --unload
 
 stats:
 	./loader --stats
