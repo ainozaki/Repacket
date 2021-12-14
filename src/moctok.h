@@ -9,7 +9,7 @@
 
 #include "base/define/define.h"
 #include "core/generator/generator.h"
-#include "core/loader/moctok_filter.h"
+#include "core/loader/loader.h"
 #include "core/stats/stats.h"
 
 class Loader;
@@ -23,7 +23,7 @@ class MocTok {
  private:
   BpfWrapper bpf_wrapper_;
 
-  std::unique_ptr<MoctokFilter> filter_;
+  std::unique_ptr<Loader> loader_;
 
   std::unique_ptr<Generator> generator_;
 

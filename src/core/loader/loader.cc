@@ -19,7 +19,8 @@
 
 #include "base/define/define.h"
 
-Loader::Loader(uint32_t xdp_flags,
+Loader::Loader(const Mode mode,
+               uint32_t xdp_flags,
                unsigned int ifindex,
                const std::string& ifname,
                const std::string& bpf_filepath,
@@ -28,9 +29,38 @@ Loader::Loader(uint32_t xdp_flags,
       ifindex_(ifindex),
       ifname_(ifname),
       bpf_filepath_(bpf_filepath),
-      progsec_(progsec) {}
+      progsec_(progsec) {
+  Load(mode);
+}
+
+Loader::Loader(const Mode mode,
+               uint32_t xdp_flags,
+               unsigned int ifindex,
+               const std::string& ifname)
+    : xdp_flags_(xdp_flags), ifindex_(ifindex), ifname_(ifname) {
+  Load(mode);
+}
 
 Loader::~Loader() {}
+
+void Loader::Load(const Mode mode) {
+  switch (mode) {
+    case Mode::Load:
+      if (LoadBpf() != kSuccess) {
+        std::cerr << "Failed: suspend loading program," << std::endl;
+        return;
+      }
+      PinMaps();
+      break;
+    case Mode::Unload:
+      UnloadBpf();
+      break;
+    default:
+      assert(false);
+      break;
+  }
+  return;
+}
 
 int Loader::UnloadBpf() {
   prog_fd_ = -1;
@@ -81,6 +111,24 @@ int Loader::LoadBpf() {
               << std::endl;
   }
   return err;
+}
+
+void Loader::PinMaps() {
+  std::string pin_dir = "/sys/fs/bpf/" + ifname_;
+  int err;
+  if (access(pin_dir.c_str(), F_OK) != -1) {
+    err = bpf_object__unpin_maps(bpf_obj_, pin_dir.c_str());
+    if (err) {
+      std::cerr << "ERR: Unpinning maps." << std::endl;
+      return;
+    }
+  }
+
+  err = bpf_object__pin_maps(bpf_obj_, pin_dir.c_str());
+  if (err) {
+    std::cerr << "ERR: Pinning maps." << std::endl;
+    return;
+  }
 }
 
 int Loader::DetachBpf() {

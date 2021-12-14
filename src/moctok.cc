@@ -9,7 +9,7 @@
 
 #include "base/define/define.h"
 #include "core/generator/generator.h"
-#include "core/loader/moctok_filter.h"
+#include "core/loader/loader.h"
 #include "core/stats/stats.h"
 
 MocTok::MocTok(struct config& cfg) : config_(cfg) {
@@ -22,12 +22,14 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
       // TODO: rename Load/Unload to Attach/Detach
     case Mode::Load:
       // MocktokFilter loads Bpf program.
-      // TODO: separate loading role from constructor.
-      filter_ = std::make_unique<MoctokFilter>(cfg);
+      loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
+                                         config_.ifindex, config_.ifname,
+                                         config_.bpf_filepath, config_.progsec);
       break;
     case Mode::Unload:
       // MocktokFilter unloads Bpf program.
-      filter_ = std::make_unique<MoctokFilter>(cfg);
+      loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
+                                         config_.ifindex, config_.ifname);
       break;
     case Mode::Stats:
       // Get statics on |config_.ifname|.

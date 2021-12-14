@@ -11,7 +11,6 @@ USER += base/utils.cc
 USER += base/yaml_handler.cc
 USER += core/generator/generator.cc
 USER += core/loader/loader.cc
-USER += core/loader/moctok_filter.cc
 USER += core/stats/map_handler.cc
 USER += core/stats/stats.cc
 USER_H := $(USER:.cc=.h)

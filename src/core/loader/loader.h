@@ -20,27 +20,35 @@ class Controller;
 
 class Loader {
  public:
-  Loader(uint32_t xdp_flags,
+  // Loader to attach BPF program.
+  Loader(const Mode mode,
+         uint32_t xdp_flags,
          unsigned int ifindex,
          const std::string& ifname,
          const std::string& bpf_filepath,
          const std::string& progsec);
+
+  // Loader to detach BPF program.
+  Loader(const Mode mode,
+         uint32_t xdp_flags,
+         unsigned int ifindex,
+         const std::string& ifname);
+
   ~Loader();
   Loader(const Loader&) = delete;
+
+ private:
+  void Load(const Mode mode);
 
   int LoadBpf();
 
   int UnloadBpf();
 
-  // Make sure to call this function after LoadBpf().
-  struct bpf_object* bpf_obj() {
-    return bpf_obj_;
-  }
-
- private:
   int AttachBpf();
 
   int DetachBpf();
+
+  void PinMaps();
 
   Controller* controller_;
 
