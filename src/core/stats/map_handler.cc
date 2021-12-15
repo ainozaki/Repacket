@@ -10,9 +10,12 @@
 #include "base/define/constant.h"
 #include "base/define/define.h"
 #include "base/utils.h"
+#include "base/yaml_handler.h"
 
 MapHandler::MapHandler(int map_fd, int filter_size)
-    : map_fd_(map_fd), filter_size_(filter_size) {}
+    : filter_actions_(YamlHandler::ReadYamlAndGetActions()),
+      map_fd_(map_fd),
+      filter_size_(filter_size) {}
 
 void MapHandler::Start() {
   // TODO: make map_info a member of Map
@@ -20,7 +23,6 @@ void MapHandler::Start() {
   exp_info.key_size = sizeof(__u32);
   exp_info.value_size = sizeof(struct datarec);
   // TODO: decide max_entries dynamically.
-  exp_info.max_entries = filter_size_;
   exp_info.max_entries = filter_size_;
   exp_info.type = BPF_MAP_TYPE_ARRAY;
 
@@ -80,12 +82,10 @@ void MapHandler::StatsPoll(struct bpf_map_info* info) {
 }
 
 void MapHandler::StatsCollect(__u32 map_type, struct stats_record* stats_rec) {
-  __u32 key_pass = XDP_PASS;
-  __u32 key_drop = XDP_DROP;
-
-  // TODO: reflect moctok.yaml
-  MapCollect(map_type, key_pass, &stats_rec->stats[0]);
-  MapCollect(map_type, key_drop, &stats_rec->stats[1]);
+  for (int i = 0; i < filter_size_; i++) {
+    __u32 filter_priority = i;
+    MapCollect(map_type, filter_priority, &stats_rec->stats[i]);
+  }
 }
 
 bool MapHandler::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
@@ -122,21 +122,24 @@ void MapHandler::StatsPrint(struct stats_record* stats_rec,
   printf(
       "----------------------------------------------------------------------"
       "-------------------------------------\n");
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < filter_size_; i++) {
     const char* fmt =
-        "%-12s %'11lld pkts (%'12.0f pps)"
+        "filter%d     %-6s %'11lld pkts (%'12.0f pps)"
         " %'11lld bytes (%'12.0f bps)"
         " period:%f\n";
 
+    // TODO of TODO: Change this!!
+    Action action_tmp = filter_actions_[i];
     const char* action;
-    switch (i) {
-      case 0:
-        action = "XDP_PASS";
+    switch (action_tmp) {
+      case Action::Pass:
+        action = "PASS";
         break;
-      case 1:
-        action = "XDP_DROP";
+      case Action::Drop:
+        action = "DROP";
         break;
     }
+    int filter_priority = i;
     rec = &stats_rec->stats[i];
     prev = &stats_prev->stats[i];
 
@@ -150,7 +153,7 @@ void MapHandler::StatsPrint(struct stats_record* stats_rec,
     bytes = rec->total.rx_bytes - prev->total.rx_bytes;
     bps = bytes / period;
 
-    printf(fmt, action, rec->total.rx_packets, pps, rec->total.rx_bytes, bps,
-           period);
+    printf(fmt, filter_priority, action, rec->total.rx_packets, pps,
+           rec->total.rx_bytes, bps, period);
   }
 }

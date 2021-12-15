@@ -2,6 +2,7 @@
 #define MAP_H_
 
 #include <string>
+#include <vector>
 
 #include <libbpf.h>
 
@@ -15,7 +16,7 @@ struct record {
 };
 
 struct stats_record {
-  struct record stats[2];
+  struct record stats[10];
 };
 
 class MapHandler {
@@ -41,6 +42,8 @@ class MapHandler {
                   struct stats_record* stats_prev);
 
   BpfWrapper bpf_wrapper_;
+
+  std::vector<Action> filter_actions_;
 
   int map_fd_;
 
