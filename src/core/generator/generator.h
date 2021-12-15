@@ -23,6 +23,8 @@ class Generator {
   // Write XDP program to |output_filepath_|.
   void Write();
 
+  int filter_size_;
+
   std::string xdp_prog_;
 
   std::string yaml_filepath_;

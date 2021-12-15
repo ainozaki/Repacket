@@ -57,6 +57,8 @@ Generator::Generator(const std::string& yaml_filepath)
     : yaml_filepath_(yaml_filepath),
       // TODO: Think whether this causes copy.
       filters_(YamlHandler::ReadYaml(yaml_filepath)) {
+  // |filters_.size()| cannot exceed the range of int.
+  filter_size_ = static_cast<int>(filters_.size());
   Construct();
 }
 
@@ -294,7 +296,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
         action_code +=
             t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
     }
-    action_code += t + "}" + nl;
+    action_code += t + "}" + nl + t + "priority++;" + nl;
 
     action_codes += action_code + nl;
   }  // for (const auto& filter : filters_)
@@ -335,8 +337,8 @@ void Generator::Construct() {
   }
 
   // define part.
-  std::string define = xdp::constant + nl + xdp::struct_datarec + nl +
-                       xdp::struct_map + nl + xdp::struct_hdr_cursor;
+  std::string define = xdp::constant(filter_size_) + nl + xdp::struct_datarec +
+                       nl + xdp::struct_map + nl + xdp::struct_hdr_cursor;
 
   // inline function.
   std::string inline_func = xdp::inline_func_stats;

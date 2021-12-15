@@ -13,6 +13,8 @@ class YamlHandler {
   ~YamlHandler() = default;
   YamlHandler(const YamlHandler&) = delete;
 
+  // Read config yaml file and set into vector of struct Filter.
+  // Return values are ordered in filterinf priority.
   static std::vector<Filter> ReadYaml(const std::string& filepath);
 
   // Read moctok.yaml and extract Action field.
@@ -23,4 +25,5 @@ class YamlHandler {
                              const std::string& value,
                              std::shared_ptr<Filter> policy);
 };
-#endif
+
+#endif  // YAML_HANDLER_H_

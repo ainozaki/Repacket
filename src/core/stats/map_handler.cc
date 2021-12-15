@@ -21,7 +21,7 @@ void MapHandler::Start() {
   exp_info.value_size = sizeof(struct datarec);
   // TODO: decide max_entries dynamically.
   exp_info.max_entries = filter_size_;
-  exp_info.max_entries = 5;
+  exp_info.max_entries = filter_size_;
   exp_info.type = BPF_MAP_TYPE_ARRAY;
 
   int check_result = CheckMapInfo(&exp_info, &info);
