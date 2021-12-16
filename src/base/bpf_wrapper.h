@@ -5,22 +5,20 @@
 
 #include <bpf/bpf.h>
 
-class BpfWrapper {
- public:
-  BpfWrapper() = default;
-  ~BpfWrapper() = default;
-  BpfWrapper(const BpfWrapper&) = delete;
+namespace bpf {
 
-  // Helper function to get bpf_map_info from specified |fd|.
-  // Returns 0 in success.
-  static int BpfGetMapInfoByFd(int fd, struct bpf_map_info* info);
+// Helper function to get bpf_map_info from specified |fd|.
+// Returns 0 in success.
+int GetMapInfoByFd(int fd, struct bpf_map_info* info);
 
-  // Helper funciton to get fd of the bpf object in |path|.
-  // Returns fd.
-  static int BpfGetPinnedObjFd(const std::string& path);
+// Helper funciton to get fd of the bpf object in |path|.
+// Returns fd.
+int GetPinnedObjFd(const std::string& path);
 
-  // Helper function to get map value from user space.
-  // Returns 0 in success.
-  static int BpfMapLookupElem(int map_fd, void* key, void* value);
-};
+// Helper function to get map value from user space.
+// Returns 0 in success.
+int MapLookupElem(int map_fd, void* key, void* value);
+
+}  // namespace bpf
+
 #endif  // BPF_WRAPPER_H_

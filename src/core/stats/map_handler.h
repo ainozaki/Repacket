@@ -41,8 +41,6 @@ class MapHandler {
   void StatsPrint(struct stats_record* stats_rec,
                   struct stats_record* stats_prev);
 
-  BpfWrapper bpf_wrapper_;
-
   std::vector<Action> filter_actions_;
 
   int map_fd_;

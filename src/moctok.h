@@ -21,8 +21,6 @@ class MocTok {
   MocTok(const MocTok&) = delete;
 
  private:
-  BpfWrapper bpf_wrapper_;
-
   std::unique_ptr<Loader> loader_;
 
   std::unique_ptr<Generator> generator_;
