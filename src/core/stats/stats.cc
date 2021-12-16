@@ -16,17 +16,12 @@ Stats::Stats(const std::string& ifname) : ifname_(ifname) {
   map_fd_ = bpf::GetPinnedObjFd(map_path_.c_str());
   if (map_fd_ < 0) {
     std::cerr << "ERR: Failed to open " << map_path_ << std::endl;
-    exit(EXIT_FAIL);
+    return;
   }
 
-  filters_ = YamlHandler::ReadYamlAndGetActions();
-  // Filter size shouldn't exceed the range of int.
-  filter_size_ = static_cast<int>(filters_.size());
-
-  map_handler_ = std::make_unique<MapHandler>(map_fd_, filter_size_);
+  map_handler_ = std::make_unique<MapHandler>(map_fd_);
 }
 
-int Stats::Start() {
+void Stats::Start() {
   map_handler_->Start();
-  return 0;
 }

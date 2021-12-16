@@ -12,17 +12,17 @@
 #include "base/utils.h"
 #include "base/yaml_handler.h"
 
-MapHandler::MapHandler(int map_fd, int filter_size)
-    : filter_actions_(YamlHandler::ReadYamlAndGetActions()),
-      map_fd_(map_fd),
-      filter_size_(filter_size) {}
+MapHandler::MapHandler(int map_fd)
+    : map_fd_(map_fd), filter_actions_(YamlHandler::ReadYamlAndGetActions()) {
+  // Filter size shouldn't exceed the range of int.
+  filter_size_ = static_cast<int>(filter_actions_.size());
+}
 
 void MapHandler::Start() {
   // TODO: make map_info a member of Map
   struct bpf_map_info exp_info, info;
   exp_info.key_size = sizeof(__u32);
   exp_info.value_size = sizeof(struct datarec);
-  // TODO: decide max_entries dynamically.
   exp_info.max_entries = filter_size_;
   exp_info.type = BPF_MAP_TYPE_ARRAY;
 
@@ -118,6 +118,9 @@ void MapHandler::StatsPrint(struct stats_record* stats_rec,
   __u64 packets, bytes;
   double pps, bps;
 
+  std::string action;
+  int filter_priority;
+
   // TODO: Change this style.
   printf(
       "----------------------------------------------------------------------"
@@ -128,18 +131,9 @@ void MapHandler::StatsPrint(struct stats_record* stats_rec,
         " %'11lld bytes (%'12.0f bps)"
         " period:%f\n";
 
-    // TODO of TODO: Change this!!
-    Action action_tmp = filter_actions_[i];
-    const char* action;
-    switch (action_tmp) {
-      case Action::Pass:
-        action = "PASS";
-        break;
-      case Action::Drop:
-        action = "DROP";
-        break;
-    }
-    int filter_priority = i;
+    action = ConvertActionToString(filter_actions_[i]);
+    filter_priority = i;
+
     rec = &stats_rec->stats[i];
     prev = &stats_prev->stats[i];
 
@@ -153,7 +147,7 @@ void MapHandler::StatsPrint(struct stats_record* stats_rec,
     bytes = rec->total.rx_bytes - prev->total.rx_bytes;
     bps = bytes / period;
 
-    printf(fmt, filter_priority, action, rec->total.rx_packets, pps,
+    printf(fmt, filter_priority, action.c_str(), rec->total.rx_packets, pps,
            rec->total.rx_bytes, bps, period);
   }
 }

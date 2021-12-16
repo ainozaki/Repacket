@@ -13,10 +13,10 @@
 #include "core/stats/stats.h"
 
 MocTok::MocTok(struct config& cfg) : config_(cfg) {
-  int err;
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
+      // TODO: separate constructor and start function.
       generator_ = std::make_unique<Generator>(config_.yaml_filepath);
       break;
       // TODO: rename Load/Unload to Attach/Detach
@@ -34,10 +34,7 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
     case Mode::Stats:
       // Get statics on |config_.ifname|.
       stats_ = std::make_unique<Stats>(config_.ifname);
-      err = stats_->Start();
-      if (err) {
-        std::cerr << "Error detected. Finish getting stats." << std::endl;
-      }
+      stats_->Start();
       break;
     default:
       assert(false);

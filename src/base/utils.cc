@@ -26,3 +26,15 @@ double calc_period(struct record* rec, struct record* prev) {
   }
   return period_;
 }
+
+std::string ConvertActionToString(const Action action) {
+  switch (action) {
+    case Action::Pass:
+      return "PASS";
+    case Action::Drop:
+      return "DROP";
+    default:
+      std::cerr << "ERR: no supported Action type" << std::endl;
+      return "Unknown";
+  }
+}

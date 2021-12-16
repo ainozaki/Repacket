@@ -16,7 +16,7 @@ class Stats {
   Stats(const Stats&) = delete;
 
   // An interface function to get stats using map.
-  int Start();
+  void Start();
 
  private:
   std::unique_ptr<MapHandler> map_handler_;
@@ -27,7 +27,7 @@ class Stats {
 
   int map_fd_;
 
-  // Filtering actions set at moctok.yaml.
+  // Vector of struct Action extracted from moctok.yaml.
   // Values are ordered in filtering priority.
   std::vector<Action> filters_;
 
