@@ -18,6 +18,9 @@ class Stats {
   // An interface function to get stats using map.
   void Start();
 
+  // Helper function to get value from map for testing.
+  datarec GetMapValueForTesting(__u32 key);
+
  private:
   std::unique_ptr<MapHandler> map_handler_;
 

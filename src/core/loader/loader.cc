@@ -129,6 +129,7 @@ void Loader::PinMaps() {
     std::cerr << "ERR: Pinning maps." << std::endl;
     return;
   }
+  std::clog << "Success: Pinning maps at /sys/fs/bpf/" << ifname_ << std::endl;
 }
 
 int Loader::SetBpf() {

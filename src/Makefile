@@ -18,6 +18,10 @@ USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
 TEST := base/yaml_handler_unittest.cc
+TEST += filter-test/icmp_test.cc
+TEST_XDP_C := filter-test/xdp-generated.c
+TEST_XDP_OBJ := $(TEST_XDP_C:.c=.o)
+TEST_XDP_OBJ += $(TEST_XDP_C:.c=.ll)
 TEST_OBJ := test
 
 DATA := data/test.yaml
@@ -51,6 +55,7 @@ moctok: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
 
 test: $(TEST) $(USER)
 	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread
+	 cd "$(PWD)/filter-test" && make
 
 format:
 # to exclude "common/xdp_base.h", use first command.
@@ -76,4 +81,4 @@ ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)
+	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(LOADER_OBJ) $(XDP_C)

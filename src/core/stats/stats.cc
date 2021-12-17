@@ -25,3 +25,9 @@ Stats::Stats(const std::string& ifname) : ifname_(ifname) {
 void Stats::Start() {
   map_handler_->Start();
 }
+
+datarec Stats::GetMapValueForTesting(__u32 key) {
+  struct datarec value;
+  map_handler_->MapGetValueArray(key, &value);
+  return value;
+}

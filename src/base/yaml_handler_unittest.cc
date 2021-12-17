@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "common/define.h"
-#include "yaml_handler.h"
+#include "base/define/define.h"
+#include "base/yaml_handler.h"
 
 TEST(YamlHandlerTest, ReadYaml) {
   std::vector<Filter> filter = YamlHandler::ReadYaml("data/test.yaml");

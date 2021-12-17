@@ -27,6 +27,9 @@ class MapHandler {
 
   void Start();
 
+  // Public for testing.
+  void MapGetValueArray(__u32 key, struct datarec* value);
+
  private:
   int CheckMapInfo(struct bpf_map_info* exp_info, struct bpf_map_info* info);
 
@@ -35,8 +38,6 @@ class MapHandler {
   void StatsCollect(__u32 map_type, struct stats_record* stats_rec);
 
   bool MapCollect(__u32 map_type, __u32 key, struct record* rec);
-
-  void MapGetValueArray(__u32 key, struct datarec* value);
 
   void StatsPrint(struct stats_record* stats_rec,
                   struct stats_record* stats_prev);

@@ -37,12 +37,13 @@ class Loader {
   ~Loader();
   Loader(const Loader&) = delete;
 
+  // Public for testing.
+  int DetachBpf();
+
  private:
   void Load(const Mode mode);
 
   int AttachBpf();
-
-  int DetachBpf();
 
   int SetBpf();
 

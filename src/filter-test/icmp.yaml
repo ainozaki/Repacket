@@ -2,8 +2,6 @@ filter:
  - action: pass
    ip_protocol: tcp
  - action: pass
-   ip_saddr: 172.16.10.2
-   ip_protocol: icmp
+   ip_protocol: udp
  - action: drop
-   ip_saddr: 192.168.33.1
    ip_protocol: icmp
