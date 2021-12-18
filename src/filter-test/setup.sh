@@ -2,7 +2,6 @@
 set -euo pipefail
 
 setup_netns(){
-	ip -all netns delete
 	ip netns add outside
 
 	ip link add name veth1 type veth peer name outside-veth1

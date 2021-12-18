@@ -1,7 +1,11 @@
 filter:
- - action: pass
-   ip_protocol: tcp
- - action: pass
-   ip_protocol: udp
  - action: drop
-   ip_protocol: icmp
+   icmp_type: echo-reply
+ - action: drop
+   icmp_type: unreachable
+ - action: drop
+   icmp_type: redirect
+ - action: drop
+   icmp_type: echo-request
+ - action: drop
+   icmp_type: time-exceeded
