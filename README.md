@@ -4,14 +4,18 @@ This is a packet filter using XDP.
 ### Usage
 
 ```
-commands:
-    moctok conf     // Make configuration file.
-    moctok gen      // Generate XDP program.
-    moctok load     // Load.
-    moctok stats    // Display filtering stats.
-    
+usage: moctok [options] ... 
 options:
-    --interface, -i // Specify interface to load.
+  -g, --gen          Generate XDP program. (string)
+  -a, --attach       Attach XDP program.
+  -d, --detach       Detach XDP program.
+  -s, --stats        Display filtering stats.
+  -i, --interface    Specify interface. (string [=eth1])
+      --bpf          BPF filepath. (string [=xdp-generated.o])
+      --input        Input yaml filepath. (string [=moctok.yaml])
+      --output       Output filepath. (string [=xdp-generated.c])
+      --sec          [Advanced option] Specify program section. (string [=xdp_generated])
+  -h, --help         Print usage.
 ```
 
 ### Configuration

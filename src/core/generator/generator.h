@@ -9,7 +9,8 @@
 
 class Generator {
  public:
-  Generator(const std::string& file);
+  Generator(const std::string& yaml_filepath,
+            const std::string& output_filepath);
   ~Generator();
   Generator(const Generator&) = delete;
 
@@ -29,9 +30,9 @@ class Generator {
 
   std::string yaml_filepath_;
 
-  std::vector<Filter> filters_;
+  std::string output_filepath_;
 
-  std::string output_filepath_ = "xdp-generated.c";
+  std::vector<Filter> filters_;
 
   bool need_ip_parse_;
 

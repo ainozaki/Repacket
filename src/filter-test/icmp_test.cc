@@ -13,7 +13,7 @@ TEST(IcmpTest, DropByType) {
   cfg.xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
   cfg.ifindex = if_nametoindex("veth1");
   cfg.ifname = "veth1";
-  cfg.bpf_filepath = "filter-test/xdp-generated.o";
+  cfg.bpf_filepath = "filter-test/xdp_test_icmp_type.o";
   cfg.progsec = "xdp_generated";
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);

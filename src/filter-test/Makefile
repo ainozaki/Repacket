@@ -1,7 +1,7 @@
 CLANG := clang
 LLC := llc
 
-XDP_C := xdp-generated.c
+XDP_C := xdp_test_icmp_type.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -48,7 +48,7 @@ $(XDP_OBJ): $(XDP_C)
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
 $(XDP_C):
-	../loader --gen icmp.yaml 
+	../loader --gen --input icmp_type.yaml --output xdp_test_icmp_type.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

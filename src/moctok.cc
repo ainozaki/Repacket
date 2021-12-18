@@ -17,7 +17,8 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
       // TODO: separate constructor and start function.
-      generator_ = std::make_unique<Generator>(config_.yaml_filepath);
+      generator_ = std::make_unique<Generator>(config_.yaml_filepath,
+                                               config_.output_filepath);
       break;
       // TODO: rename Load/Unload to Attach/Detach
     case Mode::Attach:

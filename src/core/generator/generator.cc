@@ -53,8 +53,10 @@ std::string ConvertIPAddressToHexString(const std::string& address) {
 
 }  // namespace
 
-Generator::Generator(const std::string& yaml_filepath)
+Generator::Generator(const std::string& yaml_filepath,
+                     const std::string& output_filepath)
     : yaml_filepath_(yaml_filepath),
+      output_filepath_(output_filepath),
       // TODO: Think whether this causes copy.
       filters_(YamlHandler::ReadYaml(yaml_filepath)) {
   // |filters_.size()| cannot exceed the range of int.

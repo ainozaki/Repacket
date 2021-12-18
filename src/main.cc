@@ -9,7 +9,8 @@
 #include "moctok.h"
 
 namespace {
-std::string kDefaultYamlFilepath = "access.yaml";
+std::string kDefaultYamlFilepath = "moctok.yaml";
+std::string kDefaultOutputFilepath = "xdp-generated.c";
 std::string kDefaultBpfFilepath = "xdp-generated.o";
 std::string kDefaultIfname = "eth1";
 std::string kDefaultSec = "xdp_generated";
@@ -18,16 +19,18 @@ std::string kDefaultSec = "xdp_generated";
 int main(int argc, char** argv) {
   // Make a rule of cmdline parser.
   cmdline::parser parser;
-  parser.add<std::string>("gen", 'g',
-                          "Generate XDP program. Specify yaml file's path.",
-                          false, kDefaultYamlFilepath);
+  parser.add("gen", 'g', "Generate XDP program.");
   parser.add("attach", 'a', "Attach XDP program.");
   parser.add("detach", 'd', "Detach XDP program.");
   parser.add("stats", 's', "Display filtering stats.");
-  parser.add<std::string>("filepath", 'f', "Specify BPF file's path.", false,
-                          kDefaultBpfFilepath);
   parser.add<std::string>("interface", 'i', "Specify interface.", false,
                           kDefaultIfname);
+  parser.add<std::string>("bpf", '\0', "BPF filepath.", false,
+                          kDefaultBpfFilepath);
+  parser.add<std::string>("input", '\0', "Input yaml filepath.", false,
+                          kDefaultYamlFilepath);
+  parser.add<std::string>("output", '\0', "Output filepath.", false,
+                          kDefaultOutputFilepath);
   parser.add<std::string>("sec", '\0',
                           "[Advanced option] Specify program section.", false,
                           kDefaultSec);
@@ -39,20 +42,21 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  struct config cfg = {
-      .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
-      // TODO: Remove ifindex from cfg.
-      .ifindex = if_nametoindex(kDefaultIfname.c_str()),
-      .ifname = parser.exist("interface") ? parser.get<std::string>("interface")
-                                          : kDefaultIfname,
-      .bpf_filepath = parser.exist("filepath")
-                          ? parser.get<std::string>("filepath")
-                          : kDefaultBpfFilepath,
-      .progsec =
-          parser.exist("sec") ? parser.get<std::string>("sec") : kDefaultSec,
-      .yaml_filepath =
-          parser.exist("gen") ? parser.get<std::string>("gen") : "",
-  };
+  struct config cfg;
+  cfg.xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+  // TODO: Remove ifindex from cfg.
+  cfg.ifindex = if_nametoindex(kDefaultIfname.c_str());
+  cfg.ifname = parser.exist("interface") ? parser.get<std::string>("interface")
+                                         : kDefaultIfname;
+  cfg.bpf_filepath = parser.exist("bpf") ? parser.get<std::string>("bpf")
+                                         : kDefaultBpfFilepath;
+  cfg.progsec =
+      parser.exist("sec") ? parser.get<std::string>("sec") : kDefaultSec;
+  cfg.yaml_filepath = parser.exist("input") ? parser.get<std::string>("input")
+                                            : kDefaultYamlFilepath;
+  cfg.output_filepath = parser.exist("output")
+                            ? parser.get<std::string>("output")
+                            : kDefaultOutputFilepath;
 
   if (parser.exist("attach")) {
     cfg.mode = Mode::Attach;

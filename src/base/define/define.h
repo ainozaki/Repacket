@@ -55,9 +55,10 @@ struct config {
   uint32_t xdp_flags;
   unsigned int ifindex;
 	std::string ifname;
+	std::string yaml_filepath;
+	std::string output_filepath;
 	std::string bpf_filepath;
   std::string progsec;
-	std::string yaml_filepath;
 };
 
 #define EXIT_OK 0
