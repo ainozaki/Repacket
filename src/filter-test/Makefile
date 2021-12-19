@@ -3,6 +3,7 @@ LLC := llc
 
 XDP_C := xdp_test_icmp_type.c
 XDP_C += xdp_test_icmp_code.c
+XDP_C += xdp_test_ip_protocol.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -20,6 +21,7 @@ LOADER_OBJ := loader
 
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp_test.cc
+TEST += filter-test/ip_test.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml
@@ -56,6 +58,7 @@ all:$(XDP_C) $(XDP_OBJ)
 $(XDP_C):
 	../loader --gen --input icmp_type.yaml --output xdp_test_icmp_type.c
 	../loader --gen --input icmp_code.yaml --output xdp_test_icmp_code.c
+	../loader --gen --input ip_protocol.yaml --output xdp_test_ip_protocol.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

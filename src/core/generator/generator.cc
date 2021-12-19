@@ -100,6 +100,9 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
       } else if (filter.ip_protocol == "UDP" || filter.ip_protocol == "udp") {
         condition += "(iph->protocol == IPPROTO_UDP) ";
         counter++;
+      } else {
+        std::cerr << "Invalid ip_protocol config." << std::endl;
+        exit(EXIT_FAIL);
       }
     }
 

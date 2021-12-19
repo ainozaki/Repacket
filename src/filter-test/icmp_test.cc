@@ -18,7 +18,9 @@ TEST(IcmpTest, DropByType) {
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
 
-  system("/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_type.sh");
+  system(
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_test.sh "
+      "icmp_type");
 
   Stats stats("veth1", "filter-test/icmp_type.yaml");
   __u32 key = 1;
@@ -51,7 +53,9 @@ TEST(IcmpTest, DropByCode) {
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
 
-  system("/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_code.sh");
+  system(
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_test.sh "
+      "icmp_code");
 
   Stats stats("veth1", "filter-test/icmp_code.yaml");
   __u32 key = 1;
