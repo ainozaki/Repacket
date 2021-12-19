@@ -14,8 +14,6 @@ icmp_tests(){
 
 	# icmp time exceeded
 	ip netns exec outside hping3 172.16.10.1 --icmp --icmptype 11 -c 5 -i u100
-
-	echo "finish hping3"
 }
 
 icmp_tests
