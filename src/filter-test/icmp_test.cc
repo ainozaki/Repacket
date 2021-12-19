@@ -22,7 +22,7 @@ TEST(IcmpTest, DropByType) {
   system("/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_type.sh");
 
   Stats stats("veth1", "filter-test/icmp_type.yaml");
-  __u32 key = 0;
+  __u32 key = 1;
   datarec value0 = stats.GetMapValueForTesting(key);
   key++;
   datarec value1 = stats.GetMapValueForTesting(key);
@@ -56,7 +56,7 @@ TEST(IcmpTest, DropByCode) {
   system("/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_code.sh");
 
   Stats stats("veth1", "filter-test/icmp_code.yaml");
-  __u32 key = 0;
+  __u32 key = 1;
   datarec value0 = stats.GetMapValueForTesting(key);
   key++;
   datarec value1 = stats.GetMapValueForTesting(key);

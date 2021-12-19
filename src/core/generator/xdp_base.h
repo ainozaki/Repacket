@@ -23,7 +23,7 @@ const std::string include_icmp = "#include <linux/icmp.h>";
 
 // define constants
 std::string constant(int filter_size){
-	return "#define XDP_ACTION_MAX 5" + nl + "#define FILTER_SIZE " + std::to_string(filter_size) + nl;
+	return "#define XDP_ACTION_MAX 5" + nl + "#define FILTER_SIZE " + std::to_string(filter_size + 1) + nl;
 }
 
 // struct
@@ -83,6 +83,7 @@ const std::string func_fix =
 		+ t + "void *data_end = (void *)(long)ctx->data_end;" + nl
 		+ nl
 		+ t + "__u32 action = XDP_PASS;" + nl
+		+ t + "__u32 priority = 0;" + nl
 		+ t + "struct hdr_cursor nh;" + nl
 		+ t + "nh.pos = data;" + nl
 		+ nl
@@ -91,10 +92,9 @@ const std::string func_fix =
 		+ t + t + "return -1;" + nl
 		+ t + "}" + nl
 		+ t + "if (eth->h_proto != bpf_htons(ETH_P_IP)){" + nl
-		+ t + t + "return -1;" + nl
+		+ t + t + "goto out;" + nl
 		+ t + "}" + nl
-		+ t + "nh.pos += sizeof(*eth);" + nl
-		+ t + "__u32 priority = 0;" + nl;
+		+ t + "nh.pos += sizeof(*eth);" + nl;
 
 const std::string verify_ip = 
 		t + "struct iphdr *iph = nh.pos;" + nl

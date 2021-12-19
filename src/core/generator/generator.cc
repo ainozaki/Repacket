@@ -82,6 +82,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
     // Generate code which judges action according to the filter.
     // |action_code| is the judging code for one filter.
     std::string action_code = t + "// priority " + std::to_string(index) + nl;
+    action_code += t + "priority++;" + nl;
     std::string condition;
 
     // ip_protocol
@@ -298,7 +299,7 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
         action_code +=
             t + t + "action = XDP_DROP;" + nl + t + t + "goto out;" + nl;
     }
-    action_code += t + "}" + nl + t + "priority++;" + nl;
+    action_code += t + "}" + nl;
 
     action_codes += action_code + nl;
   }  // for (const auto& filter : filters_)

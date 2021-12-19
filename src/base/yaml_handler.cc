@@ -130,6 +130,9 @@ std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
 std::vector<Action> YamlHandler::ReadYamlAndGetActions(
     const std::string filepath) {
   std::vector<Action> actions;
+  // priority 0 is pass.
+  // This is used for exceptional packets.
+  actions.push_back(Action::Pass);
   YAML::Node filter = YAML::LoadFile(filepath)["filter"];
   for (std::size_t i = 0; i < filter.size(); i++) {
     std::string action = filter[i]["action"].as<std::string>();
