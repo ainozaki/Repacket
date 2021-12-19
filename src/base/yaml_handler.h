@@ -19,7 +19,7 @@ class YamlHandler {
 
   // Read moctok.yaml and extract Action field.
   // Return values are ordered in filtering priority.
-  static std::vector<Action> ReadYamlAndGetActions();
+  static std::vector<Action> ReadYamlAndGetActions(const std::string filepath);
 
   static void StringToFilter(const std::string& key,
                              const std::string& value,

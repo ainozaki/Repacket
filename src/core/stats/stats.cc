@@ -10,7 +10,8 @@
 #include "base/yaml_handler.h"
 #include "core/stats/map_handler.h"
 
-Stats::Stats(const std::string& ifname) : ifname_(ifname) {
+Stats::Stats(const std::string& ifname, const std::string& yaml_filepath)
+    : ifname_(ifname) {
   // Get the file discripter of pinned map.
   map_path_ = "/sys/fs/bpf/" + ifname_ + "/" + kMapName;
   map_fd_ = bpf::GetPinnedObjFd(map_path_.c_str());
@@ -19,7 +20,7 @@ Stats::Stats(const std::string& ifname) : ifname_(ifname) {
     return;
   }
 
-  map_handler_ = std::make_unique<MapHandler>(map_fd_);
+  map_handler_ = std::make_unique<MapHandler>(map_fd_, yaml_filepath);
 }
 
 void Stats::Start() {

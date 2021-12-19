@@ -122,6 +122,7 @@ void Loader::PinMaps() {
       std::cerr << "ERR: Unpinning maps." << std::endl;
       return;
     }
+    std::cout << "Unpinned maps!!!" << std::endl;
   }
 
   err = bpf_object__pin_maps(bpf_obj_, pin_dir.c_str());

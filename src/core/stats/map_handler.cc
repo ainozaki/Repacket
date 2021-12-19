@@ -12,8 +12,9 @@
 #include "base/utils.h"
 #include "base/yaml_handler.h"
 
-MapHandler::MapHandler(int map_fd)
-    : map_fd_(map_fd), filter_actions_(YamlHandler::ReadYamlAndGetActions()) {
+MapHandler::MapHandler(int map_fd, const std::string& yaml_filepath)
+    : map_fd_(map_fd),
+      filter_actions_(YamlHandler::ReadYamlAndGetActions(yaml_filepath)) {
   // Filter size shouldn't exceed the range of int.
   filter_size_ = static_cast<int>(filter_actions_.size());
 }

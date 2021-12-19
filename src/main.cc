@@ -45,9 +45,9 @@ int main(int argc, char** argv) {
   struct config cfg;
   cfg.xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
   // TODO: Remove ifindex from cfg.
-  cfg.ifindex = if_nametoindex(kDefaultIfname.c_str());
   cfg.ifname = parser.exist("interface") ? parser.get<std::string>("interface")
                                          : kDefaultIfname;
+  cfg.ifindex = if_nametoindex(cfg.ifname.c_str());
   cfg.bpf_filepath = parser.exist("bpf") ? parser.get<std::string>("bpf")
                                          : kDefaultBpfFilepath;
   cfg.progsec =

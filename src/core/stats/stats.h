@@ -11,7 +11,7 @@
 
 class Stats {
  public:
-  Stats(const std::string& ifname);
+  Stats(const std::string& ifname, const std::string& yaml_filepath);
   ~Stats() = default;
   Stats(const Stats&) = delete;
 

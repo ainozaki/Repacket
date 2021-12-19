@@ -47,6 +47,7 @@ const std::string struct_hdr_cursor =
 // inline stats func
 const std::string inline_func_stats =
     "static __always_inline __u32 xdp_stats_func(struct xdp_md* ctx, __u32 action, __u32 priority) {" + nl
+		+ t + "bpf_printk(\"receive packet\\n\");" + nl
 		+ t + "void* data_end = (void*)(long)ctx->data_end;" + nl
 		+ t + "void* data = (void*)(long)ctx->data;" + nl
 		+ t + "struct datarec* rec;" + nl
@@ -89,6 +90,9 @@ const std::string func_fix =
 		+ t + "if (eth + 1 > data_end){" + nl
 		+ t + t + "return -1;" + nl
 		+ t + "}" + nl
+		+ t + "if (eth->h_proto != bpf_htons(ETH_P_IP)){" + nl
+		+ t + t + "return -1;" + nl
+		+ t + "}" + nl
 		+ t + "nh.pos += sizeof(*eth);" + nl
 		+ t + "__u32 priority = 0;" + nl;
 
@@ -123,6 +127,7 @@ const std::string func_rule =
 
 const std::string func_out =
     "out:" + nl
+		+ t + "bpf_printk(\"priority: %d\\n\", priority);" + nl
 		+ t + "return xdp_stats_func(ctx, action, priority);" + nl;
 
 }  // namespace xdp

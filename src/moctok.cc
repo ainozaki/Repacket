@@ -34,7 +34,7 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
       break;
     case Mode::Stats:
       // Get statics on |config_.ifname|.
-      stats_ = std::make_unique<Stats>(config_.ifname);
+      stats_ = std::make_unique<Stats>(config_.ifname, config_.yaml_filepath);
       stats_->Start();
       break;
     default:

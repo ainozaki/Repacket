@@ -1,11 +1,11 @@
 filter:
- - action: drop
+ - action: pass
    icmp_type: echo-reply
- - action: drop
+ - action: pass
    icmp_type: unreachable
- - action: drop
+ - action: pass
    icmp_type: redirect
- - action: drop
+ - action: pass
    icmp_type: echo-request
- - action: drop
+ - action: pass
    icmp_type: time-exceeded

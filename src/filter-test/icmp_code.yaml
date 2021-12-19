@@ -1,0 +1,9 @@
+filter:
+ - action: pass
+   icmp_code: 0
+ - action: pass
+   icmp_code: 1
+ - action: pass
+   icmp_code: 6
+ - action: pass
+   icmp_code: 15

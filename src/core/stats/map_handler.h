@@ -21,7 +21,7 @@ struct stats_record {
 
 class MapHandler {
  public:
-  MapHandler(int map_fd);
+  MapHandler(int map_fd, const std::string& yaml_filepath);
   ~MapHandler() = default;
   MapHandler(const MapHandler&) = delete;
 

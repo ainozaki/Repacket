@@ -127,9 +127,10 @@ std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
 }
 
 // static
-std::vector<Action> YamlHandler::ReadYamlAndGetActions() {
+std::vector<Action> YamlHandler::ReadYamlAndGetActions(
+    const std::string filepath) {
   std::vector<Action> actions;
-  YAML::Node filter = YAML::LoadFile("moctok.yaml")["filter"];
+  YAML::Node filter = YAML::LoadFile(filepath)["filter"];
   for (std::size_t i = 0; i < filter.size(); i++) {
     std::string action = filter[i]["action"].as<std::string>();
     actions.push_back(ConvertActionFromString(action));

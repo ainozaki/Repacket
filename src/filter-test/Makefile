@@ -2,6 +2,7 @@ CLANG := clang
 LLC := llc
 
 XDP_C := xdp_test_icmp_type.c
+XDP_C += xdp_test_icmp_code.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -34,7 +35,12 @@ LIBS_TEST := -lgtest -lgtest_main
 CFLAGS := -I..
 BPF_CFLAGS ?= -I../../deps/include/ -I../../deps/include/bpf
 
-$(XDP_OBJ): $(XDP_C)
+.SUFFIXES: .c .o
+
+all:$(XDP_C) $(XDP_OBJ)
+	echo $(XDP_C)
+
+%.o: %.c
 	$(CLANG) -S \
 	    -target bpf \
 	    -D __BPF_TRACING__ \
@@ -49,6 +55,7 @@ $(XDP_OBJ): $(XDP_C)
 
 $(XDP_C):
 	../loader --gen --input icmp_type.yaml --output xdp_test_icmp_type.c
+	../loader --gen --input icmp_code.yaml --output xdp_test_icmp_code.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)
