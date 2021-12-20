@@ -47,7 +47,6 @@ const std::string struct_hdr_cursor =
 // inline stats func
 const std::string inline_func_stats =
     "static __always_inline __u32 xdp_stats_func(struct xdp_md* ctx, __u32 action, __u32 priority) {" + nl
-		+ t + "bpf_printk(\"receive packet\\n\");" + nl
 		+ t + "void* data_end = (void*)(long)ctx->data_end;" + nl
 		+ t + "void* data = (void*)(long)ctx->data;" + nl
 		+ t + "struct datarec* rec;" + nl

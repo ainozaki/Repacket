@@ -14,7 +14,7 @@ namespace {
 // Convert decimal int to hex string.
 std::string ConvertDecimalIntToHexString(int dec) {
   if (!dec) {
-    return std::string("0");
+    return std::string("00");
   }
   std::string hex;
   const char hc = 'a';

@@ -4,6 +4,7 @@ LLC := llc
 XDP_C := xdp_test_icmp_type.c
 XDP_C += xdp_test_icmp_code.c
 XDP_C += xdp_test_ip_protocol.c
+XDP_C += xdp_test_ip_saddr.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -59,6 +60,7 @@ $(XDP_C):
 	../loader --gen --input icmp_type.yaml --output xdp_test_icmp_type.c
 	../loader --gen --input icmp_code.yaml --output xdp_test_icmp_code.c
 	../loader --gen --input ip_protocol.yaml --output xdp_test_ip_protocol.c
+	../loader --gen --input ip_saddr.yaml --output xdp_test_ip_saddr.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

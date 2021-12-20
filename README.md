@@ -38,7 +38,7 @@ Filtering rules are specified using following parameter.
 | bps            |              |                                                                                             |          |
 |                |              |                                                                                             |          |
 | ip_protocol    | tcp          | Protocol name. [tcp/udp/icmp]                                                               | o        |
-| ip_saddr       | 192.168.10.1 | Source address.                                                                             |          |
+| ip_saddr       | 192.168.10.1 | Source address.                                                                             | o        |
 | ip_daddr       | 192.168.20.1 | Destination address.                                                                        |          |
 | ip_tos         | 0x03         | Type of value. Please use prefix.                                                           |          |
 | ip_ttl_min     | 10           | Min value of ttl.                                                                           |          |

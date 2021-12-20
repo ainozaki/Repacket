@@ -1,0 +1,11 @@
+filter:
+ - action: pass
+   ip_saddr: 172.16.10.1
+ - action: pass
+   ip_saddr: 172.16.10.254
+ - action: pass
+   ip_saddr: 172.16.0.10
+ - action: pass
+   ip_saddr: 172.16.254.10
+ - action: pass
+   ip_saddr: 1.1.1.1
