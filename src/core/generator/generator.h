@@ -14,12 +14,12 @@ class Generator {
   ~Generator();
   Generator(const Generator&) = delete;
 
+  // Interface function to start generating XDP code.
+  void Start();
+
  private:
   // Generate Action judging code from Policy.
   std::unique_ptr<std::string> CreateFromFilter();
-
-  // Construct XDP program.
-  void Construct();
 
   // Write XDP program to |output_filepath_|.
   void Write();

@@ -16,20 +16,19 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.
-      // TODO: separate constructor and start function.
       generator_ = std::make_unique<Generator>(config_.yaml_filepath,
                                                config_.output_filepath);
+      generator_->Start();
       break;
-      // TODO: rename Load/Unload to Attach/Detach
     case Mode::Attach:
-      // MocktokFilter loads Bpf program.
+      // Attach Bpf program.
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname,
                                          config_.bpf_filepath, config_.progsec);
       loader_->Start();
       break;
     case Mode::Detach:
-      // MocktokFilter unloads Bpf program.
+      // Detach Bpf program.
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname);
       loader_->Start();

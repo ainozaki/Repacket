@@ -61,11 +61,60 @@ Generator::Generator(const std::string& yaml_filepath,
       filters_(YamlHandler::ReadYaml(yaml_filepath)) {
   // |filters_.size()| cannot exceed the range of int.
   filter_size_ = static_cast<int>(filters_.size());
-  Construct();
 }
 
 Generator::~Generator() {
   std::clog << "Generator destructor" << std::endl;
+}
+
+void Generator::Start() {
+  std::string nl = "\n";
+  std::string judge_action = *CreateFromFilter().get();
+  std::cerr << "CreateFromFilter finished" << std::endl;
+
+  // include part.
+  // Must call CreateFromFilter() first to use need_x_parse_.
+  std::string include = xdp::include + nl;
+
+  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
+    include += xdp::include_ip + nl;
+  }
+  if (need_icmp_parse_) {
+    include += xdp::include_icmp + nl;
+  }
+  if (need_tcp_parse_) {
+    include += xdp::include_tcp + nl;
+  }
+
+  // define part.
+  std::string define = xdp::constant(filter_size_) + nl + xdp::struct_datarec +
+                       nl + xdp::struct_map + nl + xdp::struct_hdr_cursor;
+
+  // inline function.
+  std::string inline_func = xdp::inline_func_stats;
+
+  // xdp section.
+  std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix + nl +
+                        judge_action + xdp::func_out + xdp::r_bracket + nl;
+
+  // license.
+  std::string license = xdp::license;
+
+  xdp_prog_ =
+      include + nl + define + nl + inline_func + nl + section + nl + license;
+  Write();
+  return;
+}
+
+void Generator::Write() {
+  std::ofstream xdp_file(output_filepath_);
+  if (!xdp_file) {
+    std::cerr << "Cannot open " << output_filepath_ << std::endl;
+    exit(EXIT_FAIL);
+  }
+  xdp_file << xdp_prog_ << std::endl;
+  std::cerr << "Writing to " << output_filepath_ << " done!" << std::endl;
+  return;
 }
 
 std::unique_ptr<std::string> Generator::CreateFromFilter() {
@@ -321,54 +370,4 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
       address_checking + ipaddr_definition + nl + action_codes);
   return code;
-}
-
-void Generator::Construct() {
-  std::string nl = "\n";
-  std::string judge_action = *CreateFromFilter().get();
-  std::cerr << "CreateFromFilter finished" << std::endl;
-
-  // include part.
-  // Must call CreateFromFilter() first to use need_x_parse_.
-  std::string include = xdp::include + nl;
-
-  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
-    include += xdp::include_ip + nl;
-  }
-  if (need_icmp_parse_) {
-    include += xdp::include_icmp + nl;
-  }
-  if (need_tcp_parse_) {
-    include += xdp::include_tcp + nl;
-  }
-
-  // define part.
-  std::string define = xdp::constant(filter_size_) + nl + xdp::struct_datarec +
-                       nl + xdp::struct_map + nl + xdp::struct_hdr_cursor;
-
-  // inline function.
-  std::string inline_func = xdp::inline_func_stats;
-
-  // xdp section.
-  std::string section = xdp::sec_name + xdp::func_name + xdp::func_fix + nl +
-                        judge_action + xdp::func_out + xdp::r_bracket + nl;
-
-  // license.
-  std::string license = xdp::license;
-
-  xdp_prog_ =
-      include + nl + define + nl + inline_func + nl + section + nl + license;
-  Write();
-  return;
-}
-
-void Generator::Write() {
-  std::ofstream xdp_file(output_filepath_);
-  if (!xdp_file) {
-    std::cerr << "Cannot open " << output_filepath_ << std::endl;
-    exit(EXIT_FAIL);
-  }
-  xdp_file << xdp_prog_ << std::endl;
-  std::cerr << "Writing to " << output_filepath_ << " done!" << std::endl;
-  return;
 }
