@@ -16,8 +16,6 @@
 
 #include "base/define/define.h"
 
-class Controller;
-
 class Loader {
  public:
   // Loader to attach BPF program.
@@ -41,7 +39,7 @@ class Loader {
   void Start();
 
   // Public for testing.
-  int DetachBpf();
+  void DetachBpf();
 
  private:
   int AttachBpf();
@@ -49,8 +47,6 @@ class Loader {
   int SetBpf();
 
   void PinMaps();
-
-  Controller* controller_;
 
   struct bpf_object* bpf_obj_;
 

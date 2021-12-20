@@ -17,6 +17,7 @@
 
 #include <cmdline.h>
 
+#include "base/bpf_wrapper.h"
 #include "base/define/define.h"
 
 Loader::Loader(const Mode mode,
@@ -59,24 +60,22 @@ void Loader::Start() {
   return;
 }
 
-int Loader::DetachBpf() {
+void Loader::DetachBpf() {
   prog_fd_ = -1;
+
+  // SetBpf() unloads BPF program when |prog_fd_| is -1.
   int err = SetBpf();
   if (err == kSuccess) {
     std::clog << "Success: Bpf program is unloaded from interface " << ifname_
               << std::endl;
   } else {
-    std::clog << "Failed: Bpf program cannot be unloaded from interface "
+    std::cerr << "Failed: Bpf program cannot be unloaded from interface "
               << ifname_ << std::endl;
   }
-  return err;
 }
 
 int Loader::AttachBpf() {
-  struct bpf_program* bpf_prog;
-
   // Load the BPF-ELF file.
-  std::clog << "Loading XDP-ELF file..." << std::endl;
   int err = bpf_prog_load(bpf_filepath_.c_str(), BPF_PROG_TYPE_XDP, &bpf_obj_,
                           &prog_fd_);
   if (err) {
@@ -85,20 +84,14 @@ int Loader::AttachBpf() {
     return kError;
   }
 
-  // Find the selected prog section.
-  bpf_prog = bpf_object__find_program_by_title(bpf_obj_, progsec_.c_str());
-  if (!bpf_prog) {
-    std::cerr << "ERR: finding prog sec: " << progsec_ << std::endl;
-    return kError;
-  }
-
-  // Find the correspond FD.
-  prog_fd_ = bpf_program__fd(bpf_prog);
+  // Find fd of the specified prog section.
+  prog_fd_ = bpf::GetSectionFd(bpf_obj_, progsec_);
   if (prog_fd_ <= 0) {
     std::cerr << "ERR: bpf_program__fd" << std::endl;
     return kError;
   }
 
+  // Set fd to interface.
   err = SetBpf();
   if (err == kSuccess) {
     std::clog << "Success: Bpf program is loaded to interface " << ifname_
@@ -107,12 +100,14 @@ int Loader::AttachBpf() {
     std::clog << "Failed: Bpf program cannot be loaded to interface " << ifname_
               << std::endl;
   }
+
   return err;
 }
 
 void Loader::PinMaps() {
   std::string pin_dir = "/sys/fs/bpf/" + ifname_;
   int err;
+  // Unpin maps in advance.
   if (access(pin_dir.c_str(), F_OK) != -1) {
     err = bpf_object__unpin_maps(bpf_obj_, pin_dir.c_str());
     if (err) {
@@ -122,19 +117,20 @@ void Loader::PinMaps() {
     std::cout << "Unpinned maps!!!" << std::endl;
   }
 
+  // Pin maps.
   err = bpf_object__pin_maps(bpf_obj_, pin_dir.c_str());
   if (err) {
-    std::cerr << "ERR: Pinning maps." << std::endl;
+    std::cerr << "ERR: Pinning maps at " << pin_dir << std::endl;
     return;
   }
-  std::clog << "Success: Pinning maps at /sys/fs/bpf/" << ifname_ << std::endl;
+  std::clog << "Success: Pinning maps at " << pin_dir << std::endl;
 }
 
 int Loader::SetBpf() {
-  std::clog << "Attaching to an interface..." << std::endl;
+  // set |prog_fd_| to the interface,
   int err = bpf_set_link_xdp_fd(ifindex_, prog_fd_, xdp_flags_);
   if (err < 0) {
-    std::cerr << "ERR: set xdp fd to link failed. errno: " << err << std::endl;
+    std::cerr << "ERR: Set xdp fd to " << ifname_ << " failed." << std::endl;
     return kError;
   }
   return kSuccess;
