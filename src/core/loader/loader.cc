@@ -25,26 +25,23 @@ Loader::Loader(const Mode mode,
                const std::string& ifname,
                const std::string& bpf_filepath,
                const std::string& progsec)
-    : xdp_flags_(xdp_flags),
+    : mode_(mode),
+      xdp_flags_(xdp_flags),
       ifindex_(ifindex),
       ifname_(ifname),
       bpf_filepath_(bpf_filepath),
-      progsec_(progsec) {
-  Load(mode);
-}
+      progsec_(progsec) {}
 
 Loader::Loader(const Mode mode,
                uint32_t xdp_flags,
                unsigned int ifindex,
                const std::string& ifname)
-    : xdp_flags_(xdp_flags), ifindex_(ifindex), ifname_(ifname) {
-  Load(mode);
-}
+    : mode_(mode), xdp_flags_(xdp_flags), ifindex_(ifindex), ifname_(ifname) {}
 
 Loader::~Loader() {}
 
-void Loader::Load(const Mode mode) {
-  switch (mode) {
+void Loader::Start() {
+  switch (mode_) {
     case Mode::Attach:
       if (AttachBpf() != kSuccess) {
         std::cerr << "Failed: suspend loading program," << std::endl;

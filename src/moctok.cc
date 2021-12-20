@@ -26,11 +26,13 @@ MocTok::MocTok(struct config& cfg) : config_(cfg) {
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname,
                                          config_.bpf_filepath, config_.progsec);
+      loader_->Start();
       break;
     case Mode::Detach:
       // MocktokFilter unloads Bpf program.
       loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
                                          config_.ifindex, config_.ifname);
+      loader_->Start();
       break;
     case Mode::Stats:
       // Get statics on |config_.ifname|.

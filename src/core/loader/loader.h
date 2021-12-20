@@ -37,12 +37,13 @@ class Loader {
   ~Loader();
   Loader(const Loader&) = delete;
 
+  // Interface function to start loading.
+  void Start();
+
   // Public for testing.
   int DetachBpf();
 
  private:
-  void Load(const Mode mode);
-
   int AttachBpf();
 
   int SetBpf();
@@ -52,6 +53,8 @@ class Loader {
   Controller* controller_;
 
   struct bpf_object* bpf_obj_;
+
+  Mode mode_;
 
   int prog_fd_;
 
