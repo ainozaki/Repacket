@@ -40,7 +40,7 @@ Filtering rules are specified using following parameter.
 | ip_protocol    | tcp          | Protocol name. [tcp/udp/icmp]                                                               | o        |
 | ip_saddr       | 192.0.2.100  | Source address.                                                                             | o        |
 | ip_daddr       | 192.0.2.100  | Destination address.                                                                        |          |
-| ip_tos         | 0x03         | Type of value. Please use prefix.                                                           |          |
+| ip_tos         | 0x00         | Type of Service. Please use hex prefix.                                                     | 0        |
 | ip_ttl_min     | 10           | Min value of ttl.                                                                           |          |
 | ip_ttl_max     | 64           | Max value of ttl.                                                                           |          |
 | ip_tot_len_min | 32           | Min value of total length.(byte)                                                            |          |
