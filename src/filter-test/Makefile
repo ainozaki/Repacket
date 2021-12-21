@@ -21,8 +21,8 @@ USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
 TEST := base/yaml_handler_unittest.cc
-TEST += filter-test/icmp_test.cc
-TEST += filter-test/ip_test.cc
+TEST += filter-test/icmp.cc
+TEST += filter-test/ip.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml

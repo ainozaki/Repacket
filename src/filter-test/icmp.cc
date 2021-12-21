@@ -17,9 +17,9 @@ TEST(IcmpTest, DropByType) {
   cfg.progsec = "xdp_generated";
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
-
+  loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_test.sh "
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp.sh "
       "icmp_type");
 
   Stats stats("veth1", "filter-test/icmp_type.yaml");
@@ -52,9 +52,10 @@ TEST(IcmpTest, DropByCode) {
   cfg.progsec = "xdp_generated";
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
+  loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp_test.sh "
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp.sh "
       "icmp_code");
 
   Stats stats("veth1", "filter-test/icmp_code.yaml");

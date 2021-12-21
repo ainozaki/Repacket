@@ -17,9 +17,10 @@ TEST(IPTest, FilterByProtocol) {
   cfg.progsec = "xdp_generated";
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
+  loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip_test.sh "
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
       "ip_protocol");
 
   Stats stats("veth1", "filter-test/ip_protocol.yaml");
@@ -46,9 +47,10 @@ TEST(IPTest, FilterBySaddr) {
   cfg.progsec = "xdp_generated";
   Loader loader(cfg.mode, cfg.xdp_flags, cfg.ifindex, cfg.ifname,
                 cfg.bpf_filepath, cfg.progsec);
+  loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip_test.sh "
+      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
       "ip_saddr");
 
   Stats stats("veth1", "filter-test/ip_saddr.yaml");
