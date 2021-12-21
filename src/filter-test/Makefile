@@ -20,6 +20,11 @@ USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
 LOADER_OBJ := loader
 
+YAML := icmp_code.yaml
+YAML += icmp_type.yaml
+YAML += ip_protocol.yaml
+YAML += ip_saddr.yaml
+
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
 TEST += filter-test/ip.cc
@@ -40,7 +45,7 @@ BPF_CFLAGS ?= -I../../deps/include/ -I../../deps/include/bpf
 
 .SUFFIXES: .c .o
 
-all:$(XDP_C) $(XDP_OBJ)
+all:$(XDP_C) $(XDP_OBJ) $(YAML)
 	echo $(XDP_C)
 
 %.o: %.c
