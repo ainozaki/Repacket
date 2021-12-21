@@ -6,6 +6,7 @@ XDP_C += xdp_test_icmp_code.c
 XDP_C += xdp_test_ip_protocol.c
 XDP_C += xdp_test_ip_saddr.c
 XDP_C += xdp_test_ip_tos.c
+XDP_C += xdp_test_ip_ttl_min.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -69,6 +70,7 @@ $(XDP_C):
 	../loader --gen --input ip_protocol.yaml --output xdp_test_ip_protocol.c
 	../loader --gen --input ip_saddr.yaml --output xdp_test_ip_saddr.c
 	../loader --gen --input ip_tos.yaml --output xdp_test_ip_tos.c
+	../loader --gen --input ip_ttl_min.yaml --output xdp_test_ip_ttl_min.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

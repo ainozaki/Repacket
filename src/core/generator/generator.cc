@@ -189,7 +189,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
       if (counter) {
         condition += "&& ";
       }
-      condition += "(iph->ttl < " + std::to_string(filter.ip_ttl_min) + ") ";
+      condition += "(iph->ttl >= " + std::to_string(filter.ip_ttl_min) + ") ";
       counter++;
     }
 
@@ -199,7 +199,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
       if (counter) {
         condition += "&& ";
       }
-      condition += "(iph->ttl > " + std::to_string(filter.ip_ttl_max) + ") ";
+      condition += "(iph->ttl <= " + std::to_string(filter.ip_ttl_max) + ") ";
       counter++;
     }
 

@@ -41,9 +41,27 @@ ip_tos(){
 	ip netns exec outside hping3 172.16.10.1 --tos 10 -c 5 -i u10
 }
 
+ip_ttl(){
+	# Time To Live is 1.
+	ip netns exec outside hping3 172.16.10.1 --ttl 255 -c 1 -i u10
+
+	# TTL 16.
+	ip netns exec outside hping3 172.16.10.1 --ttl 64 -c 2 -i u10
+
+	# TTL 32.
+	ip netns exec outside hping3 172.16.10.1 --ttl 32 -c 3 -i u10
+
+	# TTL 64.
+	ip netns exec outside hping3 172.16.10.1 --ttl 16 -c 4 -i u10
+
+	# TTL 255.
+	ip netns exec outside hping3 172.16.10.1 --ttl 1 -c 5 -i u10
+}
+
 case $1 in
 	"ip_protocol") ip_protocol;;
 	"ip_saddr") ip_saddr;;
 	"ip_tos") ip_tos;;
+	"ip_ttl") ip_ttl;;
 	*) echo "invalid argument";;
 esac
