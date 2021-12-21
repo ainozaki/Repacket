@@ -107,7 +107,7 @@ std::vector<Filter> YamlHandler::ReadYaml(const std::string& filepath) {
   std::vector<Filter> filters;
   // TODO: Why this filepath works?
   YAML::Node node = YAML::LoadFile(filepath);
-  int priority = 0;
+  int priority = 1;
   if (node["filter"]) {
     YAML::Node filter = node["filter"];
     for (std::size_t i = 0; i < filter.size(); i++) {

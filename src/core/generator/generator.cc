@@ -69,7 +69,7 @@ Generator::~Generator() {
 
 void Generator::Start() {
   std::string nl = "\n";
-  std::string judge_action = *CreateFromFilter().get();
+  std::string judge_action = *GenerateFromRule().get();
   std::cerr << "CreateFromFilter finished" << std::endl;
 
   // include part.
@@ -117,7 +117,7 @@ void Generator::Write() {
   return;
 }
 
-std::unique_ptr<std::string> Generator::CreateFromFilter() {
+std::unique_ptr<std::string> Generator::GenerateFromRule() {
   std::string t = "\t";
   std::string nl = "\n";
   std::string address_checking;
@@ -355,6 +355,8 @@ std::unique_ptr<std::string> Generator::CreateFromFilter() {
 
     action_codes += action_code + nl;
   }  // for (const auto& filter : filters_)
+
+  action_codes += t + "priority++;" + nl;
 
   // Create verify code.
   if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
