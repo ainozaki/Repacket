@@ -26,6 +26,7 @@ TEST_XDP_C += filter-test/xdp_test_ip_protocol.c
 TEST_XDP_C += filter-test/xdp_test_ip_saddr.c
 TEST_XDP_C += filter-test/xdp_test_ip_tos.c
 TEST_XDP_C += filter-test/xdp_test_ip_ttl_min.c
+TEST_XDP_C += filter-test/xdp_test_ip_ttl_max.c
 TEST_XDP_OBJ := $(TEST_XDP_C:.c=.o)
 TEST_XDP_OBJ += $(TEST_XDP_C:.c=.ll)
 TEST_OBJ := test
