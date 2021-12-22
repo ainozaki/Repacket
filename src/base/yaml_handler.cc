@@ -42,11 +42,11 @@ int ConvertIcmpTypeFromString(const std::string& type) {
   return -1;
 }
 
-// Convert string to bool.
-bool ConvertBoolFromString(const std::string& value) {
-  if (value == "true") {
+// Convert string on/off to bool.
+bool ConvertBoolFromStringOnOff(const std::string& value) {
+  if (value == "on") {
     return true;
-  } else if (value == "false") {
+  } else if (value == "off") {
     return false;
   } else {
     std::cerr << "Unknown value: " << value << std::endl;
@@ -88,17 +88,17 @@ void YamlHandler::StringToFilter(const std::string& key,
   } else if (key == "tcp_dst") {
     policy->tcp_dst = std::stoi(value);
   } else if (key == "tcp_urg") {
-    policy->tcp_urg = ConvertBoolFromString(value);
+    policy->tcp_urg = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_ack") {
-    policy->tcp_ack = ConvertBoolFromString(value);
+    policy->tcp_ack = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_psh") {
-    policy->tcp_psh = ConvertBoolFromString(value);
+    policy->tcp_psh = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_rst") {
-    policy->tcp_rst = ConvertBoolFromString(value);
+    policy->tcp_rst = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_syn") {
-    policy->tcp_syn = ConvertBoolFromString(value);
+    policy->tcp_syn = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_fin") {
-    policy->tcp_fin = ConvertBoolFromString(value);
+    policy->tcp_fin = ConvertBoolFromStringOnOff(value);
   }
 }
 

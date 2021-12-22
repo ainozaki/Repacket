@@ -51,12 +51,12 @@ Filtering rules are specified using following parameter.
 |                |              |                                                                                             |          |
 | tcp_src        | 22           | Source port.                                                                                | o        |
 | tcp_dest       | 22           | Destination port.                                                                           | o        |
-| tcp_urg        |              |                                                                                             |          |
-| tcp_ack        |              |                                                                                             |          |
-| tcp_psh        |              |                                                                                             |          |
-| tcp_rst        |              |                                                                                             |          |
-| tcp_syn        |              |                                                                                             |          |
-| tcp_fin        |              |                                                                                             |          |
+| tcp_urg        | on           | URG flag. [on / off]                                                                        | o        |
+| tcp_ack        | on           | ACK flag. [on / off]                                                                        | o        |
+| tcp_psh        | on           | PSH flag. [on / off]                                                                        | o        |
+| tcp_rst        | on           | RST flag. [on / off]                                                                        | o        |
+| tcp_syn        | on           | SYN flag. [on / off]                                                                        | o        |
+| tcp_fin        | on           | FIN flag. [on / off]                                                                        | o        |
 | tcp_res        |              |                                                                                             |          |
 | tcp_opt        |              |                                                                                             |          |
 |                |              |                                                                                             |          |

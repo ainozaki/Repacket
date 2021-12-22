@@ -12,11 +12,11 @@ filter:
    icmp_code: 1
    tcp_src: 22
    tcp_dst: 22
-   tcp_urg: true
-   tcp_ack: true
-   tcp_psh: true
-   tcp_rst: true
-   tcp_syn: true
-   tcp_fin: true
+   tcp_urg: on
+   tcp_ack: on
+   tcp_psh: on
+   tcp_rst: on
+   tcp_syn: on
+   tcp_fin: on
  - action: pass
    ip_protocol: udp

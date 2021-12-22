@@ -1,0 +1,13 @@
+filter:
+ - action: pass
+   tcp_urg: on
+ - action: pass
+   tcp_ack: on
+ - action: pass
+   tcp_psh: on
+ - action: pass
+   tcp_rst: on
+ - action: pass
+   tcp_syn: on
+ - action: pass
+   tcp_fin: on
