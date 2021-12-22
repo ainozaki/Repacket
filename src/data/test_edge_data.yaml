@@ -1,0 +1,3 @@
+filter:
+ - action: drop
+   tcp_src: 65535

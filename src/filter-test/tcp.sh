@@ -15,7 +15,7 @@ tcp_src(){
 
 	# src = 6555
 	# TODO: change to 65535
-	ip netns exec outside hping3 172.16.10.1 --baseport 6555 --keep -c 5 -i u100
+	ip netns exec outside hping3 172.16.10.1 --baseport 65535 --keep -c 5 -i u100
 }
 
 case $1 in

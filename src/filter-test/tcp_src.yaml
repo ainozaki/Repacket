@@ -8,4 +8,4 @@ filter:
  - action: pass
    tcp_src: 179
  - action: pass
-   tcp_src: 6555
+   tcp_src: 65535

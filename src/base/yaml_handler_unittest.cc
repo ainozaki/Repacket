@@ -8,7 +8,7 @@
 TEST(YamlHandlerTest, ReadYaml) {
   std::vector<Filter> filter = YamlHandler::ReadYaml("data/test.yaml");
   EXPECT_EQ(2, filter.size());
-  // second filter.
+  // first filter.
   EXPECT_EQ(Action::Drop, filter[0].action);
   EXPECT_EQ("tcp", filter[0].ip_protocol);
   EXPECT_EQ("192.168.33.10", filter[0].ip_saddr);
@@ -29,7 +29,7 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(true, filter[0].tcp_syn);
   EXPECT_EQ(true, filter[0].tcp_fin);
 
-  // first filter.
+  // second filter.
   EXPECT_EQ(Action::Pass, filter[1].action);
   EXPECT_EQ("udp", filter[1].ip_protocol);
   EXPECT_EQ("", filter[1].ip_saddr);
@@ -49,4 +49,13 @@ TEST(YamlHandlerTest, ReadYaml) {
   EXPECT_EQ(false, filter[1].tcp_rst);
   EXPECT_EQ(false, filter[1].tcp_syn);
   EXPECT_EQ(false, filter[1].tcp_fin);
+}
+
+TEST(YamlHandlerTest, ReadYamlEdgeData) {
+  std::vector<Filter> filter =
+      YamlHandler::ReadYaml("data/test_edge_data.yaml");
+  EXPECT_EQ(1, filter.size());
+  // first filter.
+  EXPECT_EQ(Action::Drop, filter[0].action);
+  EXPECT_EQ(65535, filter[0].tcp_src);
 }

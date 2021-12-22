@@ -20,21 +20,26 @@ enum class Action {
 struct Filter {
   int priority = -1;
 	Action action = Action::Pass;
-	// ip header property
+
+	/* ip heade */
   std::string ip_protocol;
   std::string ip_saddr;
   std::string ip_daddr;
 	int ip_ttl_min = -1;
 	int ip_ttl_max = -1;
+	// Total Length in IP header is between 46-1500 Byte. 
 	int16_t ip_tot_len_min = -1;
 	int16_t ip_tot_len_max = -1;
 	std::string ip_tos;
-	// icmp header property
+
+	/* icmp header */
 	int icmp_type = -1;
 	int icmp_code = -1;
-	// tcp header property
-  int16_t tcp_src = -1;
-  int16_t tcp_dst = -1;
+
+	/* tcp header */
+	// Source port in tcp haeder is between 0-65535.
+  int tcp_src = -1;
+  int tcp_dst = -1;
   bool tcp_urg;
   bool tcp_ack;
   bool tcp_psh;
