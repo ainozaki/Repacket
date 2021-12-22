@@ -1,0 +1,11 @@
+filter:
+ - action: pass
+   ip_tot_len_max: 64
+ - action: pass
+   ip_tot_len_max: 128
+ - action: pass
+   ip_tot_len_max: 512
+ - action: pass
+   ip_tot_len_max: 1024
+ - action: pass
+   ip_tot_len_max: 1500
