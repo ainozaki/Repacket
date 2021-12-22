@@ -2,10 +2,6 @@
 #define MOCTOK_H_
 
 #include <memory>
-#include <set>
-#include <string>
-
-#include <bpf/bpf.h>
 
 #include "base/define/define.h"
 #include "core/generator/generator.h"
@@ -28,8 +24,6 @@ class MocTok {
   std::unique_ptr<Stats> stats_;
 
   struct config config_;
-
-  struct bpf_map_info map_info_ = {0};
 };
 
 #endif  // MOCTOK_H_

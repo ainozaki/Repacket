@@ -1,11 +1,7 @@
 #include "moctok.h"
 
 #include <cassert>
-#include <cstdint>
 #include <memory>
-#include <string>
-
-#include <bpf.h>
 
 #include "base/define/define.h"
 #include "core/generator/generator.h"
