@@ -34,6 +34,7 @@ Filtering rules are specified using following parameter.
 | **Parameter**  | **Example**  | **Explanation**                                                                             | **Test** |
 |----------------|--------------|---------------------------------------------------------------------------------------------|----------|
 | action         | pass         | Action to apply to the filtered packets. [pass/drop]                                        |          |
+|                |              |                                                                                             |          |
 | pps            |              |                                                                                             |          |
 | bps            |              |                                                                                             |          |
 |                |              |                                                                                             |          |
@@ -57,11 +58,9 @@ Filtering rules are specified using following parameter.
 | tcp_rst        | on           | RST flag. [on / off]                                                                        | o        |
 | tcp_syn        | on           | SYN flag. [on / off]                                                                        | o        |
 | tcp_fin        | on           | FIN flag. [on / off]                                                                        | o        |
-| tcp_res        |              |                                                                                             |          |
-| tcp_opt        |              |                                                                                             |          |
 |                |              |                                                                                             |          |
-| udp_src        |              |                                                                                             |          |
-| udp_dest       |              |                                                                                             |          |
+| udp_src        | 22           | Source port.                                                                                | o        |
+| udp_dest       | 22           | Destination port.                                                                           | o        |
 
 
 ### Respectful Implementation

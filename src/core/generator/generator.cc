@@ -73,18 +73,8 @@ void Generator::Start() {
   std::cerr << "CreateFromFilter finished" << std::endl;
 
   // include part.
-  // Must call CreateFromFilter() first to use need_x_parse_.
+  // TODO: Rethinking!
   std::string include = xdp::include + nl;
-
-  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
-    include += xdp::include_ip + nl;
-  }
-  if (need_icmp_parse_) {
-    include += xdp::include_icmp + nl;
-  }
-  if (need_tcp_parse_) {
-    include += xdp::include_tcp + nl;
-  }
 
   // define part.
   std::string define = xdp::constant(filter_size_) + nl + xdp::struct_datarec +
@@ -128,6 +118,10 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
     int counter = 0;
     int index = filter.priority;
 
+    bool need_tcp = false;
+    bool need_udp = false;
+    bool need_icmp = false;
+
     // Generate code which judges action according to the filter.
     // |action_code| is the judging code for one filter.
     std::string action_code = t + "// priority " + std::to_string(index) + nl;
@@ -136,7 +130,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_protocol
     if (!filter.ip_protocol.empty()) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -157,7 +150,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_saddr
     if (!filter.ip_saddr.empty()) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -171,7 +163,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_daddr
     if (!filter.ip_daddr.empty()) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -185,7 +176,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_ttl_min
     if (filter.ip_ttl_min != -1) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -195,7 +185,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_ttl_max
     if (filter.ip_ttl_max != -1) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -205,7 +194,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_tot_len_min
     if (filter.ip_tot_len_min != -1) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -216,7 +204,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_tot_len_max
     if (filter.ip_tot_len_max != -1) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -227,7 +214,6 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // ip_tos
     if (!filter.ip_tos.empty()) {
-      need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
@@ -237,7 +223,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // icmp_type
     if (filter.icmp_type != -1) {
-      need_icmp_parse_ = true;
+      need_icmp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -247,7 +233,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // icmp_code
     if (filter.icmp_code != -1) {
-      need_icmp_parse_ = true;
+      need_icmp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -257,7 +243,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_src
     if (filter.tcp_src != -1) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -269,7 +255,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_dst
     if (filter.tcp_dst != -1) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -280,7 +266,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_urg
     if (filter.tcp_urg) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -290,7 +276,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_ack
     if (filter.tcp_ack) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -300,7 +286,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_psh
     if (filter.tcp_psh) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -310,7 +296,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_rst
     if (filter.tcp_rst) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -320,7 +306,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_syn
     if (filter.tcp_syn) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
@@ -330,12 +316,44 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
     // tcp_fin
     if (filter.tcp_fin) {
-      need_tcp_parse_ = true;
+      need_tcp = true;
       if (counter) {
         condition += "&& ";
       }
       condition += "(tcph->fin == 0b1) ";
       counter++;
+    }
+
+    // udp_src
+    if (filter.udp_src != -1) {
+      need_udp = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition +=
+          "(bpf_ntohs(udph->source) == " + std::to_string(filter.udp_src) +
+          ") ";
+      counter++;
+    }
+
+    // udp_dst
+    if (filter.udp_dst != -1) {
+      need_udp = true;
+      if (counter) {
+        condition += "&& ";
+      }
+      condition +=
+          "(bpf_ntohs(udph->dest) == " + std::to_string(filter.udp_dst) + ") ";
+      counter++;
+    }
+
+    // Null pointer check.
+    if (need_tcp) {
+      condition = "(tcph && " + condition + ")";
+    } else if (need_udp) {
+      condition = "(udph && " + condition + ")";
+    } else if (need_icmp) {
+      condition = "(icmph && " + condition + ")";
     }
 
     // if statement
@@ -361,18 +379,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
 
   action_codes += t + "priority++;" + nl;
 
-  // Create verify code.
-  if (need_ip_parse_ || need_icmp_parse_ || need_tcp_parse_) {
-    address_checking += xdp::verify_ip + nl;
-  }
-  if (need_icmp_parse_) {
-    address_checking += xdp::verify_icmp + nl;
-  }
-  if (need_tcp_parse_) {
-    address_checking += xdp::verify_tcp + nl;
-  }
-
   std::unique_ptr<std::string> code = std::make_unique<std::string>(
-      address_checking + ipaddr_definition + nl + action_codes);
+      xdp::verify_address + nl + ipaddr_definition + nl + action_codes);
   return code;
 }

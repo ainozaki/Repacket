@@ -46,6 +46,10 @@ struct Filter {
   bool tcp_rst;
   bool tcp_syn;
   bool tcp_fin;
+
+	/* udp header */
+  int udp_src = -1;
+  int udp_dst = -1;
 };
 
 enum class Mode {

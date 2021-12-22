@@ -14,6 +14,8 @@ XDP_C += xdp_test_ip_ttl_min.c
 XDP_C += xdp_test_tcp_dst.c
 XDP_C += xdp_test_tcp_src.c
 XDP_C += xdp_test_tcp_flags.c
+XDP_C += xdp_test_udp_dst.c
+XDP_C += xdp_test_udp_src.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -41,11 +43,14 @@ YAML += ip_ttl_min.yaml
 YAML += tcp_dst.yaml
 YAML += tcp_src.yaml
 YAML += tcp_flags.yaml
+YAML += udp_dst.yaml
+YAML += udp_src.yaml
 
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
 TEST += filter-test/ip.cc
 TEST += filter-test/tcp.cc
+TEST += filter-test/udp.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml
@@ -92,6 +97,8 @@ $(XDP_C):
 	../loader --gen --input tcp_dst.yaml --output xdp_test_tcp_dst.c
 	../loader --gen --input tcp_src.yaml --output xdp_test_tcp_src.c
 	../loader --gen --input tcp_flags.yaml --output xdp_test_tcp_flags.c
+	../loader --gen --input udp_dst.yaml --output xdp_test_udp_dst.c
+	../loader --gen --input udp_src.yaml --output xdp_test_udp_src.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

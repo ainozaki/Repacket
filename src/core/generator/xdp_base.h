@@ -13,13 +13,15 @@ const std::string license = "char _license[] SEC(\"license\") = \"GPL\";";
 // include
 const std::string include =
 	"#include <linux/bpf.h>" + nl
+	+ "#include <stddef.h>" + nl
 	+ "#include <bpf_helpers.h>" + nl
 	+ "#include <bpf_endian.h>" + nl
-	+ "#include <linux/if_ether.h>" + nl;
-const std::string include_ip = "#include <linux/ip.h>" + nl + "#include <linux/in.h>";
-const std::string include_tcp = "#include <linux/tcp.h>";
-const std::string include_udp = "#include <linux/udp.h>";
-const std::string include_icmp = "#include <linux/icmp.h>";
+	+ "#include <linux/if_ether.h>" + nl
+	+ "#include <linux/ip.h>" + nl
+	+ "#include <linux/in.h>" + nl
+	+ "#include <linux/tcp.h>" + nl
+	+ "#include <linux/udp.h>" + nl
+	+ "#include <linux/icmp.h>" + nl;
 
 // define constants
 std::string constant(int filter_size){
@@ -95,26 +97,42 @@ const std::string func_fix =
 		+ t + "}" + nl
 		+ t + "nh.pos += sizeof(*eth);" + nl;
 
-const std::string verify_ip = 
+const std::string verify_address = 
 		t + "struct iphdr *iph = nh.pos;" + nl
 		+ t + "if ( iph + 1 > data_end){" + nl
 		+ t + t + "return -1;" + nl
 		+ t + "}" + nl
-		+ t + "nh.pos += sizeof(*iph);" + nl;
-
-const std::string verify_icmp = 
-		t + "struct icmphdr *icmph = nh.pos;" + nl
-		+ t + "if ( icmph + 1 > data_end){" + nl
-		+ t + t + "return -1;" + nl
-		+ t + "}" + nl
-		+ t + "nh.pos += sizeof(*icmph);" + nl;
-
-const std::string verify_tcp = 
-		t + "struct tcphdr *tcph = nh.pos;" + nl
-		+ t + "if ( tcph + 1 > data_end){" + nl
-		+ t + t + "return -1;" + nl
-		+ t + "}" + nl
-		+ t + "nh.pos += sizeof(*tcph);" + nl;
+		+ t + "nh.pos += sizeof(*iph);" + nl
+		+ nl
+		+ t + "struct tcphdr *tcph = NULL;" + nl
+		+ t + "struct udphdr *udph = NULL;" + nl
+		+ t + "struct icmphdr *icmph = NULL;" + nl
+		+ nl
+		+ t + "if (iph->protocol == IPPROTO_TCP){" + nl 
+		+ t + t + "// tcp parse" + nl
+		+ t + t + "tcph = nh.pos;" + nl
+		+ t + t + "if ( tcph + 1 > data_end){" + nl
+		+ t + t + t + "action = XDP_ABORTED;" + nl
+		+ t + t + t + "goto out;" + nl
+		+ t + t + "}" + nl
+		+ t + t + "nh.pos += sizeof(*tcph);" + nl
+	  + t + "}else if (iph->protocol == IPPROTO_UDP){" + nl
+		+ t + t + "// udp parse" + nl
+		+ t + t + "udph = nh.pos;" + nl
+		+ t + t + "if (udph + 1 > data_end){" + nl
+		+ t + t + t + "action = XDP_ABORTED;" + nl
+		+ t + t + t + "goto out;" + nl
+		+ t + t + "}" + nl
+		+ t + t + "nh.pos += sizeof(*udph);" + nl
+		+ t + "}else if (iph->protocol == IPPROTO_ICMP){" + nl
+		+ t + t + "// icmp parse" + nl
+		+ t + t + "icmph = nh.pos;" + nl
+		+ t + t + "if ( icmph + 1 > data_end){" + nl
+		+ t + t + t + "action = XDP_ABORTED;" + nl
+		+ t + t + t + "goto out;" + nl
+		+ t + t + "}" + nl
+		+ t + t + "nh.pos += sizeof(*icmph);" + nl
+		+ t + "}" + nl;
 
 const std::string func_rule = 
 	t + "int ip_proto = iph->protocol;" + nl

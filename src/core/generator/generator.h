@@ -35,12 +35,6 @@ class Generator {
   std::string output_filepath_;
 
   std::vector<Filter> filters_;
-
-  bool need_ip_parse_;
-
-  bool need_icmp_parse_;
-
-  bool need_tcp_parse_;
 };
 
 #endif  // GENERATOR_H_

@@ -1,6 +1,3 @@
 filter:
  - action: drop
-   icmp_type: unreachable
- - action: pass
-   ip_saddr: 192.168.43.1
-   ip_protocol: icmp
+   udp_src: 22

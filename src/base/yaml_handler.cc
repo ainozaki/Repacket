@@ -99,6 +99,10 @@ void YamlHandler::StringToFilter(const std::string& key,
     policy->tcp_syn = ConvertBoolFromStringOnOff(value);
   } else if (key == "tcp_fin") {
     policy->tcp_fin = ConvertBoolFromStringOnOff(value);
+  } else if (key == "udp_src") {
+    policy->udp_src = std::stoi(value);
+  } else if (key == "udp_dst") {
+    policy->udp_dst = std::stoi(value);
   }
 }
 
