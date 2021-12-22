@@ -27,6 +27,7 @@ filter:
    ip_protocol: icmp
  - action: drop
    tcp_dest: 22
+	 tcp_syn: on
 ```
 
 Filtering rules are specified using following parameter.
@@ -44,14 +45,14 @@ Filtering rules are specified using following parameter.
 | ip_tos         | 0x00         | Type of Service. Please use hex prefix.                                                     | o        |
 | ip_ttl_min     | 10           | Min value of Time To Live.                                                                  | o        |
 | ip_ttl_max     | 64           | Max value of Time To Live.                                                                  | o        |
-| ip_tot_len_min | 64           | Min value of Total Length. Value should be between 46-1500(Byte).                           | o        |
-| ip_tot_len_max | 256          | Max value of Total Length. Value should be between 46-1500(Byte).                           | o        |
+| ip_tot_len_min | 64           | Min value of Total Length. Between 46-1500(Byte).                                           | o        |
+| ip_tot_len_max | 256          | Max value of Total Length. Between 46-1500(Byte).                                           | o        |
 |                |              |                                                                                             |          |
 | icmp_type      | echo-request | Icmp type. [echo-reply / destination-unreachable / redirect / echo-request / time-exceeded] | o        |
 | icmp_code      | 0            | Icmp code.                                                                                  | o        |
 |                |              |                                                                                             |          |
 | tcp_src        | 22           | Source port.                                                                                | o        |
-| tcp_dest       | 22           | Destination port.                                                                           | o        |
+| tcp_dst        | 22           | Destination port.                                                                           | o        |
 | tcp_urg        | on           | URG flag. [on / off]                                                                        | o        |
 | tcp_ack        | on           | ACK flag. [on / off]                                                                        | o        |
 | tcp_psh        | on           | PSH flag. [on / off]                                                                        | o        |
@@ -60,7 +61,7 @@ Filtering rules are specified using following parameter.
 | tcp_fin        | on           | FIN flag. [on / off]                                                                        | o        |
 |                |              |                                                                                             |          |
 | udp_src        | 22           | Source port.                                                                                | o        |
-| udp_dest       | 22           | Destination port.                                                                           | o        |
+| udp_dst        | 22           | Destination port.                                                                           | o        |
 
 
 ### Respectful Implementation
