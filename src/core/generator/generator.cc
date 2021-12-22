@@ -261,7 +261,9 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
       if (counter) {
         condition += "&& ";
       }
-      condition += "(tcph->source == " + std::to_string(filter.tcp_src) + ") ";
+      condition +=
+          "(bpf_ntohs(tcph->source) == " + std::to_string(filter.tcp_src) +
+          ") ";
       counter++;
     }
 
@@ -271,7 +273,8 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
       if (counter) {
         condition += "&& ";
       }
-      condition += "(tcph->dest == " + std::to_string(filter.tcp_dst) + ") ";
+      condition +=
+          "(bpf_ntohs(tcph->dest) == " + std::to_string(filter.tcp_dst) + ") ";
       counter++;
     }
 

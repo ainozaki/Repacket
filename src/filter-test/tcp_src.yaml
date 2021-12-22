@@ -1,0 +1,11 @@
+filter:
+ - action: pass
+   tcp_src: 0
+ - action: pass
+   tcp_src: 22
+ - action: pass
+   tcp_src: 80
+ - action: pass
+   tcp_src: 179
+ - action: pass
+   tcp_src: 6555

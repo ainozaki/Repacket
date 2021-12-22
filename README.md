@@ -49,7 +49,7 @@ Filtering rules are specified using following parameter.
 | icmp_type      | echo-request | Icmp type. [echo-reply / destination-unreachable / redirect / echo-request / time-exceeded] | o        |
 | icmp_code      | 0            | Icmp code.                                                                                  | o        |
 |                |              |                                                                                             |          |
-| tcp_src        | 10000        | Source port.                                                                                |          |
+| tcp_src        | 22           | Source port.                                                                                | o        |
 | tcp_dest       | 22           | Destination port.                                                                           |          |
 | tcp_urg        |              |                                                                                             |          |
 | tcp_ack        |              |                                                                                             |          |

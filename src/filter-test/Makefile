@@ -10,6 +10,7 @@ XDP_C += xdp_test_ip_tot_len_max.c
 XDP_C += xdp_test_ip_tot_len_min.c
 XDP_C += xdp_test_ip_ttl_max.c
 XDP_C += xdp_test_ip_ttl_min.c
+XDP_C += xdp_test_tcp_src.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
@@ -34,10 +35,12 @@ YAML += ip_tot_len_max.yaml
 YAML += ip_tot_len_min.yaml
 YAML += ip_ttl_max.yaml
 YAML += ip_ttl_min.yaml
+YAML += tcp_src.yaml
 
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
 TEST += filter-test/ip.cc
+TEST += filter-test/tcp.cc
 TEST_OBJ := test
 
 DATA := data/test.yaml
@@ -81,6 +84,7 @@ $(XDP_C):
 	../loader --gen --input ip_tot_len_min.yaml --output xdp_test_ip_tot_len_min.c
 	../loader --gen --input ip_ttl_max.yaml --output xdp_test_ip_ttl_max.c
 	../loader --gen --input ip_ttl_min.yaml --output xdp_test_ip_ttl_min.c
+	../loader --gen --input tcp_src.yaml --output xdp_test_tcp_src.c
 
 clean:
 	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(LOADER_OBJ) $(XDP_C)

@@ -20,6 +20,7 @@ LOADER_OBJ := loader
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
 TEST += filter-test/ip.cc
+TEST += filter-test/tcp.cc
 TEST_XDP_C := filter-test/xdp_test_icmp_type.c
 TEST_XDP_C += filter-test/xdp_test_icmp_code.c
 TEST_XDP_C += filter-test/xdp_test_ip_protocol.c
@@ -29,6 +30,7 @@ TEST_XDP_C += filter-test/xdp_test_ip_tot_len_max.c
 TEST_XDP_C += filter-test/xdp_test_ip_tot_len_min.c
 TEST_XDP_C += filter-test/xdp_test_ip_ttl_max.c
 TEST_XDP_C += filter-test/xdp_test_ip_ttl_min.c
+TEST_XDP_C += filter-test/xdp_test_tcp_src.c
 TEST_XDP_OBJ := $(TEST_XDP_C:.c=.o)
 TEST_XDP_OBJ += $(TEST_XDP_C:.c=.ll)
 TEST_OBJ := test
