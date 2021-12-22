@@ -43,7 +43,7 @@ Filtering rules are specified using following parameter.
 | ip_tos         | 0x00         | Type of Service. Please use hex prefix.                                                     | o        |
 | ip_ttl_min     | 10           | Min value of Time To Live.                                                                  | o        |
 | ip_ttl_max     | 64           | Max value of Time To Live.                                                                  | o        |
-| ip_tot_len_min | 32           | Min value of total length.(byte)                                                            |          |
+| ip_tot_len_min | 32           | Min value of Total Length. Value should be between 46-1500(Byte).                           | o        |
 | ip_tot_len_max | 1024         | Max value of total length.(byte)                                                            |          |
 |                |              |                                                                                             |          |
 | icmp_type      | echo-request | Icmp type. [echo-reply / destination-unreachable / redirect / echo-request / time-exceeded] | o        |

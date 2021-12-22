@@ -6,6 +6,7 @@ XDP_C += xdp_test_icmp_code.c
 XDP_C += xdp_test_ip_protocol.c
 XDP_C += xdp_test_ip_saddr.c
 XDP_C += xdp_test_ip_tos.c
+XDP_C += xdp_test_ip_tot_len_min.c
 XDP_C += xdp_test_ip_ttl_max.c
 XDP_C += xdp_test_ip_ttl_min.c
 XDP_OBJ := $(XDP_C:.c=.o)
@@ -28,6 +29,9 @@ YAML += icmp_type.yaml
 YAML += ip_protocol.yaml
 YAML += ip_saddr.yaml
 YAML += ip_tos.yaml
+YAML += ip_tot_len_min.yaml
+YAML += ip_ttl_min.yaml
+YAML += ip_ttl_max.yaml
 
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
@@ -71,6 +75,7 @@ $(XDP_C):
 	../loader --gen --input ip_protocol.yaml --output xdp_test_ip_protocol.c
 	../loader --gen --input ip_saddr.yaml --output xdp_test_ip_saddr.c
 	../loader --gen --input ip_tos.yaml --output xdp_test_ip_tos.c
+	../loader --gen --input ip_tot_len_min.yaml --output xdp_test_ip_tot_len_min.c
 	../loader --gen --input ip_ttl_min.yaml --output xdp_test_ip_ttl_min.c
 	../loader --gen --input ip_ttl_max.yaml --output xdp_test_ip_ttl_max.c
 

@@ -58,10 +58,29 @@ ip_ttl(){
 	ip netns exec outside hping3 172.16.10.1 --ttl 240 -c 5 -i u10
 }
 
+ip_tot_len(){
+	# Use icmp echo request. Header size of icmp echo request is 28.
+	# Total Length = 48.
+	ip netns exec outside hping3 172.16.10.1 --icmp --data 20 -c 1 -i u10
+
+	# tot_len = 68.
+	ip netns exec outside hping3 172.16.10.1 --icmp --data 40 -c 2 -i u10
+
+	# tot_len = 228.
+	ip netns exec outside hping3 172.16.10.1 --icmp --data 200 -c 3 -i u100
+
+	# tot_len = 528.
+	ip netns exec outside hping3 172.16.10.1 --icmp --data 500 -c 4 -i u100
+
+	# tot_len = 1028.
+	ip netns exec outside hping3 172.16.10.1 --icmp --data 1000 -c 5 -i u100
+}
+
 case $1 in
 	"ip_protocol") ip_protocol;;
 	"ip_saddr") ip_saddr;;
 	"ip_tos") ip_tos;;
 	"ip_ttl") ip_ttl;;
-	*) echo "invalid argument";;
+	"ip_tot_len") ip_tot_len;;
+	*) echo "[ERROR] invalid argument";;
 esac

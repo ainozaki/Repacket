@@ -209,19 +209,19 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
       if (counter) {
         condition += "&& ";
       }
-      condition +=
-          "(iph->tot_len < " + std::to_string(filter.ip_tot_len_min) + ") ";
+      condition += "(bpf_ntohs(iph->tot_len) >= " +
+                   std::to_string(filter.ip_tot_len_min) + ") ";
       counter++;
     }
 
-    // ip_tot_len_min
+    // ip_tot_len_max
     if (filter.ip_tot_len_max != -1) {
       need_ip_parse_ = true;
       if (counter) {
         condition += "&& ";
       }
-      condition +=
-          "(iph->tot_len > " + std::to_string(filter.ip_tot_len_max) + ") ";
+      condition += "(bpf_ntohs(iph->tot_len) <= " +
+                   std::to_string(filter.ip_tot_len_max) + ") ";
       counter++;
     }
 
