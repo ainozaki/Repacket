@@ -1,0 +1,11 @@
+filter:
+ - action: pass
+   tcp_dst: 0
+ - action: pass
+   tcp_dst: 22
+ - action: pass
+   tcp_dst: 80
+ - action: pass
+   tcp_dst: 179
+ - action: pass
+   tcp_dst: 65535

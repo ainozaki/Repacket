@@ -50,7 +50,7 @@ Filtering rules are specified using following parameter.
 | icmp_code      | 0            | Icmp code.                                                                                  | o        |
 |                |              |                                                                                             |          |
 | tcp_src        | 22           | Source port.                                                                                | o        |
-| tcp_dest       | 22           | Destination port.                                                                           |          |
+| tcp_dest       | 22           | Destination port.                                                                           | o        |
 | tcp_urg        |              |                                                                                             |          |
 | tcp_ack        |              |                                                                                             |          |
 | tcp_psh        |              |                                                                                             |          |
