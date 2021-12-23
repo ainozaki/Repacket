@@ -67,7 +67,7 @@ $(XDP_OBJ): $(XDP_C)
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
 moctok: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
-	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
+	 g++ -std=c++17 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
 
 test: $(TEST) $(USER)
 	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread

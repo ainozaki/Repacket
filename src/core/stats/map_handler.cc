@@ -42,7 +42,7 @@ int MapHandler::CheckMapInfo(struct bpf_map_info* exp_info,
 
   int err;
   // BPF-info via bpf-syscall
-  err = bpf::GetMapInfoByFd(map_fd_, info);
+  err = BpfWrapper::GetMapInfoByFd(map_fd_, info);
   if (err) {
     std::cerr << "ERR: Cannot get info." << std::endl;
     return EXIT_FAIL_BPF;
@@ -107,7 +107,7 @@ bool MapHandler::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
 }
 
 void MapHandler::MapGetValueArray(__u32 key, struct datarec* value) {
-  if ((bpf::MapLookupElem(map_fd_, &key, value)) != 0) {
+  if ((BpfWrapper::MapLookupElem(map_fd_, &key, value)) != 0) {
     std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
   }
 }

@@ -11,9 +11,7 @@
 #include <linux/if_link.h>
 #include <net/if.h>
 
-#include <bpf/bpf.h>
-#include <libbpf.h>
-
+#include "base/bpf_wrapper.h"
 #include "base/define/define.h"
 
 class Loader {
@@ -32,7 +30,7 @@ class Loader {
          unsigned int ifindex,
          const std::string& ifname);
 
-  ~Loader();
+  ~Loader() = default;
   Loader(const Loader&) = delete;
 
   // Interface function to start loading.
@@ -48,7 +46,7 @@ class Loader {
 
   void PinMaps();
 
-  struct bpf_object* bpf_obj_;
+  std::unique_ptr<BpfWrapper> bpf_wrapper_ = nullptr;
 
   Mode mode_;
 
