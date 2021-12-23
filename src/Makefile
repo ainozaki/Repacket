@@ -44,7 +44,6 @@ DATA := data/test.yaml
 
 # for format
 COMMON_H := base/define/define.h
-COMMON_H += base/define/constant.h
 
 LDFLAGS := -L../deps/lib
 LIBS := -l:libbpf.a -lelf -lyaml-cpp

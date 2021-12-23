@@ -5,10 +5,11 @@
 #include <string>
 
 #include "base/bpf_wrapper.h"
-#include "base/define/constant.h"
-#include "base/define/define.h"
-#include "base/yaml_handler.h"
 #include "core/stats/map_handler.h"
+
+namespace {
+std::string kMapName = "xdp_stats_map";
+}
 
 Stats::Stats(const std::string& ifname, const std::string& yaml_filepath)
     : ifname_(ifname) {

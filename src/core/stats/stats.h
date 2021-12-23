@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/bpf_wrapper.h"
-#include "base/define/define.h"
 #include "core/stats/map_handler.h"
 
 class Stats {
@@ -29,13 +27,6 @@ class Stats {
   std::string ifname_;
 
   int map_fd_;
-
-  // Vector of struct Action extracted from moctok.yaml.
-  // Values are ordered in filtering priority.
-  std::vector<Action> filters_;
-
-  // The size of |filters_|. Casted size_t to int.
-  int filter_size_;
 };
 
 #endif  // STATS_H_
