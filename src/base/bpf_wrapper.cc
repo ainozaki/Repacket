@@ -49,7 +49,7 @@ int BpfWrapper::UnpinMaps(const std::string& pin_dir) {
 // static
 int BpfWrapper::SetFdToInterface(const int ifindex,
                                  const int fd,
-                                 const uint32_t xdp_flags) {
+                                 const unsigned int xdp_flags) {
   int err = bpf_set_link_xdp_fd(ifindex, fd, xdp_flags);
   return err;
 }

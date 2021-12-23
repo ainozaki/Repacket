@@ -33,7 +33,7 @@ class BpfWrapper {
   // Returns err.
   static int SetFdToInterface(const int ifindex,
                               const int fd,
-                              const uint32_t xdp_flags);
+                              const unsigned int xdp_flags);
 
   /* Map */
   // Helper function to get bpf_map_info from specified |fd|.

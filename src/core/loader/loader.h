@@ -18,16 +18,16 @@ class Loader {
  public:
   // Loader to attach BPF program.
   Loader(const Mode mode,
-         uint32_t xdp_flags,
-         unsigned int ifindex,
+         const unsigned int xdp_flags,
+         const unsigned int ifindex,
          const std::string& ifname,
          const std::string& bpf_filepath,
          const std::string& progsec);
 
   // Loader to detach BPF program.
   Loader(const Mode mode,
-         uint32_t xdp_flags,
-         unsigned int ifindex,
+         const unsigned int xdp_flags,
+         const unsigned int ifindex,
          const std::string& ifname);
 
   ~Loader() = default;
@@ -52,7 +52,7 @@ class Loader {
 
   int prog_fd_;
 
-  uint32_t xdp_flags_;
+  unsigned int xdp_flags_;
 
   unsigned int ifindex_;
 

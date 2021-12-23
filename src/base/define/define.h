@@ -61,7 +61,7 @@ enum class Mode {
 
 struct config {
 	Mode mode = Mode::Stats;
-  uint32_t xdp_flags;
+  unsigned int xdp_flags;
   unsigned int ifindex;
 	std::string ifname;
 	std::string yaml_filepath;

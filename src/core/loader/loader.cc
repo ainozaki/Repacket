@@ -17,8 +17,8 @@
 #include "base/define/define.h"
 
 Loader::Loader(const Mode mode,
-               uint32_t xdp_flags,
-               unsigned int ifindex,
+               const unsigned int xdp_flags,
+               const unsigned int ifindex,
                const std::string& ifname,
                const std::string& bpf_filepath,
                const std::string& progsec)
@@ -30,8 +30,8 @@ Loader::Loader(const Mode mode,
       progsec_(progsec) {}
 
 Loader::Loader(const Mode mode,
-               uint32_t xdp_flags,
-               unsigned int ifindex,
+               const unsigned int xdp_flags,
+               const unsigned int ifindex,
                const std::string& ifname)
     : mode_(mode), xdp_flags_(xdp_flags), ifindex_(ifindex), ifname_(ifname) {}
 
@@ -55,7 +55,7 @@ void Loader::Start() {
 }
 
 void Loader::DetachBpf() {
-  // SetBpf() unloads BPF program when |prog_fd_| is -1.
+  // SetBpf() unloads BPF program when fd is -1.
   prog_fd_ = -1;
   int err = SetBpf();
   if (err == kSuccess) {
