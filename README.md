@@ -4,18 +4,42 @@ This is a packet filter using XDP.
 ### Usage
 
 ```
-usage: moctok [options] ... 
-options:
+usage: moctok [mode] [options] ... 
+mode:
   -g, --gen          Generate XDP program. (string)
   -a, --attach       Attach XDP program.
   -d, --detach       Detach XDP program.
   -s, --stats        Display filtering stats.
+
+options:
   -i, --interface    Specify interface. (string [=eth1])
       --bpf          BPF filepath. (string [=xdp-generated.o])
       --input        Input yaml filepath. (string [=moctok.yaml])
       --output       Output filepath. (string [=xdp-generated.c])
       --sec          [Advanced option] Specify program section. (string [=xdp_generated])
   -h, --help         Print usage.
+```
+
+### How to use
+#### Setup and build
+```
+git clone https://github.com/ainnooo/MocTok.git
+cd MocTok
+./setup.sh
+make
+```
+
+#### Conigure
+Create `moctok.yaml`. See Configuration section.
+
+#### Generate xdp prog and run
+```
+./moctok --gen
+make xdp
+./moctok --attach
+
+./moctok --stats	// Show filtering stats.
+./moctok --detach	// Stop filtering.
 ```
 
 ### Configuration
