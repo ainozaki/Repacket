@@ -59,6 +59,12 @@ enum class Mode {
 	Stats,
 };
 
+enum class LogLevel {
+	Info,
+	Error,
+	Debug,
+};
+
 struct config {
 	Mode mode = Mode::Stats;
   unsigned int xdp_flags;
@@ -68,6 +74,7 @@ struct config {
 	std::string output_filepath;
 	std::string bpf_filepath;
   std::string progsec;
+	LogLevel loglevel = LogLevel::Info;
 };
 
 #define EXIT_OK 0

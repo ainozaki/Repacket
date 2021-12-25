@@ -13,6 +13,7 @@
 
 #include "base/bpf_wrapper.h"
 #include "base/define/define.h"
+#include "base/logger.h"
 
 class Loader {
  public:
@@ -22,7 +23,8 @@ class Loader {
          const unsigned int ifindex,
          const std::string& ifname,
          const std::string& bpf_filepath,
-         const std::string& progsec);
+         const std::string& progsec,
+         const LogLevel& level);
 
   // Loader to detach BPF program.
   Loader(const Mode mode,
@@ -61,6 +63,8 @@ class Loader {
   std::string bpf_filepath_;
 
   std::string progsec_;
+
+  Logger logger_;
 };
 
 #endif  // LOADER_H_

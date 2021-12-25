@@ -7,6 +7,7 @@ XDP_OBJ := $(XDP_C:.c=.o)
 MAIN := main.cc
 USER := moctok.cc
 USER += base/bpf_wrapper.cc
+USER += base/logger.cc
 USER += base/utils.cc
 USER += base/yaml_handler.cc
 USER += core/generator/generator.cc
