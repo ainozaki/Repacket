@@ -22,31 +22,25 @@ Loader::Loader(const Mode mode,
                const unsigned int ifindex,
                const std::string& ifname,
                const std::string& bpf_filepath,
-               const std::string& progsec,
-               const LogLevel& level)
+               const std::string& progsec)
     : mode_(mode),
       xdp_flags_(xdp_flags),
       ifindex_(ifindex),
       ifname_(ifname),
       bpf_filepath_(bpf_filepath),
-      progsec_(progsec),
-      logger_(Logger(level)) {}
+      progsec_(progsec) {}
 
 Loader::Loader(const Mode mode,
                const unsigned int xdp_flags,
                const unsigned int ifindex,
                const std::string& ifname)
-    : mode_(mode),
-      xdp_flags_(xdp_flags),
-      ifindex_(ifindex),
-      ifname_(ifname),
-      logger_(Logger(LogLevel::Info)) {}
+    : mode_(mode), xdp_flags_(xdp_flags), ifindex_(ifindex), ifname_(ifname) {}
 
 void Loader::Start() {
   switch (mode_) {
     case Mode::Attach:
       if (AttachBpf() != kSuccess) {
-        logger_.Error("Failed: suspend loading program,");
+        LOG_ERROR("Failed: suspend loading program: %d", 10);
         return;
       }
       PinMaps();
@@ -66,9 +60,9 @@ void Loader::DetachBpf() {
   prog_fd_ = -1;
   int err = SetBpf();
   if (err == kSuccess) {
-    logger_.Info("Success: Bpf program is unloaded from interface.");
+    LOG_INFO("Success: Bpf program is unloaded from interface.%d", 10);
   } else {
-    logger_.Error("Failed: Bpf program cannot be unloaded from interface.");
+    LOG_ERROR("Failed: Bpf program cannot be unloaded from interface.");
   }
 }
 
@@ -92,9 +86,9 @@ int Loader::AttachBpf() {
   // Set fd to the interface.
   err = SetBpf();
   if (err == kSuccess) {
-    logger_.Info("Success: Bpf program is loaded to interface ");
+    LOG_INFO("Success: Bpf program is loaded to interface ");
   } else {
-    logger_.Error("Failed: Bpf program cannot be loaded to interface ");
+    LOG_ERROR("Failed: Bpf program cannot be loaded to interface ");
   }
 
   return err;
