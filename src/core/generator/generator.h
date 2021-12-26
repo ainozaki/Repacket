@@ -11,7 +11,7 @@ class Generator {
  public:
   Generator(const std::string& yaml_filepath,
             const std::string& output_filepath);
-  ~Generator();
+  ~Generator() = default;
   Generator(const Generator&) = delete;
 
   // Interface function to start generating XDP code.

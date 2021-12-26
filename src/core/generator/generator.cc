@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/define/define.h"
+#include "base/logger.h"
 #include "base/yaml_handler.h"
 #include "core/generator/xdp_base.h"
 
@@ -63,14 +64,9 @@ Generator::Generator(const std::string& yaml_filepath,
   filter_size_ = static_cast<int>(filters_.size());
 }
 
-Generator::~Generator() {
-  std::clog << "Generator destructor" << std::endl;
-}
-
 void Generator::Start() {
   std::string nl = "\n";
   std::string judge_action = *GenerateFromRule().get();
-  std::cerr << "CreateFromFilter finished" << std::endl;
 
   // include part.
   // TODO: Rethinking!
@@ -99,11 +95,10 @@ void Generator::Start() {
 void Generator::Write() {
   std::ofstream xdp_file(output_filepath_);
   if (!xdp_file) {
-    std::cerr << "Cannot open " << output_filepath_ << std::endl;
+    LOG_ERROR("Cannot open %s.", output_filepath_);
     exit(EXIT_FAIL);
   }
-  xdp_file << xdp_prog_ << std::endl;
-  std::cerr << "Writing to " << output_filepath_ << " done!" << std::endl;
+  LOG_INFO("Writing to %s done.", output_filepath_);
   return;
 }
 
@@ -143,7 +138,7 @@ std::unique_ptr<std::string> Generator::GenerateFromRule() {
         condition += "(iph->protocol == IPPROTO_UDP) ";
         counter++;
       } else {
-        std::cerr << "Invalid ip_protocol config." << std::endl;
+        LOG_ERROR("Invalid ip_protocol config.");
         exit(EXIT_FAIL);
       }
     }

@@ -1,10 +1,10 @@
 #include "core/stats/stats.h"
 
-#include <iostream>
 #include <memory>
 #include <string>
 
 #include "base/bpf_wrapper.h"
+#include "base/logger.h"
 #include "core/stats/map_handler.h"
 
 namespace {
@@ -17,7 +17,7 @@ Stats::Stats(const std::string& ifname, const std::string& yaml_filepath)
   map_path_ = "/sys/fs/bpf/" + ifname_ + "/" + kMapName;
   map_fd_ = BpfWrapper::GetPinnedObjFd(map_path_.c_str());
   if (map_fd_ < 0) {
-    std::cerr << "ERR: Failed to open " << map_path_ << std::endl;
+    LOG_ERROR("ERR: Failed to open %s", map_path_);
     return;
   }
 

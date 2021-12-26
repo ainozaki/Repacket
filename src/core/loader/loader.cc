@@ -40,7 +40,7 @@ void Loader::Start() {
   switch (mode_) {
     case Mode::Attach:
       if (AttachBpf() != kSuccess) {
-        LOG_ERROR("Failed: suspend loading program: %d", 10);
+        LOG_ERROR("Suspend loading program to interface %s.", ifname_.c_str());
         return;
       }
       PinMaps();
@@ -60,26 +60,26 @@ void Loader::DetachBpf() {
   prog_fd_ = -1;
   int err = SetBpf();
   if (err == kSuccess) {
-    LOG_INFO("Success: Bpf program is unloaded from interface.%d", 10);
+    LOG_INFO("Success: Bpf program is unloaded from interface.");
   } else {
-    LOG_ERROR("Failed: Bpf program cannot be unloaded from interface.");
+    LOG_ERROR("Failed: Cannot unload BPF program from interface %s.",
+              ifname_.c_str());
   }
 }
 
 int Loader::AttachBpf() {
   // Load the BPF-ELF file.
-  bpf_wrapper_ = std::make_unique<BpfWrapper>(bpf_filepath_);
+  bpf_wrapper_ = std::make_unique<BpfWrapper>(bpf_filepath_.c_str());
   int err = bpf_wrapper_->Load();
   if (err) {
-    std::cerr << "ERR: cannot load BPF-OBJ file at " << bpf_filepath_
-              << std::endl;
+    LOG_ERROR("Failed: Cannot load BPF-OBJ file at %s.", bpf_filepath_.c_str());
     return kError;
   }
 
   // Find fd of the specified prog section.
-  prog_fd_ = bpf_wrapper_->GetSectionFd(progsec_);
+  prog_fd_ = bpf_wrapper_->GetSectionFd(progsec_.c_str());
   if (prog_fd_ <= 0) {
-    std::cerr << "ERR: Failed to get bpf program fd." << std::endl;
+    LOG_ERROR("Failed: Cannot get fd of section %s.", progsec_.c_str());
     return kError;
   }
 
@@ -88,7 +88,7 @@ int Loader::AttachBpf() {
   if (err == kSuccess) {
     LOG_INFO("Success: Bpf program is loaded to interface ");
   } else {
-    LOG_ERROR("Failed: Bpf program cannot be loaded to interface ");
+    LOG_ERROR("Failed: Cannot load to interface %s.", ifname_.c_str());
   }
 
   return err;
@@ -103,26 +103,26 @@ void Loader::PinMaps() {
   if (access(pin_dir.c_str(), F_OK) != -1) {
     err = bpf_wrapper_->UnpinMaps(pin_dir);
     if (err) {
-      std::cerr << "ERR: Unpinning maps." << std::endl;
+      LOG_ERROR("Failed: Cannot unpinning maps to %s.", pin_dir);
       return;
     }
-    std::cout << "Unpinned maps!!!" << std::endl;
+    LOG_INFO("Success: Unpinned maps!!!");
   }
 
   // Pin maps.
   err = bpf_wrapper_->PinMaps(pin_dir);
   if (err) {
-    std::cerr << "ERR: Pinning maps at " << pin_dir << std::endl;
+    LOG_ERROR("Failed: Cannot pinning maps at %s.", pin_dir);
     return;
   }
-  std::clog << "Success: Pinning maps at " << pin_dir << std::endl;
+  LOG_INFO("Success: Pinning maps at %s.", pin_dir);
 }
 
 int Loader::SetBpf() {
   // set |prog_fd_| to the interface.
   int err = BpfWrapper::SetFdToInterface(ifindex_, prog_fd_, xdp_flags_);
   if (err < 0) {
-    std::cerr << "ERR: Set xdp fd to " << ifname_ << " failed." << std::endl;
+    LOG_ERROR("Failed: Cannot set xdp fd to %s.", ifname_);
     return kError;
   }
   return kSuccess;

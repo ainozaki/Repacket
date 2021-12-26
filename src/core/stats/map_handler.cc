@@ -4,10 +4,10 @@
 #include <libbpf.h>
 
 #include <cassert>
-#include <iostream>
 
 #include "base/bpf_wrapper.h"
 #include "base/define/define.h"
+#include "base/logger.h"
 #include "base/utils.h"
 #include "base/yaml_handler.h"
 
@@ -28,7 +28,7 @@ void MapHandler::Start() {
 
   int check_result = CheckMapInfo(&exp_info, &info);
   if (check_result) {
-    std::cerr << "ERR: Failed to get map info." << std::endl;
+    LOG_ERROR("ERR: Failed to get map info.");
     return;
   }
 
@@ -43,30 +43,29 @@ int MapHandler::CheckMapInfo(struct bpf_map_info* exp_info,
   // BPF-info via bpf-syscall
   err = BpfWrapper::GetMapInfoByFd(map_fd_, info);
   if (err) {
-    std::cerr << "ERR: Cannot get info." << std::endl;
+    LOG_ERROR("ERR: Cannot get info.");
     return EXIT_FAIL_BPF;
   }
   if (exp_info->key_size && exp_info->key_size != info->key_size) {
-    std::cerr << "ERR: Unexpected size." << std::endl;
+    LOG_ERROR("ERR: Unexpected size.");
     return EXIT_FAIL;
   }
   if (exp_info->value_size && exp_info->value_size != info->value_size) {
-    std::cerr << "ERR: Unexpected value size." << std::endl;
+    LOG_ERROR("ERR: Unexpected value size.");
     return EXIT_FAIL;
   }
   if (exp_info->max_entries && exp_info->max_entries != info->max_entries) {
-    std::cerr << "ERR: Unexpected max_entries value." << std::endl;
+    LOG_ERROR("ERR: Unexpected max_entries value.");
     return EXIT_FAIL;
   }
   if (exp_info->type && exp_info->type != info->type) {
-    std::cerr << "ERR: Unexpected type." << std::endl;
+    LOG_ERROR("ERR: Unexpected type.");
     return EXIT_FAIL;
   }
   return 0;
 }
 
 void MapHandler::StatsPoll(struct bpf_map_info* info) {
-  std::clog << "Polling stats..." << std::endl;
   struct stats_record prev, record = {0};
 
   // Initial reading
@@ -96,7 +95,7 @@ bool MapHandler::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
       MapGetValueArray(key, &value);
       break;
     default:
-      std::cerr << "Unknown map type." << std::endl;
+      LOG_ERROR("Unknown map type.");
       return false;
       break;
   }
@@ -107,7 +106,7 @@ bool MapHandler::MapCollect(__u32 map_type, __u32 key, struct record* rec) {
 
 void MapHandler::MapGetValueArray(__u32 key, struct datarec* value) {
   if ((BpfWrapper::MapLookupElem(map_fd_, &key, value)) != 0) {
-    std::cerr << "ERR: bpf_map_lookup_elem" << std::endl;
+    LOG_ERROR("ERR: bpf_map_lookup_elem");
   }
 }
 
