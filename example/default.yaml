@@ -1,0 +1,24 @@
+bpf-file: xdp_generated.c
+section: xdp_generated
+interface: veth1
+dump: off
+filter:
+ - action: pass
+   ip_protocol: no-check
+   ip_saddr: no-check
+   ip_daddr: no-check
+   ip_ttl_min: no-check
+   ip_ttl_max: no-check
+   ip_tot_len_min: no-check
+   ip_tot_len_max: no-check
+   ip_tos: no-check
+   icmp_type: no-check
+   icmp_code: no-check
+   tcp_src: no-check
+   tcp_dst: no-check
+   tcp_urg: no-check
+   tcp_ack: no-check
+   tcp_psh: no-check
+   tcp_rst: no-check
+   tcp_syn: no-check
+   tcp_fin: no-check
