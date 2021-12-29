@@ -10,11 +10,11 @@
 
 class Loader;
 
-class MocTok {
+class Xilter {
  public:
-  MocTok(struct config& cfg);
-  ~MocTok() = default;
-  MocTok(const MocTok&) = delete;
+  Xilter(struct config& cfg);
+  ~Xilter() = default;
+  Xilter(const Xilter&) = delete;
 
  private:
   std::unique_ptr<Loader> loader_;

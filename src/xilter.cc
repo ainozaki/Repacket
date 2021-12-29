@@ -1,4 +1,4 @@
-#include "moctok.h"
+#include "xilter.h"
 
 #include <cassert>
 #include <memory>
@@ -8,7 +8,7 @@
 #include "core/loader/loader.h"
 #include "core/stats/stats.h"
 
-MocTok::MocTok(struct config& cfg) : config_(cfg) {
+Xilter::Xilter(struct config& cfg) : config_(cfg) {
   switch (config_.mode) {
     case Mode::Generate:
       // Generate XDP program according to rules in yaml file.

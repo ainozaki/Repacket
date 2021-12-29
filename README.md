@@ -1,10 +1,10 @@
-## MocTok
+## Xilter
 This is a packet filter using XDP.
 
 ### Usage
 
 ```
-usage: moctok [mode] [options] ... 
+usage: xilter [mode] [options] ... 
 mode:
   -g, --gen          Generate XDP program. (string)
   -a, --attach       Attach XDP program.
@@ -14,7 +14,7 @@ mode:
 options:
   -i, --interface    Specify interface. (string [=eth1])
       --bpf          BPF filepath. (string [=xdp-generated.o])
-      --input        Input yaml filepath. (string [=moctok.yaml])
+      --input        Input yaml filepath. (string [=xilter.yaml])
       --output       Output filepath. (string [=xdp-generated.c])
       --sec          [Advanced option] Specify program section. (string [=xdp_generated])
   -h, --help         Print usage.
@@ -30,20 +30,20 @@ make
 ```
 
 #### Conigure
-Create `moctok.yaml`. See Configuration section.
+Create `xilter.yaml`. See Configuration section.
 
 #### Generate xdp prog and run
 ```
-./moctok --gen
+./xilter --gen
 make xdp
-./moctok --attach
+./xilter --attach
 
-./moctok --stats	// Show filtering stats.
-./moctok --detach	// Stop filtering.
+./xilter --stats	// Show filtering stats.
+./xilter --detach	// Stop filtering.
 ```
 
 ### Configuration
-Example of `moctok.yaml`. 
+Example of `xilter.yaml`. 
 
 ```
 filter:

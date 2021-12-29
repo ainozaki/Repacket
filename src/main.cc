@@ -6,10 +6,10 @@
 #include <cmdline.h>
 
 #include "base/define/define.h"
-#include "moctok.h"
+#include "xilter.h"
 
 namespace {
-std::string kDefaultYamlFilepath = "moctok.yaml";
+std::string kDefaultYamlFilepath = "xilter.yaml";
 std::string kDefaultOutputFilepath = "xdp-generated.c";
 std::string kDefaultBpfFilepath = "xdp-generated.o";
 std::string kDefaultIfname = "eth1";
@@ -68,6 +68,6 @@ int main(int argc, char** argv) {
     cfg.mode = Mode::Stats;
   }
 
-  MocTok moctok(cfg);
+  Xilter xilter(cfg);
   return 0;
 }

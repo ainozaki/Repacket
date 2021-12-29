@@ -5,7 +5,7 @@ XDP_C := xdp-generated.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
-USER := moctok.cc
+USER := xilter.cc
 USER += base/bpf_wrapper.cc
 USER += base/logger.cc
 USER += base/utils.cc
@@ -16,7 +16,7 @@ USER += core/stats/map_handler.cc
 USER += core/stats/stats.cc
 USER_H := $(USER:.cc=.h)
 USER_OBJ := $(USER:.cc=)
-LOADER_OBJ := loader
+XILTER_OBJ := xilter
 
 TEST := base/yaml_handler_unittest.cc
 TEST += filter-test/icmp.cc
@@ -66,8 +66,8 @@ $(XDP_OBJ): $(XDP_C)
 	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
 
-moctok: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
-	 g++ -std=c++17 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(LOADER_OBJ) $(LDFLAGS) $^ $(LIBS)
+xilter: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
+	 g++ -std=c++17 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(XILTER_OBJ) $(LDFLAGS) $^ $(LIBS)
 
 test: $(TEST) $(USER)
 	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread
@@ -79,22 +79,22 @@ format:
 # find ./ -name "*.cc" -o -name "*.h" -o -path "./common" | xargs clang-format -i
 
 attach:
-	./loader --attach
+	./xilter --attach
 
 load-ip:
 	ip link set dev eth1 xdpgeneric obj kern.o sec xdp
 
 detach:
-	./loader --detach
+	./xilter --detach
 
 gen:
-	./loader --gen 
+	./xilter --gen 
 
 stats:
-	./loader --stats
+	./xilter --stats
 
 ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(LOADER_OBJ) $(XDP_C)
+	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(XILTER_OBJ) $(XDP_C)
