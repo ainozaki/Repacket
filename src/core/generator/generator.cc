@@ -98,6 +98,7 @@ void Generator::Write() {
     LOG_ERROR("Cannot open %s.", output_filepath_);
     exit(EXIT_FAIL);
   }
+	xdp_file << xdp_prog_ << std::endl;
   LOG_INFO("Writing to %s done.", output_filepath_);
   return;
 }
