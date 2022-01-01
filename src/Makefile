@@ -1,7 +1,7 @@
 CLANG := clang
 LLC := llc
 
-XDP_C := xdp-generated.c
+XDP_C := xdp-generated-dump.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 MAIN := main.cc
