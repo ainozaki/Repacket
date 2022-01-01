@@ -18,9 +18,9 @@ Xilter::Xilter(struct config& cfg) : config_(cfg) {
       break;
     case Mode::Attach:
       // Attach Bpf program.
-      loader_ = std::make_unique<Loader>(config_.mode, config_.xdp_flags,
-                                         config_.ifindex, config_.ifname,
-                                         config_.bpf_filepath, config_.progsec);
+      loader_ = std::make_unique<Loader>(
+          config_.mode, config_.xdp_flags, config_.ifindex, config_.ifname,
+          config_.bpf_filepath, config_.progsec, config_.is_dump);
       loader_->Start();
       break;
     case Mode::Detach:

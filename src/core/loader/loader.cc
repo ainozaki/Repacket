@@ -22,7 +22,8 @@ Loader::Loader(const Mode mode,
                const unsigned int ifindex,
                const std::string& ifname,
                const std::string& bpf_filepath,
-               const std::string& progsec)
+               const std::string& progsec,
+               const bool is_dump)
     : mode_(mode),
       xdp_flags_(xdp_flags),
       ifindex_(ifindex),

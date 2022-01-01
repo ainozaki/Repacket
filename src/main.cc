@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
   parser.add("attach", 'a', "Attach XDP program.");
   parser.add("detach", 'd', "Detach XDP program.");
   parser.add("stats", 's', "Display filtering stats.");
+  parser.add("dump", 'd', "Dump packets.", false, false);
   parser.add<std::string>("interface", 'i', "Specify interface.", false,
                           kDefaultIfname);
   parser.add<std::string>("bpf", '\0', "BPF filepath.", false,
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
   cfg.output_filepath = parser.exist("output")
                             ? parser.get<std::string>("output")
                             : kDefaultOutputFilepath;
+  cfg.is_dump = parser.exist("dump");
 
   if (parser.exist("attach")) {
     cfg.mode = Mode::Attach;

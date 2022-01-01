@@ -75,7 +75,7 @@ test: $(TEST) $(USER)
 
 format:
 # to exclude "common/xdp_base.h", use first command.
-	clang-format -i $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc $(XDP_C) 
+	clang-format -i $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc 
 # find ./ -name "*.cc" -o -name "*.h" -o -path "./common" | xargs clang-format -i
 
 attach:
@@ -97,4 +97,4 @@ ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(XILTER_OBJ) $(XDP_C)
+	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(XILTER_OBJ)

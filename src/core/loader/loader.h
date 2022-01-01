@@ -23,7 +23,8 @@ class Loader {
          const unsigned int ifindex,
          const std::string& ifname,
          const std::string& bpf_filepath,
-         const std::string& progsec);
+         const std::string& progsec,
+         const bool is_dump);
 
   // Loader to detach BPF program.
   Loader(const Mode mode,
