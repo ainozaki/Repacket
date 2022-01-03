@@ -11,7 +11,7 @@ void parse_cmdline(int argc, char **argv, struct config *cfg)
 	while ((opt = getopt(argc, argv, "d::")) != -1){
 			switch (opt){
 				case 'd':
-					cfg->is_detach = true;
+					cfg->run_mode = DETACH;
 					break;
 				default:
 					printf("unknown cmdline option.\n");

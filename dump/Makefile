@@ -4,7 +4,9 @@ LLC := llc
 XDP_C := xdp-generated-dump.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
-USER_TARGETS := parse_cmdline
+USER_TARGETS := loader
+USER_TARGETS += parse_cmdline
+USER_TARGETS += xilter
 USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)
 USER_OBJ := $(USER_TARGETS:=.o)
@@ -19,10 +21,10 @@ LDFLAGS := -L../deps/lib
 LIBS := -l:libbpf.a -lelf -lyaml-cpp
 LIBS_TEST := -lgtest -lgtest_main
 
-all: $(XDP_OBJ) $(USER_TARGETS)
+user: $(USER_C)
+	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o dump $^ $(MAIN) $(LIBS)
 
-$(USER_TARGETS): %: %.c
-	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o dump $< $(MAIN) $(LIBS)
+xdp: $(XDP_OBJ)
 
 $(XDP_OBJ): $(XDP_C)
 	$(CLANG) -S \

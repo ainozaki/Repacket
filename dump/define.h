@@ -4,11 +4,16 @@
 #include <stdbool.h>
 #include <linux/types.h>
 
+enum mode {
+	ATTACH,
+	DETACH
+};
+
 struct config {
 	__u32 xdp_flags;
 	int ifindex;
 	char* ifname;
-	bool is_detach;
+	enum mode run_mode;
 };
 
 #endif // DEFINE_H_

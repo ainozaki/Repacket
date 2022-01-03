@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <string>
+
 extern "C"
 {
 #include "define.h"
@@ -14,5 +16,6 @@ TEST(ParseCmdline, Normal)
 	char *argv[] = {arg0, arg1};
 	struct config cfg;
 	parse_cmdline(argc, argv, &cfg);
-	EXPECT_EQ(true, cfg.is_detach);
+	enum mode mode_detach = DETACH;
+	EXPECT_EQ(mode_detach, cfg.run_mode);
 }

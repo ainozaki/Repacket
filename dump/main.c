@@ -2,6 +2,7 @@
 
 #include "define.h"
 #include "parse_cmdline.h"
+#include "xilter.h"
 
 int main(int argc, char **argv)
 {
@@ -10,6 +11,9 @@ int main(int argc, char **argv)
 		.ifindex = -1,
 	};
 	parse_cmdline(argc, argv, &cfg);
+
+	xilter(cfg);
+
 	return 0;
 }
 
