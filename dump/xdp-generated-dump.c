@@ -16,7 +16,7 @@ struct bpf_map_def SEC("maps") perf_map = {
     .max_entries = MAX_CPUS,
 };
 
-SEC("xdp_dump")
+SEC("xdp_generated")
 int xdp_dump_prog(struct xdp_md* ctx) {
   void* data_end = (void*)(long)ctx->data_end;
   void* data = (void*)(long)ctx->data;

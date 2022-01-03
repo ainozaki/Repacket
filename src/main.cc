@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   parser.add("attach", 'a', "Attach XDP program.");
   parser.add("detach", 'd', "Detach XDP program.");
   parser.add("stats", 's', "Display filtering stats.");
-  parser.add("dump", 'd', "Dump packets.", false, false);
+  parser.add("dump", '\0', "Dump packets.", false, false);
   parser.add<std::string>("interface", 'i', "Specify interface.", false,
                           kDefaultIfname);
   parser.add<std::string>("bpf", '\0', "BPF filepath.", false,
