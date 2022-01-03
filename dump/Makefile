@@ -6,6 +6,7 @@ XDP_OBJ := $(XDP_C:.c=.o)
 
 USER_TARGETS := loader
 USER_TARGETS += parse_cmdline
+USER_TARGETS += perf_event_handler
 USER_TARGETS += xilter
 USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)
@@ -24,10 +25,8 @@ LIBS_TEST := -lgtest -lgtest_main
 user: $(USER_C)
 	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o dump $^ $(MAIN) $(LIBS)
 
-xdp: $(XDP_OBJ)
-
-$(XDP_OBJ): $(XDP_C)
-	$(CLANG) -S \
+xdp: $(XDP_C)
+	clang -S \
 	    -target bpf \
 	    -D __BPF_TRACING__ \
 	    $(BPF_INCLUDE) \
@@ -36,8 +35,8 @@ $(XDP_OBJ): $(XDP_C)
 	    -Wno-pointer-sign \
 	    -Wno-compare-distinct-pointer-types \
 	    -Werror \
-	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
-	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
+	    -O2 -emit-llvm -c -g -o ${XDP_OBJ:.o=.ll} $<
+	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) ${XDP_OBJ:.o=.ll}
 
 test: $(TEST)
 	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)

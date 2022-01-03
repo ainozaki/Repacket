@@ -2,9 +2,10 @@
 #define LOADER_H_
 
 #include <linux/types.h>
+#include <stdbool.h>
 
-void attach(__u32 xdp_flags, int ifindex, char* ifname);
+int attach(__u32 xdp_flags, int ifindex, char *ifname, int *map_fd);
 
-void detach(int ifindex, char* ifname);
+int detach(__u32 xdp_flags, int ifindex, char *ifname);
 
 #endif // LOADER_H_
