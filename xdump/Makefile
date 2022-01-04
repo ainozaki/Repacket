@@ -1,7 +1,7 @@
 CC := gcc
 LLC := llc
 
-XDP_C := xdp-generated-dump.c
+XDP_C := xdp-generated-kern.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
 USER_TARGETS := loader

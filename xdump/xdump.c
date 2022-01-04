@@ -21,7 +21,6 @@ void xdump(struct config cfg) {
       LOG_ERROR("Err while attaching BPF program.\n");
       return;
     }
-    LOG_INFO("Succes: attach\n");
 
     // Perf event.
     err = perf_event(&map_fd);
@@ -37,7 +36,6 @@ void xdump(struct config cfg) {
     if (err) {
       LOG_ERROR("Err while attaching BPF program.\n");
     }
-    LOG_INFO("Succes: detach\n");
     return;
 
   default:
