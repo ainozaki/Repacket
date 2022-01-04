@@ -13,6 +13,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "logger.h"
+
 #define MAX_CPUS 128
 #define PAGE_CNT 8
 
@@ -24,25 +26,22 @@ int perf_event(int *map_fd) {
   int err;
   int cpu_num = libbpf_num_possible_cpus();
 
-  err = setup(map_fd, cpu_num);
+  // Setup for perf events.
+  err = setup_perf(map_fd, cpu_num);
   if (err) {
-    printf("Err: Cannot setup for perf event\n");
+    LOG_ERROR("Err: Cannot setup for perf event\n");
     return err;
   }
 
-  for (int i = 0; i < cpu_num; i++) {
-    err = mmap_header(pmu_fds[i], &headers[i]);
-    if (err) {
-      return err;
-    }
-  }
-
-  poll_perf_event(pmu_fds, headers, cpu_num, print_bpf_output, &done);
+  // Run poll and handle events enqued.
+  poll_perf_event(pmu_fds, headers, cpu_num, print_dump, &done);
   return 0;
 }
 
-int setup(int *map_fd, int cpu_num) {
+int setup_perf(int *map_fd, int cpu_num) {
+  // |map_fd| is set at loader.
   assert(*map_fd > 0);
+
   struct perf_event_attr attr = {
       .sample_type = PERF_SAMPLE_RAW,
       .type = PERF_TYPE_SOFTWARE,
@@ -58,6 +57,15 @@ int setup(int *map_fd, int cpu_num) {
     bpf_map_update_elem(*map_fd, &key, &pmu_fds[i], BPF_ANY);
     ioctl(pmu_fds[i], PERF_EVENT_IOC_ENABLE, 0);
   }
+
+  for (int i = 0; i < cpu_num; i++) {
+    int err = mmap_header(pmu_fds[i], &headers[i]);
+    if (err) {
+      LOG_ERROR("Err: Cannot mmap headers.\n");
+      return err;
+    }
+  }
+  LOG_INFO("Success: setup for perf event,\n");
   return 0;
 }
 
@@ -69,7 +77,7 @@ int mmap_header(int fd, struct perf_event_mmap_page **header) {
 
   base = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (base == MAP_FAILED) {
-    printf("mmap error");
+    LOG_ERROR("Error while mmap().\n");
     return -1;
   }
   *header = base;
@@ -82,9 +90,11 @@ void poll_perf_event(int *fds, struct perf_event_mmap_page **headers,
   void *buf = NULL;
   size_t len = 0;
   int cpu_num = libbpf_num_possible_cpus();
+  int page_size = getpagesize();
+
   pfds = calloc(cpu_num, sizeof(*pfds));
   if (!pfds) {
-    printf("ERR: calloc");
+    LOG_ERROR("ERR: Cannot calloc.\n");
     return;
   }
 
@@ -93,7 +103,7 @@ void poll_perf_event(int *fds, struct perf_event_mmap_page **headers,
     pfds[i].events = POLLIN;
   }
 
-  int page_size = getpagesize();
+  LOG_INFO("Waiting for packets...\n");
   while (1) {
     poll(pfds, cpu_num, 1000);
     for (int i = 0; i < cpu_num; i++) {
@@ -132,7 +142,7 @@ enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header *hdr,
   return LIBBPF_PERF_EVENT_CONT;
 }
 
-int print_bpf_output(void *data, int size) {
+int print_dump(void *data, int size) {
   struct packed {
     __u16 cookie;
     __u16 pkt_len;
@@ -150,7 +160,7 @@ int print_bpf_output(void *data, int size) {
 
   err = clock_gettime(CLOCK_MONOTONIC, &ts);
   if (err < 0) {
-    printf("Error with clock_gettime! (%i)\n", err);
+    LOG_ERROR("Error with clock_gettime! (%i)\n", err);
     return LIBBPF_PERF_EVENT_ERROR;
   }
 
