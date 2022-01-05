@@ -1,4 +1,4 @@
-#include "xdump.h"
+#include "xapture.h"
 
 #include <assert.h>
 #include <stdbool.h>

@@ -8,7 +8,7 @@ USER_TARGETS := loader
 USER_TARGETS += parse_cmdline
 USER_TARGETS += perf_event_handler
 USER_TARGETS += print_ether
-USER_TARGETS += xdump
+USER_TARGETS += xapture
 USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)
 USER_OBJ := $(USER_TARGETS:=.o)

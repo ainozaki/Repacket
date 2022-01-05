@@ -2,7 +2,7 @@
 
 #include "def/config.h"
 #include "parse_cmdline.h"
-#include "xdump.h"
+#include "xapture.h"
 
 int main(int argc, char **argv)
 {

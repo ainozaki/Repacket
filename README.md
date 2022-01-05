@@ -1,5 +1,9 @@
 ## Xapture
 This is a packet capture using XDP.
+Xapture can
+- rewrite packets.
+- use multiple filter.
+- work with flood packets.
 
 ### Usage
 
