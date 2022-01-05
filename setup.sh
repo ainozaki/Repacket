@@ -9,14 +9,13 @@ COLOR_RED="\033[0;31m"
 COLOR_GREEN="\033[0;32m"
 COLOR_OFF="\033[0m"
 
-for_developper_ubuntu(){
+get-software-ubuntu(){
 	sudo apt update
-	sudo apt install clang llvm libelf-dev libpcap-dev gcc-multilib build-essential
-	sudo apt install linux-tools-$(uname -r) linux-headers-$(uname -r)
-	sudo apt install cmake clang-format
+	sudo apt install -y clang clang-format cmake llvm libelf-dev libpcap-dev gcc-multilib build-essential
+	sudo apt install -y linux-tools-$(uname -r) linux-headers-$(uname -r)
 }
 
-get_yaml_cpp(){
+get-yaml-cpp(){
 	cd ~
 	git clone https://github.com/jbeder/yaml-cpp.git
 	cd ~/yaml-cpp
@@ -28,14 +27,14 @@ get_yaml_cpp(){
 	echo -e "${COLOR_GREEN}[ INFO ] yaml-cpp installed ${COLOR_OFF}"
 }
 
-get_cmdline(){
+get-cmdline(){
 	cd ~
 	git clone https://github.com/tanakh/cmdline.git
 	sudo mv ~/cmdline/cmdline.h /usr/local/include
 	echo -e "${COLOR_GREEN}[ INFO ] cmdline installed ${COLOR_OFF}"
 }
 
-get_libbpf() {
+get-libbpf() {
     DEPS_DIR="${ROOT_DIR}/deps"
     mkdir -p "${DEPS_DIR}"
     if [ -f "${DEPS_DIR}/libbpf_installed" ]; then
@@ -71,7 +70,7 @@ get_libbpf() {
     touch "${DEPS_DIR}/libbpf_installed"
 }
 
-#for_developper_ubuntu
-get_libbpf
-#get_yaml_cpp
-#get_cmdline
+get-software-ubuntu
+get-libbpf
+#get-yaml-cpp
+#get-cmdline
