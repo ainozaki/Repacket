@@ -7,6 +7,7 @@ XDP_OBJ := $(XDP_C:.c=.o)
 USER_TARGETS := loader
 USER_TARGETS += parse_cmdline
 USER_TARGETS += perf_event_handler
+USER_TARGETS += print_ether
 USER_TARGETS += xdump
 USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)
@@ -19,7 +20,7 @@ CFLAGS := -I./
 BPF_INCLUDE ?= -I../deps/include/ -I../deps/include/bpf
 
 LDFLAGS := -L../deps/lib
-LIBS := -l:libbpf.a -lelf -lyaml-cpp
+LIBS := -l:libbpf.a -lelf
 LIBS_TEST := -lgtest -lgtest_main
 
 user: $(USER_C)
@@ -56,4 +57,4 @@ ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll dump test
+	rm -rf *.o *.ll xdump test

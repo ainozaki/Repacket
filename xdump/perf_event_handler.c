@@ -14,15 +14,16 @@
 #include <unistd.h>
 
 #include "logger.h"
+#include "print_ether.h"
 
 #define MAX_CPUS 128
 #define PAGE_CNT 8
 
 static int pmu_fds[MAX_CPUS];
-static struct perf_event_mmap_page *headers[MAX_CPUS];
+static struct perf_event_mmap_page* headers[MAX_CPUS];
 static int done;
 
-int perf_event(int *map_fd) {
+int perf_event(int* map_fd) {
   int err;
   int cpu_num = libbpf_num_possible_cpus();
 
@@ -38,7 +39,7 @@ int perf_event(int *map_fd) {
   return 0;
 }
 
-int setup_perf(int *map_fd, int cpu_num) {
+int setup_perf(int* map_fd, int cpu_num) {
   // |map_fd| is set at loader.
   assert(*map_fd > 0);
 
@@ -69,8 +70,8 @@ int setup_perf(int *map_fd, int cpu_num) {
   return 0;
 }
 
-int mmap_header(int fd, struct perf_event_mmap_page **header) {
-  void *base;
+int mmap_header(int fd, struct perf_event_mmap_page** header) {
+  void* base;
 
   int page_size = getpagesize();
   int mmap_size = page_size * (PAGE_CNT + 1);
@@ -84,10 +85,13 @@ int mmap_header(int fd, struct perf_event_mmap_page **header) {
   return 0;
 }
 
-void poll_perf_event(int *fds, struct perf_event_mmap_page **headers,
-                     int num_fds, perf_event_print_fn output_fn, int *done) {
-  struct pollfd *pfds;
-  void *buf = NULL;
+void poll_perf_event(int* fds,
+                     struct perf_event_mmap_page** headers,
+                     int num_fds,
+                     perf_event_print_fn output_fn,
+                     int* done) {
+  struct pollfd* pfds;
+  void* buf = NULL;
   size_t len = 0;
   int cpu_num = libbpf_num_possible_cpus();
   int page_size = getpagesize();
@@ -119,9 +123,9 @@ void poll_perf_event(int *fds, struct perf_event_mmap_page **headers,
   free(pfds);
 }
 
-enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header *hdr,
-                                             void *private_data) {
-  struct perf_event_sample *e = (struct perf_event_sample *)hdr;
+enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header* hdr,
+                                             void* private_data) {
+  struct perf_event_sample* e = (struct perf_event_sample*)hdr;
   perf_event_print_fn fn = private_data;
   int ret;
 
@@ -133,7 +137,7 @@ enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header *hdr,
       __u64 id;
       __u64 lost;
     };
-    struct Lost *lost = (struct Lost *)e;
+    struct Lost* lost = (struct Lost*)e;
     printf("lost %lld events\n", lost->lost);
   } else {
     printf("unknown event type=%d size=%d\n", e->header.type, e->header.size);
@@ -142,16 +146,16 @@ enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header *hdr,
   return LIBBPF_PERF_EVENT_CONT;
 }
 
-int print_dump(void *data, int size) {
+int print_dump(void* data, int size) {
   struct packed {
     __u16 cookie;
     __u16 pkt_len;
     __u8 pkt_data[1024];
   };
-  struct packed *e = (struct packed *)data;
+  struct packed* e = (struct packed*)data;
 
   struct timespec ts;
-  int i, err;
+  int err;
 
   if (e->cookie != 0xdead) {
     printf("BUG cookie %x sized %d\n", e->cookie, size);
@@ -165,8 +169,8 @@ int print_dump(void *data, int size) {
   }
 
   printf("pkt len: %-5d bytes. hdr: ", e->pkt_len);
-  for (i = 0; i < e->pkt_len; i++)
-    printf("%02x ", e->pkt_data[i]);
+  // TODO: convert or make pkt_len to __u8.
+  start_dump(e->pkt_data, e->pkt_len);
   printf("\n");
 
   return LIBBPF_PERF_EVENT_CONT;

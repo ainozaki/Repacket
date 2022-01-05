@@ -1,6 +1,6 @@
 #include <linux/if_link.h>
 
-#include "define.h"
+#include "def/config.h"
 #include "parse_cmdline.h"
 #include "xdump.h"
 

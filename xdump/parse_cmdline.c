@@ -4,21 +4,21 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "define.h"
+#include "def/config.h"
 
-void parse_cmdline(int argc, char **argv, struct config *cfg) {
+void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;
   while ((opt = getopt(argc, argv, "i:d::")) != -1) {
     switch (opt) {
-    case 'i':
-      cfg->ifname = optarg;
-      cfg->ifindex = if_nametoindex(cfg->ifname);
-      break;
-    case 'd':
-      cfg->run_mode = DETACH;
-      break;
-    default:
-      printf("unknown cmdline option.\n");
+      case 'i':
+        cfg->ifname = optarg;
+        cfg->ifindex = if_nametoindex(cfg->ifname);
+        break;
+      case 'd':
+        cfg->run_mode = DETACH;
+        break;
+      default:
+        printf("unknown cmdline option.\n");
     }
   }
 }

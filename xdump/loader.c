@@ -7,12 +7,12 @@
 
 #include "logger.h"
 
-int attach(__u32 xdp_flags, int ifindex, char *ifname, int *map_fd) {
+int attach(__u32 xdp_flags, int ifindex, char* ifname, int* map_fd) {
   int err;
   int prog_fd;
-  struct bpf_object *bpfobj;
-  char *bpf_file = "xdp-generated-kern.o";
-  char *bpf_mapname = "perf_map";
+  struct bpf_object* bpfobj;
+  char* bpf_file = "xdp-generated-kern.o";
+  char* bpf_mapname = "perf_map";
 
   // Load BPF program and get fd.
   err = bpf_prog_load(bpf_file, BPF_PROG_TYPE_XDP, &bpfobj, &prog_fd);
@@ -41,7 +41,7 @@ int attach(__u32 xdp_flags, int ifindex, char *ifname, int *map_fd) {
   return 0;
 }
 
-int detach(__u32 xdp_flags, int ifindex, char *ifname) {
+int detach(__u32 xdp_flags, int ifindex, char* ifname) {
   // Set xdp to the interface.
   // bpf_set_link_xdp_fd() unloads BPF program when fd is -1.
   int err = bpf_set_link_xdp_fd(ifindex, /*fd=*/-1, xdp_flags);
