@@ -1,22 +1,19 @@
-## Xilter
-This is a packet filter using XDP.
+## Xapture
+This is a packet capture using XDP.
 
 ### Usage
 
 ```
-usage: xilter [mode] [options] ... 
+usage: xapture [mode] [options] ... 
 mode:
+  -N/A               Run packet capture.
   -g, --gen          Generate XDP program. (string)
-  -a, --attach       Attach XDP program.
   -d, --detach       Detach XDP program.
-  -s, --stats        Display filtering stats.
 
 options:
   -i, --interface    Specify interface. (string [=eth1])
-      --bpf          BPF filepath. (string [=xdp-generated.o])
-      --input        Input yaml filepath. (string [=xilter.yaml])
-      --output       Output filepath. (string [=xdp-generated.c])
-      --sec          [Advanced option] Specify program section. (string [=xdp_generated])
+  -b  --bpf          BPF filepath. (string [=xdp-generated.o])
+  -p, --pcap         Save to pcap file.
   -h, --help         Print usage.
 ```
 
@@ -30,23 +27,22 @@ make
 ```
 
 #### Conigure
-Create `xilter.yaml`. See Configuration section.
+Xapture can use multiple filter. See Configuration section.
 
 #### Generate xdp prog and run
 ```
-./xilter --gen
+./xapture --gen
 make xdp
-./xilter --attach
+./xapture -i veth1 
 
-./xilter --stats	// Show filtering stats.
-./xilter --detach	// Stop filtering.
+./xapture --detach	// Stop filtering.
 ```
 
 ### Configuration
-Example of `xilter.yaml`. 
+To filter packets, create `xilter.yaml`. 
+The higher-written filter will be given higher priority.
 
 ```
-filter:
  - action: pass
    ip_protocol: icmp
  - action: drop
@@ -87,6 +83,9 @@ Filtering rules are specified using following parameter.
 | udp_src        | 22           | Source port.                                                                                | o        |
 | udp_dst        | 22           | Destination port.                                                                           | o        |
 
+
+## Xilter
+Originally, this repository was a packet filter using XDP.
 
 ### Respectful Implementation
 [facebookincubator/katran](https://github.com/facebookincubator/katran)  

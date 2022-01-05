@@ -1,100 +1,60 @@
-CLANG := clang
+CC := gcc
 LLC := llc
 
-XDP_C := xdp-generated-dump.c
+XDP_C := xdp-generated-kern.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
-MAIN := main.cc
-USER := xilter.cc
-USER += base/bpf_wrapper.cc
-USER += base/logger.cc
-USER += base/utils.cc
-USER += base/yaml_handler.cc
-USER += core/generator/generator.cc
-USER += core/loader/loader.cc
-USER += core/stats/map_handler.cc
-USER += core/stats/stats.cc
-USER_H := $(USER:.cc=.h)
-USER_OBJ := $(USER:.cc=)
-XILTER_OBJ := xilter
+USER_TARGETS := loader
+USER_TARGETS += parse_cmdline
+USER_TARGETS += perf_event_handler
+USER_TARGETS += print_ether
+USER_TARGETS += xdump
+USER_H := $(USER_TARGETS:=.h)
+USER_C := $(USER_TARGETS:=.c)
+USER_OBJ := $(USER_TARGETS:=.o)
+MAIN := main.c
+OBJ := dump
+TEST := tests/parse_cmdline_unittest.cc
 
-TEST := base/yaml_handler_unittest.cc
-TEST += filter-test/icmp.cc
-TEST += filter-test/ip.cc
-TEST += filter-test/tcp.cc
-TEST += filter-test/udp.cc
-TEST_XDP_C := filter-test/xdp_test_icmp_type.c
-TEST_XDP_C += filter-test/xdp_test_icmp_code.c
-TEST_XDP_C += filter-test/xdp_test_ip_protocol.c
-TEST_XDP_C += filter-test/xdp_test_ip_saddr.c
-TEST_XDP_C += filter-test/xdp_test_ip_tos.c
-TEST_XDP_C += filter-test/xdp_test_ip_tot_len_max.c
-TEST_XDP_C += filter-test/xdp_test_ip_tot_len_min.c
-TEST_XDP_C += filter-test/xdp_test_ip_ttl_max.c
-TEST_XDP_C += filter-test/xdp_test_ip_ttl_min.c
-TEST_XDP_C += filter-test/xdp_test_tcp_dst.c
-TEST_XDP_C += filter-test/xdp_test_tcp_src.c
-TEST_XDP_C += filter-test/xdp_test_tcp_flags.c
-TEST_XDP_C += filter-test/xdp_test_udp_dst.c
-TEST_XDP_C += filter-test/xdp_test_udp_src.c
-TEST_XDP_OBJ := $(TEST_XDP_C:.c=.o)
-TEST_XDP_OBJ += $(TEST_XDP_C:.c=.ll)
-TEST_OBJ := test
-
-DATA := data/test.yaml
-
-# for format
-COMMON_H := base/define/define.h
+CFLAGS := -I./
+BPF_INCLUDE ?= -I../deps/include/ -I../deps/include/bpf
 
 LDFLAGS := -L../deps/lib
-LIBS := -l:libbpf.a -lelf -lyaml-cpp
+LIBS := -l:libbpf.a -lelf
 LIBS_TEST := -lgtest -lgtest_main
 
-CFLAGS := -I.
-BPF_CFLAGS ?= -I../deps/include/ -I../deps/include/bpf
+user: $(USER_C)
+	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o xdump $^ $(MAIN) $(LIBS)
 
-$(XDP_OBJ): $(XDP_C)
-	$(CLANG) -S \
+xdp: $(XDP_C)
+	clang -S \
 	    -target bpf \
 	    -D __BPF_TRACING__ \
-	    $(BPF_CFLAGS) \
+	    $(BPF_INCLUDE) \
 	    -Wall \
 	    -Wno-unused-value \
 	    -Wno-pointer-sign \
 	    -Wno-compare-distinct-pointer-types \
 	    -Werror \
-	    -O2 -emit-llvm -c -g -o ${@:.o=.ll} $<
-	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
+	    -O2 -emit-llvm -c -g -o ${XDP_OBJ:.o=.ll} $<
+	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) ${XDP_OBJ:.o=.ll}
 
-xilter: $(USER) $(USER_H) $(COMMON_H) $(MAIN)
-	 g++ -std=c++17 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(XILTER_OBJ) $(LDFLAGS) $^ $(LIBS)
-
-test: $(TEST) $(USER)
-	 g++ -std=c++14 -Wall $(BPF_CFLAGS) $(CFLAGS) -o $(TEST_OBJ) $(LDFLAGS) $^ $(LIBS) $(LIBS_TEST) -pthread
-	 cd "$(PWD)/filter-test" && make
+test: $(TEST)
+	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)
+	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
 
 format:
-# to exclude "common/xdp_base.h", use first command.
-	clang-format -i $(USER) $(USER:.cc=.h) $(TEST) $(COMMON) main.cc 
-# find ./ -name "*.cc" -o -name "*.h" -o -path "./common" | xargs clang-format -i
+	clang-format -i $(USER_H) $(USER_C) 
 
-attach:
-	./xilter --attach
-
-load-ip:
-	ip link set dev eth1 xdpgeneric obj kern.o sec xdp
+run:
+	sudo ../src/xilter --attach
+	sudo ./xdp-generated-dump
 
 detach:
-	./xilter --detach
-
-gen:
-	./xilter --gen 
-
-stats:
-	./xilter --stats
+	../src/xilter --detach
 
 ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll $(USER_OBJ) $(TEST_OBJ) $(TEST_XDP_C) $(TEST_XDP_OBJ) $(XILTER_OBJ)
+	rm -rf *.o *.ll xdump test
