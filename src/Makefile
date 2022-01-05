@@ -13,7 +13,7 @@ USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)
 USER_OBJ := $(USER_TARGETS:=.o)
 MAIN := main.c
-OBJ := dump
+OBJ := xapture
 TEST := tests/parse_cmdline_unittest.cc
 
 CFLAGS := -I./
@@ -24,7 +24,7 @@ LIBS := -l:libbpf.a -lelf
 LIBS_TEST := -lgtest -lgtest_main
 
 user: $(USER_C)
-	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o xdump $^ $(MAIN) $(LIBS)
+	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o xapture $^ $(MAIN) $(LIBS)
 
 xdp: $(XDP_C)
 	clang -S \
@@ -39,6 +39,12 @@ xdp: $(XDP_C)
 	    -O2 -emit-llvm -c -g -o ${XDP_OBJ:.o=.ll} $<
 	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) ${XDP_OBJ:.o=.ll}
 
+run:
+	sudo ./xapture -i eth1
+
+off:
+	sudo ./xapture -i eth1 -d
+
 test: $(TEST)
 	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)
 	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
@@ -46,15 +52,8 @@ test: $(TEST)
 format:
 	clang-format -i $(USER_H) $(USER_C) 
 
-run:
-	sudo ../src/xilter --attach
-	sudo ./xdp-generated-dump
-
-detach:
-	../src/xilter --detach
-
 ping:
 	ip netns exec router ping 172.16.10.1
 
 clean:
-	rm -rf *.o *.ll xdump test
+	rm -rf *.o *.ll xapture test
