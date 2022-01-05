@@ -1,10 +1,10 @@
-#include "parse_cmdline.h"
+#include "base/parse_cmdline.h"
 
 #include <net/if.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#include "def/config.h"
+#include "base/config.h"
 
 void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;

@@ -1,11 +1,11 @@
-#include "loader.h"
+#include "core/xdp/loader.h"
 
 #include <bpf/bpf.h>
 #include <libbpf.h>
 #include <linux/types.h>
 #include <stdbool.h>
 
-#include "logger.h"
+#include "base/logger.h"
 
 int attach(__u32 xdp_flags, int ifindex, char* ifname, int* map_fd) {
   int err;

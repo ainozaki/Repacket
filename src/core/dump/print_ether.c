@@ -1,11 +1,11 @@
-#include "print_ether.h"
+#include "core/dump/print_ether.h"
 
 #include <linux/types.h>
 #include <stdio.h>
 
-#include "binary_utils.h"
-#include "def/ethertype.h"
-#include "def/protocol.h"
+#include "core/dump/binary_utils.h"
+#include "core/dump/def/ethertype.h"
+#include "core/dump/def/protocol.h"
 
 void start_dump(const unsigned char* p, uint8_t len) {
   ether_print(p, len);

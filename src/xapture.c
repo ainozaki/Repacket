@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "def/config.h"
-#include "loader.h"
-#include "logger.h"
-#include "perf_event_handler.h"
+#include "base/config.h"
+#include "base/logger.h"
+#include "core/xdp/loader.h"
+#include "core/xdp/perf_event_handler.h"
 
 void xdump(struct config cfg) {
   int err;

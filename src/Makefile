@@ -4,10 +4,10 @@ LLC := llc
 XDP_C := xdp-generated-kern.c
 XDP_OBJ := $(XDP_C:.c=.o)
 
-USER_TARGETS := loader
-USER_TARGETS += parse_cmdline
-USER_TARGETS += perf_event_handler
-USER_TARGETS += print_ether
+USER_TARGETS := base/parse_cmdline
+USER_TARGETS += core/xdp/loader
+USER_TARGETS += core/xdp/perf_event_handler
+USER_TARGETS += core/dump/print_ether
 USER_TARGETS += xapture
 USER_H := $(USER_TARGETS:=.h)
 USER_C := $(USER_TARGETS:=.c)

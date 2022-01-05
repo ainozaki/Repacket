@@ -1,7 +1,7 @@
 #ifndef XILTER_H_
 #define XILTER_H_
 
-#include "def/config.h"
+#include "base/config.h"
 
 // Controller function.
 // Start proceccing according to |cfg.run_mode|.

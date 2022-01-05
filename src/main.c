@@ -1,7 +1,7 @@
 #include <linux/if_link.h>
 
-#include "def/config.h"
-#include "parse_cmdline.h"
+#include "base/config.h"
+#include "base/parse_cmdline.h"
 #include "xapture.h"
 
 int main(int argc, char **argv)

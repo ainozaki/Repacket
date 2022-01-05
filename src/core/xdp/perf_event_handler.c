@@ -13,8 +13,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "logger.h"
-#include "print_ether.h"
+#include "base/logger.h"
+#include "core/dump/print_ether.h"
 
 #define MAX_CPUS 128
 #define PAGE_CNT 8
