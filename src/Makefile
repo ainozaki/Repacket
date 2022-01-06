@@ -4,7 +4,7 @@ LLC = llc
 PROG = xapture
 
 BPF_INCL = -I../deps/include/ -I../deps/include/bpf
-CFLAGS = -I. $(BPF_INCL) -g -O2
+CFLAGS = -I. $(BPF_INCL) -g -O2 -Wall
 LDFLAGS = -L../deps/lib
 LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
@@ -24,11 +24,17 @@ LIBXAPTURE_SRC=\
 LIBXAPTURE_OBJ=$(LIBXAPTURE_SRC:.c=.o)
 LIBXAPTURE=libxapture.a
 
+HDRS=\
+	core/dump/binary_utils.h \
+	core/dump/def/ip.h \
+	core/dump/def/ether.h \
+	core/dump/def/types.h
+
 TEST := tests/parse_cmdline_unittest.cc
 
-all: $(PROG)
+all: $(PROG) $(LIBXAPTURE_SRC) $(C_SRC) $(HDRS)
 
-$(PROG): $(C_OBJ) $(LIBXAPTURE)
+$(PROG): $(C_OBJ) $(LIBXAPTURE) $(HDRS)
 	rm -f $@
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(C_OBJ) $(LIBXAPTURE) $(LIBS)
 
@@ -36,7 +42,7 @@ $(LIBXAPTURE): $(LIBXAPTURE_OBJ)
 	rm -f $@
 	$(AR) cr $@ $(LIBXAPTURE_OBJ)
 
-$(LIBXAPTURE_OBJ): %.o: %.c
+$(LIBXAPTURE_OBJ): %.o: %.c $(HDRS)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(C_OBJ): %.o: %.c
@@ -69,5 +75,5 @@ format:
 	clang-format -i $(LIBXAPTURE_SRC) $(C_SRC)
 
 clean:
-	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll)
+	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll) $(PROG)
 	find ./ -name "*.o" -type f -delete
