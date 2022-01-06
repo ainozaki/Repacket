@@ -1,43 +1,59 @@
-CC := gcc
-LLC := llc
+CC = gcc
+AR = ar
+LLC = llc
+PROG = xapture
 
-XDP_C := xdp-generated-kern.c
-XDP_OBJ := $(XDP_C:.c=.o)
+BPF_INCL = -I../deps/include/ -I../deps/include/bpf
+CFLAGS = -I. $(BPF_INCL) -g -O2
+LDFLAGS = -L../deps/lib
+LIBS = -l:libbpf.a -lelf
+LIBS_TEST = -lgtest -lgtest_main
 
-USER_TARGETS := base/parse_cmdline
-USER_TARGETS += core/xdp/loader
-USER_TARGETS += core/xdp/perf_event_handler
-USER_TARGETS += core/dump/print_ether
-USER_TARGETS += xapture
-USER_H := $(USER_TARGETS:=.h)
-USER_C := $(USER_TARGETS:=.c)
-USER_OBJ := $(USER_TARGETS:=.o)
-MAIN := main.c
-OBJ := xapture
+XDP_SRC:=xdp-generated-kern.c
+XDP_OBJ:=$(XDP_SRC:.c=.o)
+
+C_SRC = xapture.c
+C_OBJ = $(C_SRC:.c=.o)
+
+LIBXAPTURE_SRC=\
+	base/parse_cmdline.c \
+	core/dump/print_ether.c \
+	core/dump/print_ip.c \
+	core/xdp/loader.c \
+	core/xdp/perf_event_handler.c
+LIBXAPTURE_OBJ=$(LIBXAPTURE_SRC:.c=.o)
+LIBXAPTURE=libxapture.a
+
 TEST := tests/parse_cmdline_unittest.cc
 
-CFLAGS := -I./
-BPF_INCLUDE ?= -I../deps/include/ -I../deps/include/bpf
+all: $(PROG)
 
-LDFLAGS := -L../deps/lib
-LIBS := -l:libbpf.a -lelf
-LIBS_TEST := -lgtest -lgtest_main
+$(PROG): $(C_OBJ) $(LIBXAPTURE)
+	rm -f $@
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(C_OBJ) $(LIBXAPTURE) $(LIBS)
 
-user: $(USER_C)
-	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) $(LDFLAGS) -o xapture $^ $(MAIN) $(LIBS)
+$(LIBXAPTURE): $(LIBXAPTURE_OBJ)
+	rm -f $@
+	$(AR) cr $@ $(LIBXAPTURE_OBJ)
 
-xdp: $(XDP_C)
+$(LIBXAPTURE_OBJ): %.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(C_OBJ): %.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+xdp: $(XDP_SRC)
 	clang -S \
 	    -target bpf \
 	    -D __BPF_TRACING__ \
-	    $(BPF_INCLUDE) \
+	    $(BPF_INCL) \
 	    -Wall \
 	    -Wno-unused-value \
 	    -Wno-pointer-sign \
 	    -Wno-compare-distinct-pointer-types \
 	    -Werror \
-	    -O2 -emit-llvm -c -g -o ${XDP_OBJ:.o=.ll} $<
-	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) ${XDP_OBJ:.o=.ll}
+	    -O2 -emit-llvm -c -g -o $(XDP_OBJ:.o=.ll) $<
+	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) $(XDP_OBJ:.o=.ll)
 
 run:
 	sudo ./xapture -i eth1
@@ -45,15 +61,13 @@ run:
 off:
 	sudo ./xapture -i eth1 -d
 
-test: $(TEST)
-	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)
-	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
+#test: $(TEST)
+#	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)
+#	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
 
 format:
-	clang-format -i $(USER_H) $(USER_C) 
-
-ping:
-	ip netns exec router ping 172.16.10.1
+	clang-format -i $(LIBXAPTURE_SRC) $(C_SRC)
 
 clean:
-	rm -rf *.o *.ll xapture test
+	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll)
+	find ./ -name "*.o" -type f -delete

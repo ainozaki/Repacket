@@ -21,7 +21,7 @@ static const char *protocol_name_list[2] = {
 	"icmp",
 };
 
-const char* ip_protoname(const uint8_t protoid)
+static inline const char* ip_protoname(const uint8_t protoid)
 {
 	return protocol_name_list[protoid];
 }

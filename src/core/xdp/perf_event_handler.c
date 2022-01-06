@@ -168,10 +168,8 @@ int print_dump(void* data, int size) {
     return LIBBPF_PERF_EVENT_ERROR;
   }
 
-  printf("pkt len: %-5d bytes. hdr: ", e->pkt_len);
   // TODO: convert or make pkt_len to __u8.
   start_dump(e->pkt_data, e->pkt_len);
-  printf("\n");
 
   return LIBBPF_PERF_EVENT_CONT;
 }
