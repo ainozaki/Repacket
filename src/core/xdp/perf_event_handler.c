@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "base/logger.h"
-#include "core/dump/print_ether.h"
+#include "core/dump/print.h"
 
 #define MAX_CPUS 128
 #define PAGE_CNT 8

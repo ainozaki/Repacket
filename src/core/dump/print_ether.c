@@ -1,4 +1,4 @@
-#include "core/dump/print_ether.h"
+#include "core/dump/print.h"
 
 #include <linux/types.h>
 #include <stdio.h>
@@ -6,7 +6,6 @@
 #include "core/dump/binary_utils.h"
 #include "core/dump/def/ether.h"
 #include "core/dump/def/ip.h"
-#include "core/dump/print_ip.h"
 
 void start_dump(const unsigned char* p, uint8_t len) {
   ether_print(p, len);
