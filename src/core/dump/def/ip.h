@@ -1,7 +1,11 @@
-#ifndef IP_H_
-#define IP_H_
+#ifndef X_IP_H_
+#define X_IP_H_
 
 #include "core/dump/def/types.h"
+
+#ifndef IPPROTO_ICMP
+#define IPPROTO_ICMP 1
+#endif
 
 struct ip {
 	n_uint8_t vhl;
@@ -16,14 +20,4 @@ struct ip {
 	n_uint32_t daddr;
 };
 
-static const char *protocol_name_list[2] = {
-	"hoopt",
-	"icmp",
-};
-
-static inline const char* ip_protoname(const uint8_t protoid)
-{
-	return protocol_name_list[protoid];
-}
-
-#endif // IP_H_
+#endif // X_IP_H_
