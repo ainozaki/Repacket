@@ -14,8 +14,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "base/config.h"
 #include "base/logger.h"
 #include "core/dump/print.h"
+#include "core/xdp/loader.h"
 
 #define MAX_CPUS 128
 #define PAGE_CNT 8
@@ -24,12 +26,16 @@ static int pmu_fds[MAX_CPUS];
 static struct perf_event_mmap_page* headers[MAX_CPUS];
 static int done;
 
+static struct config* config;
+
 static int packet_captured = 0;
 static int catch_signal = 0;
 
-int perf_event(int* map_fd) {
+int perf_event(struct config* cfg, int* map_fd) {
   int err;
   int cpu_num = libbpf_num_possible_cpus();
+
+  config = cfg;
 
   // Setup for perf events.
   err = setup_perf(map_fd, cpu_num);
@@ -196,4 +202,8 @@ void signal_handler() {
 
 void cleanup() {
   printf("\n%d packets captured.\n", packet_captured);
+  int err = detach(config);
+  if (err) {
+    LOG_ERROR("Failed to detach XDP from %s\n", config->ifname);
+  }
 }

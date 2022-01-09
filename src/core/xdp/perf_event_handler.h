@@ -4,6 +4,8 @@
 #include <bpf/libbpf.h>
 #include <linux/perf_event.h>
 
+#include "base/config.h"
+
 struct perf_event_mmap_page;
 
 typedef enum bpf_perf_event_ret (*perf_event_print_fn)(void* data, int size);
@@ -15,7 +17,7 @@ struct perf_event_sample {
 };
 
 // Control function for perf event.
-int perf_event(int* map_fd);
+int perf_event(struct config* cfg, int* map_fd);
 
 // Setup for perf event.
 int setup_perf(int* map_fd, int cpu_num);

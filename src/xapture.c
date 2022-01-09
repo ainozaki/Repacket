@@ -1,5 +1,3 @@
-#include "xapture.h"
-
 #include <assert.h>
 #include <linux/if_link.h>
 #include <stdbool.h>
@@ -18,14 +16,14 @@ void xdump(struct config cfg) {
   switch (cfg.run_mode) {
     case ATTACH:
       // Attach BPF program.
-      err = attach(cfg.xdp_flags, cfg.ifindex, cfg.ifname, &map_fd);
+      err = attach(&cfg, &map_fd);
       if (err) {
         LOG_ERROR("Err while attaching BPF program.\n");
         return;
       }
 
       // Perf event.
-      err = perf_event(&map_fd);
+      err = perf_event(&cfg, &map_fd);
       if (err) {
         LOG_ERROR("Err while handling perf_event.\n");
         return;
@@ -34,7 +32,7 @@ void xdump(struct config cfg) {
 
     case DETACH:
       // Detach BPF program.
-      err = detach(cfg.xdp_flags, cfg.ifindex, cfg.ifname);
+      err = detach(&cfg);
       if (err) {
         LOG_ERROR("Err while attaching BPF program.\n");
       }

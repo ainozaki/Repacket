@@ -1,18 +1,23 @@
 #include "core/xdp/loader.h"
 
+#include <assert.h>
 #include <bpf/bpf.h>
 #include <libbpf.h>
 #include <linux/types.h>
 #include <stdbool.h>
 
+#include "base/config.h"
 #include "base/logger.h"
 
-int attach(__u32 xdp_flags, int ifindex, char* ifname, int* map_fd) {
+int attach(struct config* cfg, int* map_fd) {
   int err;
   int prog_fd;
   struct bpf_object* bpfobj;
   char* bpf_file = "xdp-generated-kern.o";
   char* bpf_mapname = "perf_map";
+
+  assert(cfg->ifname);
+  assert(cfg->ifindex > 0);
 
   // Load BPF program and get fd.
   err = bpf_prog_load(bpf_file, BPF_PROG_TYPE_XDP, &bpfobj, &prog_fd);
@@ -22,9 +27,9 @@ int attach(__u32 xdp_flags, int ifindex, char* ifname, int* map_fd) {
   }
 
   // Set xdp to the interface.
-  err = bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags);
+  err = bpf_set_link_xdp_fd(cfg->ifindex, prog_fd, cfg->xdp_flags);
   if (err) {
-    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n", ifindex);
+    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n", cfg->ifindex);
     return err;
   }
 
@@ -37,18 +42,18 @@ int attach(__u32 xdp_flags, int ifindex, char* ifname, int* map_fd) {
   }
   *map_fd = fd;
 
-  LOG_INFO("Success: Attach %s to interface %s\n", bpf_file, ifname);
+  LOG_INFO("Success: Attach %s to interface %s\n", bpf_file, cfg->ifname);
   return 0;
 }
 
-int detach(__u32 xdp_flags, int ifindex, char* ifname) {
+int detach(struct config* cfg) {
   // Set xdp to the interface.
   // bpf_set_link_xdp_fd() unloads BPF program when fd is -1.
-  int err = bpf_set_link_xdp_fd(ifindex, /*fd=*/-1, xdp_flags);
+  int err = bpf_set_link_xdp_fd(cfg->ifindex, /*fd=*/-1, cfg->xdp_flags);
   if (err) {
-    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n", ifindex);
+    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n", cfg->ifindex);
     return err;
   }
-  LOG_INFO("Success: Detach XDP program from interface %s\n", ifname);
+  LOG_INFO("Success: Detach XDP program from interface %s\n", cfg->ifname);
   return 0;
 }
