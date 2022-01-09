@@ -23,8 +23,86 @@ void ip_print(const unsigned char* p, uint8_t len) {
 
   printf("IP %s > %s: ", src, dst);
   switch (proto) {
-    case IPPROTO_ICMP:
+    case X_IPPROTO_ICMP:
       icmp_print(p, len);
+      break;
+    case X_IPPROTO_IGMP:
+      printf("IGMP");
+      break;
+    case X_IPPROTO_IP:
+      printf("IP");
+      break;
+    case X_IPPROTO_TCP:
+      printf("TCP");
+      break;
+    case X_IPPROTO_CBT:
+      printf("CBT");
+      break;
+    case X_IPPROTO_EGP:
+      printf("EGP");
+      break;
+    case X_IPPROTO_IGP:
+      printf("IGP");
+      break;
+    case X_IPPROTO_UDP:
+      printf("UDP");
+      break;
+    case X_IPPROTO_IPv6:
+      printf("IPv6");
+      break;
+    case X_IPPROTO_IPv6_Route:
+      printf("IPv6 Route");
+      break;
+    case X_IPPROTO_IPv6_Frag:
+      printf("IPv6 Frag");
+      break;
+    case X_IPPROTO_IDRP:
+      printf("IDRP");
+      break;
+    case X_IPPROTO_RSVP:
+      printf("RSVP");
+      break;
+    case X_IPPROTO_GRE:
+      printf("GRE");
+      break;
+    case X_IPPROTO_ESP:
+      printf("ESP");
+      break;
+    case X_IPPROTO_AH:
+      printf("AH");
+      break;
+    case X_IPPROTO_MOBILE:
+      printf("MOBILE");
+      break;
+    case X_IPPROTO_IPv6_ICMP:
+      printf("IPv6_ICMP");
+      break;
+    case X_IPPROTO_IPv6_NoNxt:
+      printf("IPv6 NoNxt");
+      break;
+    case X_IPPROTO_IPv6_Opts:
+      printf("IPv6 Opts");
+      break;
+    case X_IPPROTO_EIGRP:
+      printf("EIGRP");
+      break;
+    case X_IPPROTO_OSPF:
+      printf("OSPF");
+      break;
+    case X_IPPROTO_IPIP:
+      printf("IPIP");
+      break;
+    case X_IPPROTO_PIM:
+      printf("PIM");
+      break;
+    case X_IPPROTO_VRRP:
+      printf("VRRP");
+      break;
+    case X_IPPROTO_PGM:
+      printf("PGM");
+      break;
+    case X_IPPROTO_L2TP:
+      printf("L2TP");
       break;
   }
 }

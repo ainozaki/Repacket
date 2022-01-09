@@ -21,46 +21,46 @@ void ether_print(const unsigned char* p, uint8_t len) {
   len -= ETHER_PROTO_LEN;
 
   switch (ethertype) {
-    case ETHERTYPE_IPv4:
+    case X_ETH_P_IPV4:
       ip_print(p, len);
       break;
-    case ETHERTYPE_ARP:
+    case X_ETH_P_ARP:
       printf("ARP");
       break;
-    case ETHERTYPE_RARP:
+    case X_ETH_P_RARP:
       printf("RARP");
       break;
-    case ETHERTYPE_VMTP:
+    case X_ETH_P_VMTP:
       printf("VMTP");
       break;
-    case ETHERTYPE_APPLE_TALK:
+    case X_ETH_P_ATALK:
       printf("Apple Talk");
       break;
-    case ETHERTYPE_AARP:
+    case X_ETH_P_AARP:
       printf("AARP");
       break;
-    case ETHERTYPE_IPX:
+    case X_ETH_P_IPX:
       printf("IPX");
       break;
-    case ETHERTYPE_SNMPoE:
+    case X_ETH_P_SNMPoE:
       printf("SNMP over Ethernet");
       break;
-    case ETHERTYPE_NET_BIOS:
+    case X_ETH_P_NET_BIOS:
       printf("NetBIOS/NetBEUI");
       break;
-    case ETHERTYPE_XTP:
+    case X_ETH_P_XTP:
       printf("XTP");
       break;
-    case ETHERTYPE_IPv6:
+    case X_ETH_P_IPV6:
       printf("IPv6");
       break;
-    case ETHERTYPE_PPPoE_DS:
+    case X_ETH_P_PPP_DS:
       printf("PPPoE Discovery Stage");
       break;
-    case ETHERTYPE_PPPoE_SS:
+    case X_ETH_P_PPP_SES:
       printf("PPPoE Session Stage");
       break;
-    case ETHERTYPE_LOOPBACK:
+    case X_ETH_P_LOOPBACK:
       printf("Loopback");
       break;
     default:
