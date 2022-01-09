@@ -10,9 +10,9 @@
 #define ICMP_TIME_EXCEEDED 11
 
 struct icmp {
-	n_uint8_t type;
-	n_uint8_t code;
-	n_uint16_t chsum;
+  n_uint8_t type;
+  n_uint8_t code;
+  n_uint16_t chsum;
 };
 
-#endif // X_ICMP_H_
+#endif  // X_ICMP_H_

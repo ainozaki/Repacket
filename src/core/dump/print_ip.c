@@ -17,14 +17,14 @@ void ip_print(const unsigned char* p, uint8_t len) {
   src = GET_IPADDR(ip->saddr);
   dst = GET_IPADDR(ip->daddr);
 
-	uint8_t hdl = (GET_U8(ip->vhl) & 0x0F) * 4;
-	p += hdl;
-	len -= hdl;
+  uint8_t hdl = (GET_U8(ip->vhl) & 0x0F) * 4;
+  p += hdl;
+  len -= hdl;
 
   printf("IP %s > %s: ", src, dst);
-	switch (proto) {
-		case IPPROTO_ICMP:
-			icmp_print(p, len);
-			break;
-	}
+  switch (proto) {
+    case IPPROTO_ICMP:
+      icmp_print(p, len);
+      break;
+  }
 }

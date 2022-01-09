@@ -25,11 +25,19 @@ LIBXAPTURE_SRC=\
 LIBXAPTURE_OBJ=$(LIBXAPTURE_SRC:.c=.o)
 LIBXAPTURE=libxapture.a
 
+# for format
 HDRS=\
+	base/config.h \
+	base/parse_cmdline.h \
+	base/logger.h \
 	core/dump/binary_utils.h \
+	core/dump/def/icmp.h \
 	core/dump/def/ip.h \
 	core/dump/def/ether.h \
-	core/dump/def/types.h
+	core/dump/def/types.h \
+	core/dump/print.h \
+	core/xdp/loader.h \
+	core/xdp/perf_event_handler.h
 
 TEST := tests/parse_cmdline_unittest.cc
 
@@ -73,7 +81,7 @@ off:
 #	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
 
 format:
-	clang-format -i $(LIBXAPTURE_SRC) $(C_SRC)
+	clang-format -i $(LIBXAPTURE_SRC) $(LIBXAPTURE_H) $(C_SRC) $(HDRS)
 
 clean:
 	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll) $(PROG)

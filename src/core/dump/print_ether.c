@@ -9,14 +9,14 @@
 
 void start_dump(const unsigned char* p, uint8_t len) {
   ether_print(p, len);
-	printf("\n");
+  printf("\n");
 }
 
 void ether_print(const unsigned char* p, uint8_t len) {
   p += MAC_ADDR_LEN * 2;
   len -= MAC_ADDR_LEN * 2;
-  
-	uint16_t ethertype = GET_U16(p);
+
+  uint16_t ethertype = GET_U16(p);
   p += ETHER_PROTO_LEN;
   len -= ETHER_PROTO_LEN;
 
@@ -25,7 +25,7 @@ void ether_print(const unsigned char* p, uint8_t len) {
       ip_print(p, len);
       break;
     default:
-			printf("unknown ethertype");
+      printf("unknown ethertype");
       break;
   }
 }
