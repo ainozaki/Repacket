@@ -6,6 +6,7 @@
 #include <bpf/libbpf.h>
 #include <linux/perf_event.h>
 #include <poll.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -22,6 +23,9 @@
 static int pmu_fds[MAX_CPUS];
 static struct perf_event_mmap_page* headers[MAX_CPUS];
 static int done;
+
+static int packet_captured = 0;
+static int catch_signal = 0;
 
 int perf_event(int* map_fd) {
   int err;
@@ -96,6 +100,13 @@ void poll_perf_event(int* fds,
   int cpu_num = libbpf_num_possible_cpus();
   int page_size = getpagesize();
 
+  // register SIGNINT handler.
+  struct sigaction sa;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_handler = signal_handler;
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
+
   pfds = calloc(cpu_num, sizeof(*pfds));
   if (!pfds) {
     LOG_ERROR("ERR: Cannot calloc.\n");
@@ -108,7 +119,9 @@ void poll_perf_event(int* fds,
   }
 
   LOG_INFO("Waiting for packets...\n");
-  while (1) {
+
+  // SIGNINT makes |catch_signal| true.
+  while (!catch_signal) {
     poll(pfds, cpu_num, 1000);
     for (int i = 0; i < cpu_num; i++) {
       if (!pfds[i].revents) {
@@ -121,6 +134,7 @@ void poll_perf_event(int* fds,
   }
   free(buf);
   free(pfds);
+  cleanup();
 }
 
 enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header* hdr,
@@ -128,6 +142,8 @@ enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header* hdr,
   struct perf_event_sample* e = (struct perf_event_sample*)hdr;
   perf_event_print_fn fn = private_data;
   int ret;
+
+  packet_captured++;
 
   if (e->header.type == PERF_RECORD_SAMPLE) {
     ret = fn(e->data, e->size);
@@ -172,4 +188,12 @@ int print_dump(void* data, int size) {
   start_dump(e->pkt_data, e->pkt_len);
 
   return LIBBPF_PERF_EVENT_CONT;
+}
+
+void signal_handler() {
+  catch_signal = 1;
+}
+
+void cleanup() {
+  printf("\n%d packets captured.\n", packet_captured);
 }

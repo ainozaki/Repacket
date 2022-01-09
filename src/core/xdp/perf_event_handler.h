@@ -36,4 +36,11 @@ enum bpf_perf_event_ret bpf_perf_event_print(struct perf_event_header* hdr,
 // Dump packet data.
 int print_dump(void* data, int size);
 
+// Called when SIGINT is detected.
+void signal_handler();
+
+// Called after SIGINT.
+// TODO: add detaching xdp from the interface.
+void cleanup();
+
 #endif  // PERF_EVENT_HANDLER_
