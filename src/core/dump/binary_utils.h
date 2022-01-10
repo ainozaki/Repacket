@@ -1,27 +1,17 @@
 #ifndef BINARY_UTILS_H_
 #define BINARY_UTILS_H_
 
-#include <arpa/inet.h>
 #include <stdint.h>
-#include <string.h>
 
-static inline uint8_t GET_U8(const void* p) {
-  return *(uint8_t*)p;
-}
+#include "core/dump/def/types.h"
 
-static inline uint16_t GET_U16(const void* p) {
-  return (uint16_t)ntohs(*(const uint16_t*)(p));
-}
+// Get each size of int from pointer.
+// Pass pointer with network-order, since this handles byte-order inside.
+uint8_t GET_U8(const void* p);
+uint16_t GET_U16(const void* p);
 
-static inline char* GET_IPADDR(const void* p) {
-  char buf[32];
-  char* ptr;
-  // inet_ntop expects network-order binary.
-  inet_ntop(AF_INET, (struct in_addr*)p, buf, sizeof(buf));
-  ptr = buf;
-  // TODO: buf address is the same for every call. why?
-  // printf("buf ptr: %p\n", buf);
-  return ptr;
-}
+// Get formatted address from pointer.
+char* GET_IPADDR(const void* p);
+char* GET_ETHADDR(const void* p);
 
 #endif  // BINARY_UTILS_H_

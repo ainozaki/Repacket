@@ -17,6 +17,8 @@ C_OBJ = $(C_SRC:.c=.o)
 
 LIBXAPTURE_SRC=\
 	base/parse_cmdline.c \
+	core/dump/binary_utils.c \
+	core/dump/print_arp.c \
 	core/dump/print_ether.c \
 	core/dump/print_icmp.c \
 	core/dump/print_ip.c \

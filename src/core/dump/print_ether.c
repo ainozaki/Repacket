@@ -6,6 +6,7 @@
 #include "core/dump/binary_utils.h"
 #include "core/dump/def/ether.h"
 #include "core/dump/def/ip.h"
+#include "core/dump/print.h"
 
 void start_dump(const unsigned char* p, uint8_t len) {
   ether_print(p, len);
@@ -25,7 +26,7 @@ void ether_print(const unsigned char* p, uint8_t len) {
       ip_print(p, len);
       break;
     case X_ETH_P_ARP:
-      printf("ARP");
+      arp_print(p, len);
       break;
     case X_ETH_P_RARP:
       printf("RARP");
