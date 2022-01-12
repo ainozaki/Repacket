@@ -8,7 +8,7 @@
 
 void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;
-  while ((opt = getopt(argc, argv, "i:d::")) != -1) {
+  while ((opt = getopt(argc, argv, "i:d::f::")) != -1) {
     switch (opt) {
       case 'i':
         cfg->ifname = optarg;
@@ -16,6 +16,9 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
         break;
       case 'd':
         cfg->run_mode = DETACH;
+        break;
+      case 'f':
+        cfg->run_mode = GEN;
         break;
       default:
         printf("unknown cmdline option.\n");

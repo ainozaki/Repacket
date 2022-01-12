@@ -6,6 +6,7 @@
 #include "base/config.h"
 #include "base/logger.h"
 #include "base/parse_cmdline.h"
+#include "core/gen/generator.h"
 #include "core/xdp/loader.h"
 #include "core/xdp/perf_event_handler.h"
 
@@ -14,6 +15,15 @@ void xdump(struct config cfg) {
   int map_fd = -1;
 
   switch (cfg.run_mode) {
+		case GEN:
+			err = gen(&cfg);
+			if (err) {
+				LOG_ERROR("Err while generating XDP program.\n");
+				return;
+			}
+			return;
+			// Continue to attach.
+
     case ATTACH:
       // Attach BPF program.
       err = attach(&cfg, &map_fd);

@@ -4,7 +4,7 @@
 #include <linux/types.h>
 #include <stdbool.h>
 
-enum mode { ATTACH, DETACH };
+enum mode { ATTACH, DETACH, GEN };
 
 struct config {
   __u32 xdp_flags;
