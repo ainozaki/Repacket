@@ -40,15 +40,16 @@ get-libbpf() {
     if [ -f ${DEPS}/libbpf_installed ]; then
         return
     fi
-    LIBBPF=${DEPS}/libbpf-0.6.1
+    LIBBPF=${DEPS}/libbpf
     INSTALL=${DEPS}
     mkdir -p ${DEPS}/lib
     mkdir -p ${DEPS}/include
     rm -rf ${LIBBPF}
     pushd .
     cd ${DEPS}
-		wget https://github.com/libbpf/libbpf/archive/refs/tags/v0.6.1.tar.gz
-		tar -zxvf v0.6.1.tar.gz
+		git clone https://github.com/libbpf/libbpf || true
+    cd "${LIBBPF}"
+    git checkout b91f53e
     cd ${LIBBPF}/src
     make
     DESTDIR=$INSTALL make install
