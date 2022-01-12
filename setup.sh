@@ -35,42 +35,34 @@ get-cmdline(){
 }
 
 get-libbpf() {
-    DEPS_DIR="${ROOT_DIR}/deps"
-    mkdir -p "${DEPS_DIR}"
-    if [ -f "${DEPS_DIR}/libbpf_installed" ]; then
+    DEPS=${ROOT_DIR}/deps
+    mkdir -p ${DEPS}
+    if [ -f ${DEPS}/libbpf_installed ]; then
         return
     fi
-    LIBBPF_DIR="${DEPS_DIR}/libbpf"
-    INSTALL_DIR=${DEPS_DIR}
-    mkdir -p "${INSTALL_DIR}/lib"
-    mkdir -p "${INSTALL_DIR}/include"
-    rm -rf "${LIBBPF_DIR}"
+    LIBBPF=${DEPS}/libbpf-0.6.1
+    INSTALL=${DEPS}
+    mkdir -p ${DEPS}/lib
+    mkdir -p ${DEPS}/include
+    rm -rf ${LIBBPF}
     pushd .
-    cd "${DEPS_DIR}"
-    echo -e "${COLOR_GREEN}[ INFO ] Cloning libbpf repo ${COLOR_OFF}"
-    #git clone --depth 1 https://github.com/libbpf/libbpf || true
-    git clone https://github.com/libbpf/libbpf || true
-    cd "${LIBBPF_DIR}"
-    git checkout b91f53e
-    cd "${LIBBPF_DIR}"/src
+    cd ${DEPS}
+		wget https://github.com/libbpf/libbpf/archive/refs/tags/v0.6.1.tar.gz
+		tar -zxvf v0.6.1.tar.gz
+    cd ${LIBBPF}/src
     make
-    #on centos the cp -fpR used was throwing an error, so just use a regular cp -R
-    if [ -f /etc/redhat-release ]; then
-        sed -i 's/cp -fpR/cp -R/g' Makefile
-    fi
-    DESTDIR="$INSTALL_DIR" make install
-    cd "$LIBBPF_DIR"
-    cp -r include/uapi "$INSTALL_DIR"/usr/include/bpf/
-    # Move to CMAKE_PREFIX_PATH so that cmake can easily discover them
-    cd "$INSTALL_DIR"
-    mv "$INSTALL_DIR"/usr/include/bpf "$INSTALL_DIR"/include/
-    cp -r "$INSTALL_DIR"/usr/lib64/* "$INSTALL_DIR"/lib/
+    DESTDIR=$INSTALL make install
+    cd $LIBBPF
+    cp -r include/uapi $INSTALL/usr/include/bpf/
+    cd $INSTALL
+    mv $INSTALL/usr/include/bpf $INSTALL/include/
+    cp -r $INSTALL/usr/lib64/* $INSTALL/lib/
     echo -e "${COLOR_GREEN}libbpf is installed ${COLOR_OFF}"
     popd
-    touch "${DEPS_DIR}/libbpf_installed"
+    touch ${DEPS}/libbpf_installed
 }
 
-get-software-ubuntu
+#get-software-ubuntu
 get-libbpf
 #get-yaml-cpp
 #get-cmdline

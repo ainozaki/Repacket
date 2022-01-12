@@ -22,6 +22,7 @@ LIBXAPTURE_SRC=\
 	core/dump/print_ether.c \
 	core/dump/print_icmp.c \
 	core/dump/print_ip.c \
+	core/gen/generator.c \
 	core/xdp/loader.c \
 	core/xdp/perf_event_handler.c
 LIBXAPTURE_OBJ=$(LIBXAPTURE_SRC:.c=.o)
@@ -37,6 +38,7 @@ HDRS=\
 	core/dump/def/ip.h \
 	core/dump/def/ether.h \
 	core/dump/def/types.h \
+	core/gen/generator.h \
 	core/dump/print.h \
 	core/xdp/loader.h \
 	core/xdp/perf_event_handler.h
