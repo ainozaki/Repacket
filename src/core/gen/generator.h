@@ -3,6 +3,6 @@
 
 #include "base/config.h"
 
-int gen(const struct config *cfg);
+int gen(const struct config* cfg);
 
-#endif // GENERATOR_H_
+#endif  // GENERATOR_H_

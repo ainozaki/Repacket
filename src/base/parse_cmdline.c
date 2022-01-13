@@ -31,6 +31,7 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
   const char* dst = "dst";
   const char* host = "host";
   const char* port = "port";
+  const char* icmp = "icmp";
 
   while (optind < argc) {
     if (!strcmp(argv[optind], dst)) {
@@ -43,6 +44,8 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
         cfg->filter->tcp_dst = atoi(argv[optind]);
         cfg->filter->udp_dst = atoi(argv[optind]);
       }
+    } else if (!strcmp(argv[optind], icmp)) {
+      cfg->filter->ip_proto = ICMP;
     }
     optind++;
   }
