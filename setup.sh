@@ -63,7 +63,7 @@ get-libbpf() {
     touch ${DEPS}/libbpf_installed
 }
 
-#get-software-ubuntu
+get-software-ubuntu
 get-libbpf
-#get-yaml-cpp
+get-yaml-cpp
 #get-cmdline

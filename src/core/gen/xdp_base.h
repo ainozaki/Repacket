@@ -35,20 +35,13 @@ const char *define_struct =
 
 const char *sec = "SEC(\"xdp_generated\") "
 		"int xdp_parse_prog(struct xdp_md* ctx){\n"
-    "void *data = (void *)(long)ctx->data;\n"
+    		"void *data = (void *)(long)ctx->data;\n"
 		"void *data_end = (void *)(long)ctx->data_end;\n"
 		"__u64 flags = BPF_F_CURRENT_CPU;\n"
 		"__u16 sample_size;\n"
 		"int ret;\n"
 		"struct S metadata;\n"
-		"struct hdr_cursor nh;\n"
-		"nh.pos = data;\n"
-		"struct ethhdr *eth = nh.pos;\n"
-		"nh.pos += sizeof(*eth);\n"
-		"if (eth + 1 > data_end){return -1; }\n"
-		"struct iphdr *iph = nh.pos;\n"
-		"if (iph + 1 > data_end){ return -1; }\n"
-		"if (iph->protocol == %s){ return XDP_PASS; }\n"
+		"%s"
 		"metadata.cookie = 0xdead;\n"
 		"metadata.packet_len = (__u16)(data_end - data);\n"
 		"sample_size = metadata.packet_len <= SAMPLE_SIZE ? metadata.packet_len : SAMPLE_SIZE;\n"
@@ -59,5 +52,15 @@ const char *sec = "SEC(\"xdp_generated\") "
 		"}\n"
 		"return XDP_PASS;\n"
 		"}\n";
+
+const char *filter_base = 
+		"struct hdr_cursor nh;\n"
+		"nh.pos = data;\n"
+		"struct ethhdr *eth = nh.pos;\n"
+		"nh.pos += sizeof(*eth);\n"
+		"if (eth + 1 > data_end){return -1; }\n"
+		"struct iphdr *iph = nh.pos;\n"
+		"if (iph + 1 > data_end){ return -1; }\n"
+		"if (%s){ return XDP_PASS; }\n";
 
 #endif  // XDP_PROG_BASE_H_

@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-enum mode { ATTACH, DETACH, FILTER };
+enum mode { ATTACH, DETACH, DUMPALL, FILTER };
 
 enum proto { ICMP };
 
