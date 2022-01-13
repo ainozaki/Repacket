@@ -45,7 +45,7 @@ void ip_print(const unsigned char* p, uint8_t len) {
       printf("IGP");
       break;
     case X_IPPROTO_UDP:
-      printf("UDP");
+      udp_print(p, len);
       break;
     case X_IPPROTO_IPv6:
       printf("IPv6");

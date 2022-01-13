@@ -35,7 +35,7 @@ int gen(const struct config* cfg) {
 
   // compile XDP code using clang.
   int err;
-  err - clang = system(
+  err = system(
       "clang -S \
 	    -target bpf \
 	    -D __BPF_TRACING__ \
