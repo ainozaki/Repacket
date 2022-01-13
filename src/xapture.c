@@ -2,6 +2,7 @@
 #include <linux/if_link.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "base/config.h"
 #include "base/logger.h"
@@ -15,14 +16,14 @@ void xdump(struct config cfg) {
   int map_fd = -1;
 
   switch (cfg.run_mode) {
-		case GEN:
-			err = gen(&cfg);
-			if (err) {
-				LOG_ERROR("Err while generating XDP program.\n");
-				return;
-			}
-			return;
-			// Continue to attach.
+    case FILTER:
+      err = gen(&cfg);
+      if (err) {
+        LOG_ERROR("Err while generating XDP program.\n");
+        return;
+      }
+      return;
+      // Continue to attach.
 
     case ATTACH:
       // Attach BPF program.
@@ -56,13 +57,17 @@ void xdump(struct config cfg) {
 
 int main(int argc, char** argv) {
   struct config cfg = {
-      .xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
+      //.xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST,
+      .xdp_flags = XDP_FLAGS_SKB_MODE,
       .ifindex = -1,
       .run_mode = ATTACH,
+      .filter = (struct filter*)malloc(sizeof(struct filter)),
   };
   parse_cmdline(argc, argv, &cfg);
 
   xdump(cfg);
+
+  free(cfg.filter);
 
   return 0;
 }
