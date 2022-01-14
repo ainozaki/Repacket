@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>
+#include <sys/sysinfo.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -19,7 +20,7 @@
 #include "core/dump/print.h"
 #include "core/xdp/loader.h"
 
-#define MAX_CPUS 128
+#define MAX_CPUS 12
 #define PAGE_CNT 8
 
 static int pmu_fds[MAX_CPUS];
@@ -33,7 +34,7 @@ static int catch_signal = 0;
 
 int perf_event(struct config* cfg, int* map_fd) {
   int err;
-  int cpu_num = libbpf_num_possible_cpus();
+  int cpu_num = get_nprocs();
 
   config = cfg;
 
@@ -103,7 +104,7 @@ void poll_perf_event(int* fds,
   struct pollfd* pfds;
   void* buf = NULL;
   size_t len = 0;
-  int cpu_num = libbpf_num_possible_cpus();
+  int cpu_num = num_fds;
   int page_size = getpagesize();
 
   // register SIGNINT handler.
