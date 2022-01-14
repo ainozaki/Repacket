@@ -34,7 +34,7 @@ nh.pos += sizeof(*eth);
 if (eth + 1 > data_end){return -1; }
 struct iphdr *iph = nh.pos;
 if (iph + 1 > data_end){ return -1; }
-if (iph->protocol == IPPROTO_ICMP){ return XDP_PASS; }
+if (iph->protocol==IPPROTO_ICMP){ return XDP_PASS; }
 metadata.cookie = 0xdead;
 metadata.packet_len = (__u16)(data_end - data);
 sample_size = metadata.packet_len <= SAMPLE_SIZE ? metadata.packet_len : SAMPLE_SIZE;

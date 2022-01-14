@@ -41,11 +41,11 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
         strcpy(cfg->filter->ip_dst, argv[optind]);
       } else if (!strcmp(argv[optind], port)) {
         optind++;
-        cfg->filter->tcp_dst = atoi(argv[optind]);
-        cfg->filter->udp_dst = atoi(argv[optind]);
+        strcpy(cfg->filter->tcp_dst, argv[optind]);
+        strcpy(cfg->filter->udp_dst, argv[optind]);
       }
     } else if (!strcmp(argv[optind], icmp)) {
-      cfg->filter->ip_proto = ICMP;
+      strcpy(cfg->filter->ip_proto, "IPPROTO_ICMP");
     }
     optind++;
   }

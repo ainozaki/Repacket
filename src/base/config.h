@@ -10,11 +10,11 @@ enum mode { ATTACH, DETACH, DUMPALL, FILTER };
 enum proto { ICMP };
 
 struct filter {
-  char ip_dst[sizeof("255.255.255.255")];
-  char ip_src[sizeof("255.255.255.255")];
-  enum proto ip_proto;
-  uint16_t tcp_dst;
-  uint16_t udp_dst;
+  char ip_dst[16];
+  char ip_src[16];
+  char ip_proto[16];
+  char tcp_dst[6];
+  char udp_dst[6];
 };
 
 struct config {

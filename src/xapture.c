@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "base/config.h"
 #include "base/logger.h"
@@ -62,6 +63,8 @@ int main(int argc, char** argv) {
       .run_mode = DUMPALL,
       .filter = (struct filter*)malloc(sizeof(struct filter)),
   };
+
+  memset(cfg.filter, 0, sizeof(struct filter));
   parse_cmdline(argc, argv, &cfg);
 
   xdump(cfg);
