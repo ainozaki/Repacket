@@ -75,10 +75,10 @@ void filter_conditional_statement(const struct config* cfg, char buf[]) {
 
   // If config has filtering attributes, convert them into string.
   if (strncmp(cfg->filter->ip_proto, empty, sizeof(cfg->filter->ip_proto))) {
-    sprintf(ip_proto, "(iph && iph->protocol!=%s)", cfg->filter->ip_proto);
+    sprintf(ip_proto, "iph && iph->protocol!=%s", cfg->filter->ip_proto);
   }
   if (strncmp(cfg->filter->tcp_dst, empty, sizeof(cfg->filter->tcp_dst))) {
-    sprintf(tcp_dst, "(tcph && tcph->dest!=%s)", cfg->filter->tcp_dst);
+    sprintf(tcp_dst, "tcph && tcph->dest!=%s", cfg->filter->tcp_dst);
   }
 
   // Concatinate conditional statements.
@@ -89,10 +89,10 @@ void filter_conditional_statement(const struct config* cfg, char buf[]) {
       // strlen doesn't include the end-NULL-byte.
       strcpy(ptr, attributes[i]);
       ptr += strlen(attributes[i]);
-      strcpy(ptr, "|");
-      ptr++;
+      strcpy(ptr, "&&");
+      ptr += 2;
     }
   }
-  memset(ptr - 1, '\0', 1);
+  memset(ptr - 2, '\0', 2);
   return;
 }

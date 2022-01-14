@@ -90,5 +90,5 @@ format:
 	clang-format -i $(LIBXAPTURE_SRC) $(LIBXAPTURE_H) $(C_SRC) $(HDRS)
 
 clean:
-	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll) $(PROG)
+	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll) $(XDP_SRC) $(PROG)
 	find ./ -name "*.o" -type f -delete
