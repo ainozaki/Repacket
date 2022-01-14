@@ -9,12 +9,22 @@ const char *license = "char _license[] SEC(\"license\") = \"GPL\";\n";
 const char *include = 
 		"#include <linux/bpf.h>\n"
 		"#include <bpf/bpf_helpers.h>\n"
+		"#include <linux/icmp.h>\n"
 		"#include <linux/if_ether.h>\n"
 		"#include <linux/ip.h>\n"
+		"#include <linux/tcp.h>\n"
+		"#include <linux/udp.h>\n"
+		"#include <stddef.h>\n"
 		"#define MAX_CPUS 128\n"
 		"#define SAMPLE_SIZE 1024ul\n"
 		"#ifndef IPPROTO_ICMP\n"
 		"#define IPPROTO_ICMP 1\n"
+		"#endif\n"
+		"#ifndef IPPROTO_TCP\n"
+		"#define IPPROTO_TCP 6\n"
+		"#endif\n"
+		"#ifndef IPPROTO_UDP\n"
+		"#define IPPROTO_UDP 17\n"
 		"#endif\n";
 
 // struct
@@ -61,6 +71,21 @@ const char *filter_base =
 		"if (eth + 1 > data_end){return -1; }\n"
 		"struct iphdr *iph = nh.pos;\n"
 		"if (iph + 1 > data_end){ return -1; }\n"
+		"struct tcphdr *tcph = NULL;\n"
+		"struct udphdr *udph = NULL;\n"
+		"struct icmphdr *icmph = NULL;\n"
+		"if (iph->protocol == IPPROTO_ICMP){\n"
+		"icmph = nh.pos;\n"
+		"if (icmph + 1 > data_end) { return XDP_ABORTED;}\n"
+		"nh.pos += sizeof(*icmph);}\n"
+		"if (iph->protocol == IPPROTO_TCP){\n"
+		"tcph = nh.pos;\n"
+		"if (tcph + 1 > data_end) { return XDP_ABORTED;}\n"
+		"nh.pos += sizeof(*tcph);}\n"
+		"if (iph->protocol == IPPROTO_UDP){\n"
+		"udph = nh.pos;\n"
+		"if (udph + 1 > data_end) { return XDP_ABORTED;}\n"
+		"nh.pos += sizeof(*udph);}\n"
 		"if (%s){ return XDP_PASS; }\n";
 
 #endif  // XDP_PROG_BASE_H_

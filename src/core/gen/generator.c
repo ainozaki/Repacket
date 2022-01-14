@@ -68,17 +68,17 @@ int gen(const struct config* cfg) {
 }
 
 void filter_conditional_statement(const struct config* cfg, char buf[]) {
-  char ip_proto[32] = "";
-  char tcp_dst[32] = "";
-  char empty[32] = "";
+  char ip_proto[64] = "";
+  char tcp_dst[64] = "";
+  char empty[64] = "";
   char* attributes[] = {ip_proto, tcp_dst};
 
   // If config has filtering attributes, convert them into string.
   if (strncmp(cfg->filter->ip_proto, empty, sizeof(cfg->filter->ip_proto))) {
-    sprintf(ip_proto, "iph->protocol==%s", cfg->filter->ip_proto);
+    sprintf(ip_proto, "(iph && iph->protocol!=%s)", cfg->filter->ip_proto);
   }
   if (strncmp(cfg->filter->tcp_dst, empty, sizeof(cfg->filter->tcp_dst))) {
-    sprintf(tcp_dst, "tcph->dest==%s", cfg->filter->tcp_dst);
+    sprintf(tcp_dst, "(tcph && tcph->dest!=%s)", cfg->filter->tcp_dst);
   }
 
   // Concatinate conditional statements.
