@@ -21,18 +21,26 @@ int gen(const struct config* cfg) {
   fprintf(f, include);
   fprintf(f, define_struct);
 
-  char filter[1024] = "";
+  char parse[1024] = "";
+  char action[1024] = "";
   char buff[128] = "";
+  char buff2[256] = "";
   switch (cfg->run_mode) {
     case FILTER:
       filter_conditional_statement(cfg, buff);
-      sprintf(filter, filter_base, buff);
-      fprintf(f, sec, filter);
+      sprintf(action, filter_base, buff);
+      sprintf(parse, parse_base, action);
+      break;
+    case REWRITE:
+      rewrite_statement(cfg, buff, buff2);
+      sprintf(action, rewrite_base, buff, buff2);
+      sprintf(parse, parse_base, action);
       break;
     default:
       // case DUMPALL
-      fprintf(f, sec, "");
+      break;
   }
+  fprintf(f, sec_base, parse);
   fprintf(f, license);
 
   fclose(f);
@@ -94,5 +102,27 @@ void filter_conditional_statement(const struct config* cfg, char buf[]) {
     }
   }
   memset(ptr - 2, '\0', 2);
+  return;
+}
+
+void rewrite_statement(const struct config* cfg, char buf[], char buf2[]) {
+  char tcp_dst[6] = "";
+  char empty[64] = "";
+  int use_tcp = 0;
+
+  // If config has filtering attributes, convert them into string.
+  if (strncmp(cfg->filter->tcp_dst, empty, sizeof(cfg->filter->tcp_dst))) {
+    use_tcp = 1;
+    strcpy(tcp_dst, cfg->filter->tcp_dst);
+		const char *tcp_port = "unsigned long sum = bpf_ntohs(tcph->check) + bpf_ntohs(tcph->dest) + ((~%s & 0xffff) + 1);\n"
+													"tcph->check = bpf_htons(sum & 0xffff);"
+													"tcph->dest = bpf_htons(%s);\n";
+    sprintf(buf2, tcp_port, cfg->filter->tcp_dst, cfg->filter->tcp_dst);
+  }
+
+  // Prevent NULL pointer access.
+  if (use_tcp) {
+    strncpy(buf, "tcph", 5);
+  }
   return;
 }

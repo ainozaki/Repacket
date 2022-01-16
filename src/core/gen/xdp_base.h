@@ -9,6 +9,7 @@ const char *license = "char _license[] SEC(\"license\") = \"GPL\";\n";
 const char *include = 
 		"#include <linux/bpf.h>\n"
 		"#include <bpf/bpf_helpers.h>\n"
+		"#include <bpf/bpf_endian.h>\n"
 		"#include <linux/icmp.h>\n"
 		"#include <linux/if_ether.h>\n"
 		"#include <linux/ip.h>\n"
@@ -43,7 +44,7 @@ const char *define_struct =
 		"void *pos;\n"
 		"};\n";
 
-const char *sec = "SEC(\"xdp_generated\") "
+const char *sec_base = "SEC(\"xdp_generated\") "
 		"int xdp_parse_prog(struct xdp_md* ctx){\n"
     		"void *data = (void *)(long)ctx->data;\n"
 		"void *data_end = (void *)(long)ctx->data_end;\n"
@@ -63,7 +64,7 @@ const char *sec = "SEC(\"xdp_generated\") "
 		"return XDP_PASS;\n"
 		"}\n";
 
-const char *filter_base = 
+const char *parse_base = 
 		"struct hdr_cursor nh;\n"
 		"nh.pos = data;\n"
 		"struct ethhdr *eth = nh.pos;\n"
@@ -71,6 +72,7 @@ const char *filter_base =
 		"if (eth + 1 > data_end){return -1; }\n"
 		"struct iphdr *iph = nh.pos;\n"
 		"if (iph + 1 > data_end){ return -1; }\n"
+		"nh.pos += sizeof(*iph);\n"
 		"struct tcphdr *tcph = NULL;\n"
 		"struct udphdr *udph = NULL;\n"
 		"struct icmphdr *icmph = NULL;\n"
@@ -86,6 +88,10 @@ const char *filter_base =
 		"udph = nh.pos;\n"
 		"if (udph + 1 > data_end) { return XDP_ABORTED;}\n"
 		"nh.pos += sizeof(*udph);}\n"
-		"if (%s){ return XDP_PASS; }\n";
+		"%s";
+
+const char *filter_base = "if (%s){ return XDP_PASS; }\n";
+
+const char *rewrite_base = "if(%s){%s}\n";
 
 #endif  // XDP_PROG_BASE_H_

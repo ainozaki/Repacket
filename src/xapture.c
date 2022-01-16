@@ -19,6 +19,7 @@ void xdump(struct config cfg) {
   switch (cfg.run_mode) {
     case DUMPALL:
     case FILTER:
+    case REWRITE:
       err = gen(&cfg);
       if (err) {
         LOG_ERROR("Err while generating XDP program.\n");

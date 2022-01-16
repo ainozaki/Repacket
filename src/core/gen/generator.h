@@ -5,7 +5,8 @@
 
 int gen(const struct config* cfg);
 
-// generate code of FILTER mode.
+// generate code in each mode.
 void filter_conditional_statement(const struct config* cfg, char buf[]);
+void rewrite_statement(const struct config* cfg, char buf[], char buf2[]);
 
 #endif  // GENERATOR_H_
