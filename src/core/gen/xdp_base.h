@@ -90,7 +90,7 @@ const char *parse_base =
 		"nh.pos += sizeof(*udph);}\n"
 		"%s";
 
-const char *filter_base = "if (%s){ return XDP_PASS; }\n";
+const char *filter_base = "if (%s){ return %s; }\n";
 
 const char *rewrite_base = "if(%s){%s}\n";
 

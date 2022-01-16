@@ -18,6 +18,7 @@ void xdump(struct config cfg) {
 
   switch (cfg.run_mode) {
     case DUMPALL:
+    case DROP:
     case FILTER:
     case REWRITE:
       err = gen(&cfg);

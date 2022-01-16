@@ -28,12 +28,17 @@ int gen(const struct config* cfg) {
   switch (cfg->run_mode) {
     case FILTER:
       filter_conditional_statement(cfg, buff);
-      sprintf(action, filter_base, buff);
+      sprintf(action, filter_base, buff, "XDP_PASS");
       sprintf(parse, parse_base, action);
       break;
     case REWRITE:
       rewrite_statement(cfg, buff, buff2);
       sprintf(action, rewrite_base, buff, buff2);
+      sprintf(parse, parse_base, action);
+      break;
+    case DROP:
+      filter_conditional_statement(cfg, buff);
+      sprintf(action, filter_base, buff, "XDP_DROP");
       sprintf(parse, parse_base, action);
       break;
     default:
@@ -114,9 +119,11 @@ void rewrite_statement(const struct config* cfg, char buf[], char buf2[]) {
   if (strncmp(cfg->filter->tcp_dst, empty, sizeof(cfg->filter->tcp_dst))) {
     use_tcp = 1;
     strcpy(tcp_dst, cfg->filter->tcp_dst);
-		const char *tcp_port = "unsigned long sum = bpf_ntohs(tcph->check) + bpf_ntohs(tcph->dest) + ((~%s & 0xffff) + 1);\n"
-													"tcph->check = bpf_htons(sum & 0xffff);"
-													"tcph->dest = bpf_htons(%s);\n";
+    const char* tcp_port =
+        "unsigned long sum = bpf_ntohs(tcph->check) + bpf_ntohs(tcph->dest) + "
+        "((~%s & 0xffff) + 1);\n"
+        "tcph->check = bpf_htons(sum & 0xffff);"
+        "tcph->dest = bpf_htons(%s);\n";
     sprintf(buf2, tcp_port, cfg->filter->tcp_dst, cfg->filter->tcp_dst);
   }
 

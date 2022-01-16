@@ -10,17 +10,19 @@
 
 void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;
-  while ((opt = getopt(argc, argv, "i:d::f::r::a::")) != -1) {
+  while ((opt = getopt(argc, argv, "i:d::f::r::a::z::")) != -1) {
     switch (opt) {
-			case 'a':
-				cfg->run_mode = ATTACH;
-				printf("ATTACH mode\n");
-				break;
+      case 'a':
+        cfg->run_mode = ATTACH;
+        break;
+      case 'd':
+        cfg->run_mode = DROP;
+        break;
       case 'i':
         cfg->ifname = optarg;
         cfg->ifindex = if_nametoindex(cfg->ifname);
         break;
-      case 'd':
+      case 'z':
         cfg->run_mode = DETACH;
         break;
       case 'f':
