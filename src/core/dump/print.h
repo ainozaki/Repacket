@@ -11,6 +11,7 @@ void arp_print(const unsigned char* p, uint8_t len);
 void ether_print(const unsigned char* p, uint8_t len);
 void ip_print(const unsigned char* p, uint8_t len);
 void icmp_print(const unsigned char* p, uint8_t len);
+void tcp_print(const unsigned char* p, uint8_t len);
 void udp_print(const unsigned char* p, uint8_t len);
 
 #endif  // PRINT_H_

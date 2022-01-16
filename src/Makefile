@@ -22,6 +22,7 @@ LIBXAPTURE_SRC=\
 	core/dump/print_ether.c \
 	core/dump/print_icmp.c \
 	core/dump/print_ip.c \
+	core/dump/print_tcp.c \
 	core/dump/print_udp.c \
 	core/gen/generator.c \
 	core/xdp/loader.c \
@@ -38,6 +39,7 @@ HDRS=\
 	core/dump/def/icmp.h \
 	core/dump/def/ip.h \
 	core/dump/def/ether.h \
+	core/dump/def/tcp.h \
 	core/dump/def/types.h \
 	core/dump/def/udp.h \
 	core/gen/generator.h \

@@ -33,7 +33,7 @@ void ip_print(const unsigned char* p, uint8_t len) {
       printf("IP");
       break;
     case X_IPPROTO_TCP:
-      printf("TCP");
+      tcp_print(p, len);
       break;
     case X_IPPROTO_CBT:
       printf("CBT");
