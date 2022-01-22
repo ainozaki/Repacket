@@ -7,6 +7,15 @@
 #include <unistd.h>
 
 #include "base/config.h"
+#include "base/logger.h"
+
+void check_range_port(const char* p) {
+  int port = atoi(p);
+  if (port < 0 | 65535 < port) {
+    LOG_ERROR("Port value is %d. It must be between 0-65535.\n", port);
+    exit(1);
+  }
+}
 
 void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;
@@ -37,25 +46,45 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
   }
 
   // parse filtering options.
-  const char* dst = "dst";
-  const char* host = "host";
-  const char* port = "port";
-  const char* icmp = "icmp";
+  const char* ip_protocol = "ip_protocol";
+  const char* tcp_src = "tcp_src";
+  const char* tcp_dst = "tcp_dst";
+  const char* udp_src = "udp_src";
+  const char* udp_dst = "udp_dst";
 
   while (optind < argc) {
-    if (!strcmp(argv[optind], dst)) {
-      optind++;
-      if (!strcmp(argv[optind], host)) {
-        optind++;
-        strcpy(cfg->filter->ip_dst, argv[optind]);
-      } else if (!strcmp(argv[optind], port)) {
-        optind++;
-        strcpy(cfg->filter->tcp_dst, argv[optind]);
-        strcpy(cfg->filter->udp_dst, argv[optind]);
+    char* key = argv[optind++];
+    char* value = argv[optind++];
+
+    // ip_protocol
+    if (!strcmp(key, ip_protocol)) {
+      if (!strcmp(value, "icmp")) {
+        strcpy(cfg->filter->ip_proto, "IPPROTO_ICMP");
       }
-    } else if (!strcmp(argv[optind], icmp)) {
-      strcpy(cfg->filter->ip_proto, "IPPROTO_ICMP");
     }
-    optind++;
+
+    // tcp_src
+    if (!strcmp(key, tcp_src)) {
+      check_range_port(value);
+      strcpy(cfg->filter->tcp_src, value);
+    }
+
+    // tcp_dst
+    if (!strcmp(key, tcp_dst)) {
+      check_range_port(value);
+      strcpy(cfg->filter->tcp_dst, value);
+    }
+
+    // udp_src
+    if (!strcmp(key, udp_src)) {
+      check_range_port(value);
+      strcpy(cfg->filter->udp_src, value);
+    }
+
+    // udp_dst
+    if (!strcmp(key, udp_dst)) {
+      check_range_port(value);
+      strcpy(cfg->filter->udp_dst, value);
+    }
   }
 }
