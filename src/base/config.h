@@ -25,6 +25,8 @@ struct config {
   char* ifname;
   enum mode run_mode;
   struct filter* filter;
+  struct filter* if_filter;
+  struct filter* then_filter;
 };
 
 #endif  // DEFINE_H_
