@@ -192,7 +192,7 @@ int print_dump(void* data, int size) {
   }
 
   // TODO: convert or make pkt_len to __u8.
-  start_dump(e->pkt_data, e->pkt_len);
+  start_dump(config, e->pkt_data, e->pkt_len);
 
   return LIBBPF_PERF_EVENT_CONT;
 }

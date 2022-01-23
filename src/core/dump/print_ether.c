@@ -8,8 +8,15 @@
 #include "core/dump/def/ip.h"
 #include "core/dump/print.h"
 
-void start_dump(const unsigned char* p, uint8_t len) {
-  ether_print(p, len);
+void start_dump(struct config *config, const unsigned char* p, uint8_t len) {
+	switch (config->dump_mode){
+		case NORMAL:
+  		ether_print(p, len);
+			break;
+		case FRIENDLY:
+  		ether_friendly_print(p, len);
+			break;
+	}
   printf("\n");
 }
 
@@ -68,4 +75,20 @@ void ether_print(const unsigned char* p, uint8_t len) {
       printf("unknown ethertype");
       break;
   }
+}
+
+void ether_friendly_print(const unsigned char* p, uint8_t len) {
+  p += MAC_ADDR_LEN * 2;
+  len -= MAC_ADDR_LEN * 2;
+
+  uint16_t ethertype = GET_U16(p);
+  p += ETHER_PROTO_LEN;
+  len -= ETHER_PROTO_LEN;
+
+	printf("\t|-------8------16------24------32\n");
+  switch (ethertype) {
+    case X_ETH_P_IPV4:
+      ip_friendly_print(p, len);
+      break;
+	}
 }

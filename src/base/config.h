@@ -5,7 +5,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-enum mode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
+enum run_mode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
+
+enum dump_mode { NORMAL, FRIENDLY };
 
 enum proto { ICMP };
 
@@ -23,7 +25,8 @@ struct config {
   __u32 xdp_flags;
   int ifindex;
   char* ifname;
-  enum mode run_mode;
+  enum run_mode run_mode;
+	enum dump_mode dump_mode;
   struct filter* filter;
   struct filter* if_filter;
   struct filter* then_filter;
