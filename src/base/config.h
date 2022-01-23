@@ -26,7 +26,7 @@ struct config {
   int ifindex;
   char* ifname;
   enum run_mode run_mode;
-	enum dump_mode dump_mode;
+  enum dump_mode dump_mode;
   struct filter* filter;
   struct filter* if_filter;
   struct filter* then_filter;

@@ -35,7 +35,7 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
         cfg->run_mode = DETACH;
         break;
       case 'f':
-        cfg->run_mode = FILTER;
+        cfg->dump_mode = FRIENDLY;
         break;
       case 'r':
         cfg->run_mode = REWRITE;

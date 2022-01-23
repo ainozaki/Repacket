@@ -8,15 +8,15 @@
 #include "core/dump/def/ip.h"
 #include "core/dump/print.h"
 
-void start_dump(struct config *config, const unsigned char* p, uint8_t len) {
-	switch (config->dump_mode){
-		case NORMAL:
-  		ether_print(p, len);
-			break;
-		case FRIENDLY:
-  		ether_friendly_print(p, len);
-			break;
-	}
+void start_dump(struct config* config, const unsigned char* p, uint8_t len) {
+  switch (config->dump_mode) {
+    case NORMAL:
+      ether_print(p, len);
+      break;
+    case FRIENDLY:
+      ether_friendly_print(p, len);
+      break;
+  }
   printf("\n");
 }
 
@@ -85,10 +85,10 @@ void ether_friendly_print(const unsigned char* p, uint8_t len) {
   p += ETHER_PROTO_LEN;
   len -= ETHER_PROTO_LEN;
 
-	printf("\t|-------8------16------24------32\n");
+  printf("\t|-------8------16------24------32\n");
   switch (ethertype) {
     case X_ETH_P_IPV4:
       ip_friendly_print(p, len);
       break;
-	}
+  }
 }

@@ -5,7 +5,7 @@
 
 #include <base/config.h>
 
-void start_dump(struct config *config, const unsigned char* p, uint8_t len);
+void start_dump(struct config* config, const unsigned char* p, uint8_t len);
 
 // Forward declaration of xxx_print()
 // There functions are defined in print-xxx.c
