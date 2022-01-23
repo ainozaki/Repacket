@@ -10,6 +10,7 @@
 
 int gen(const struct config* cfg) {
   FILE* f;
+  int err;
 
   f = fopen("xdp-generated-kern.c", "w");
   if (!f) {
@@ -50,6 +51,14 @@ int gen(const struct config* cfg) {
 
   fclose(f);
 
+  err = compile();
+  if (err) {
+    LOG_ERROR("Err while compiling xdp-generated-kern.c\n");
+  }
+  return err;
+}
+
+int compile() {
   // compile XDP code using clang.
   int err;
   err = system(
@@ -111,25 +120,36 @@ void filter_conditional_statement(const struct config* cfg, char buf[]) {
 }
 
 void rewrite_statement(const struct config* cfg, char buf[], char buf2[]) {
-  char tcp_dst[6] = "";
   char empty[64] = "";
   int use_tcp = 0;
+  int use_udp = 0;
+
+  const struct filter* filter = cfg->filter;
 
   // If config has filtering attributes, convert them into string.
-  if (strncmp(cfg->filter->tcp_dst, empty, sizeof(cfg->filter->tcp_dst))) {
+  // tcp_dst
+  if (strncmp(filter->tcp_dst, empty, sizeof(filter->tcp_dst))) {
     use_tcp = 1;
-    strcpy(tcp_dst, cfg->filter->tcp_dst);
-    const char* tcp_port =
+    const char* tcp_dst =
         "unsigned long sum = bpf_ntohs(tcph->check) + bpf_ntohs(tcph->dest) + "
         "((~%s & 0xffff) + 1);\n"
         "tcph->check = bpf_htons(sum & 0xffff);"
         "tcph->dest = bpf_htons(%s);\n";
-    sprintf(buf2, tcp_port, cfg->filter->tcp_dst, cfg->filter->tcp_dst);
+    sprintf(buf2, tcp_dst, filter->tcp_dst, filter->tcp_dst);
+  }
+
+  // udp_dst
+  if (strncmp(filter->udp_dst, empty, sizeof(filter->udp_dst))) {
+    use_udp = 1;
+    const char* udp_dst = "udph->dest = bpf_htons(%s);\n";
+    sprintf(buf2, udp_dst, filter->udp_dst);
   }
 
   // Prevent NULL pointer access.
   if (use_tcp) {
     strncpy(buf, "tcph", 5);
+  } else if (use_udp) {
+    strncpy(buf, "udph", 5);
   }
   return;
 }
