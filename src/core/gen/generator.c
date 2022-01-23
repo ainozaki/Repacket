@@ -28,22 +28,26 @@ int gen(const struct config* cfg) {
   char buff2[256] = "";
   switch (cfg->run_mode) {
     case FILTER:
+      LOG_INFO("FILTER mode.\n");
       filter_conditional_statement(cfg, buff);
       sprintf(action, filter_base, buff, "XDP_PASS");
       sprintf(parse, parse_base, action);
       break;
     case REWRITE:
+      LOG_INFO("REWRITE mode.\n");
       rewrite_statement(cfg, buff, buff2);
       sprintf(action, rewrite_base, buff, buff2);
       sprintf(parse, parse_base, action);
       break;
     case DROP:
+      LOG_INFO("DROP mode.\n");
       filter_conditional_statement(cfg, buff);
       sprintf(action, filter_base, buff, "XDP_DROP");
       sprintf(parse, parse_base, action);
       break;
     default:
       // case DUMPALL
+      LOG_INFO("DUMPALL mode.\n");
       break;
   }
   fprintf(f, sec_base, parse);

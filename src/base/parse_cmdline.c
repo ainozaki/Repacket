@@ -1,5 +1,6 @@
 #include "base/parse_cmdline.h"
 
+#include <assert.h>
 #include <net/if.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,30 +20,49 @@ void check_range_port(const char* p) {
 
 void parse_cmdline(int argc, char** argv, struct config* cfg) {
   int opt;
+  int has_i_option = 0;
   while ((opt = getopt(argc, argv, "i:d::f::r::a::z::")) != -1) {
     switch (opt) {
-      case 'a':
-        cfg->run_mode = ATTACH;
-        break;
-      case 'd':
-        cfg->run_mode = DROP;
-        break;
       case 'i':
+        has_i_option = 1;
         cfg->ifname = optarg;
         cfg->ifindex = if_nametoindex(cfg->ifname);
+        break;
+      case 'a':
+        cfg->run_mode = ATTACH;
         break;
       case 'z':
         cfg->run_mode = DETACH;
         break;
-      case 'f':
-        cfg->dump_mode = FRIENDLY;
-        break;
       case 'r':
         cfg->run_mode = REWRITE;
         break;
+      case 'd':
+        cfg->run_mode = DROP;
+        break;
+      case 'f':
+        cfg->dump_mode = FRIENDLY;
+        break;
       default:
-        printf("unknown cmdline option.\n");
+        break;
     }
+  }
+
+  if (!has_i_option) {
+    LOG_ERROR("Interface must be specified.\n");
+    exit(1);
+  }
+
+  // assert run_mode
+  // DUMPALL, ATTACH, DETACH mode.
+  if (optind == argc) {
+    assert((cfg->run_mode == ATTACH) | (cfg->run_mode == DETACH) |
+           (cfg->run_mode = DUMPALL));
+    return;
+  }
+  // FILTER mode.
+  if ((cfg->run_mode != REWRITE) | (cfg->run_mode != DROP)) {
+    cfg->run_mode = FILTER;
   }
 
   // parse filtering options.
