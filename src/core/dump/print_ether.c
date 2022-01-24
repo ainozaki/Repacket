@@ -96,6 +96,9 @@ void ether_friendly_print(const unsigned char* p, uint8_t len) {
 
   printf("\t|-------8------16------24------32\n");
   switch (ethertype) {
+    case X_ETH_P_ARP:
+      arp_friendly_print(p, len);
+      break;
     case X_ETH_P_IPV4:
       ip_friendly_print(p, len);
       break;
