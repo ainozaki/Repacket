@@ -2,6 +2,8 @@
 
 #include <linux/types.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "core/dump/binary_utils.h"
 #include "core/dump/def/ether.h"
@@ -21,6 +23,13 @@ void start_dump(struct config* config, const unsigned char* p, uint8_t len) {
 }
 
 void ether_print(const unsigned char* p, uint8_t len) {
+  struct timeval t;
+  struct tm* tm;
+  gettimeofday(&t, NULL);
+  tm = localtime(&t.tv_sec);
+  printf("%02d:%02d:%02d.%06ld ", tm->tm_hour, tm->tm_min, tm->tm_sec,
+         t.tv_usec);
+
   p += MAC_ADDR_LEN * 2;
   len -= MAC_ADDR_LEN * 2;
 

@@ -18,4 +18,5 @@ void udp_print(const unsigned char* p, uint8_t len);
 
 void ether_friendly_print(const unsigned char* p, uint8_t len);
 void ip_friendly_print(const unsigned char* p, uint8_t len);
+void icmp_friendly_print(const unsigned char* p, uint8_t len);
 #endif  // PRINT_H_

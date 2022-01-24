@@ -1,6 +1,8 @@
 #ifndef X_ICMP_H_
 #define X_ICMP_H_
 
+#include <stdint.h>
+
 #include "core/dump/def/types.h"
 
 #define ICMP_ECHO_REPLY 1
@@ -10,9 +12,11 @@
 #define ICMP_TIME_EXCEEDED 11
 
 struct icmp {
-  n_uint8_t type;
-  n_uint8_t code;
-  n_uint16_t chsum;
+  uint8_t type;
+  uint8_t code;
+  uint16_t chsum;
+  uint16_t id;
+  uint16_t seq;
 };
 
 #endif  // X_ICMP_H_

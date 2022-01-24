@@ -192,13 +192,6 @@ int print_dump(void* data, int size) {
     return LIBBPF_PERF_EVENT_ERROR;
   }
 
-  struct timeval t;
-  struct tm* tm;
-  gettimeofday(&t, NULL);
-  tm = localtime(&t.tv_sec);
-  printf("%02d:%02d:%02d.%06ld ", tm->tm_hour, tm->tm_min, tm->tm_sec,
-         t.tv_usec);
-
   // TODO: convert or make pkt_len to __u8.
   start_dump(config, e->pkt_data, e->pkt_len);
 

@@ -144,4 +144,10 @@ void ip_friendly_print(const unsigned char* p, uint8_t len) {
   printf("\t|ttl%4d|proto%2d|csum%11d|\n", ttl, proto, csum);
   printf("\t|src%28s|\n", src);
   printf("\t|dst%28s|\n", dst);
+
+  switch (proto) {
+    case X_IPPROTO_ICMP:
+      icmp_friendly_print(p, len);
+      break;
+  }
 }
