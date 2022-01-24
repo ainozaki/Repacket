@@ -44,6 +44,17 @@ const char *define_struct =
 		"void *pos;\n"
 		"};\n";
 
+// inline func
+const char *always_inline = 
+		"static __always_inline __u16 csum_fold_helper(__u32 csum){"
+		"return ~((csum & 0xffff) + (csum >> 16));"
+		"}\n"
+    "static __always_inline void calc_csum(void *data_start, int data_size, __u32 *csum){"
+		"*csum = bpf_csum_diff(0, 0, data_start, data_size, *csum);"
+		"*csum = csum_fold_helper(*csum);"
+    "}\n";
+
+
 const char *sec_base = "SEC(\"xdp_generated\") "
 		"int xdp_parse_prog(struct xdp_md* ctx){\n"
     		"void *data = (void *)(long)ctx->data;\n"
@@ -70,6 +81,9 @@ const char *parse_base =
 		"struct ethhdr *eth = nh.pos;\n"
 		"nh.pos += sizeof(*eth);\n"
 		"if (eth + 1 > data_end){return -1; }\n"
+		"if (eth->h_proto != bpf_htons(ETH_P_IP)){\n"
+		"return XDP_PASS;\n"
+		"}\n"
 		"struct iphdr *iph = nh.pos;\n"
 		"if (iph + 1 > data_end){ return -1; }\n"
 		"nh.pos += sizeof(*iph);\n"

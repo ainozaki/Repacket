@@ -35,6 +35,7 @@ int gen(const struct config* cfg) {
       break;
     case REWRITE:
       LOG_INFO("REWRITE mode.\n");
+      fprintf(f, always_inline);
       rewrite_statement(cfg, buff, buff2);
       sprintf(action, rewrite_base, buff, buff2);
       sprintf(parse, parse_base, action);
@@ -125,12 +126,25 @@ void filter_conditional_statement(const struct config* cfg, char buf[]) {
 
 void rewrite_statement(const struct config* cfg, char buf[], char buf2[]) {
   char empty[64] = "";
+  int use_ip = 0;
   int use_tcp = 0;
   int use_udp = 0;
 
   const struct filter* filter = cfg->filter;
 
   // If config has filtering attributes, convert them into string.
+  // ip_ttl
+  if (strncmp(filter->ip_ttl, empty, sizeof(filter->ip_ttl))) {
+    use_ip = 1;
+    const char* ip_ttl =
+        "iph->ttl = %s;\n"
+        "iph->check = 0;"
+        "__u32 csum = 0;"
+        "calc_csum(iph, sizeof(struct iphdr), &csum);"
+        "iph->check = csum;\n";
+    sprintf(buf2, ip_ttl, filter->ip_ttl);
+  }
+
   // tcp_dst
   if (strncmp(filter->tcp_dst, empty, sizeof(filter->tcp_dst))) {
     use_tcp = 1;
@@ -150,7 +164,9 @@ void rewrite_statement(const struct config* cfg, char buf[], char buf2[]) {
   }
 
   // Prevent NULL pointer access.
-  if (use_tcp) {
+  if (use_ip) {
+    strncpy(buf, "iph", 4);
+  } else if (use_tcp) {
     strncpy(buf, "tcph", 5);
   } else if (use_udp) {
     strncpy(buf, "udph", 5);

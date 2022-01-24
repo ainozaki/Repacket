@@ -14,6 +14,7 @@ enum proto { ICMP };
 struct filter {
   char ip_dst[16];
   char ip_src[16];
+  char ip_ttl[4];
   char ip_proto[16];
   char tcp_src[6];
   char tcp_dst[6];

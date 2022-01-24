@@ -27,22 +27,22 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
         has_i_option = 1;
         cfg->ifname = optarg;
         cfg->ifindex = if_nametoindex(cfg->ifname);
-        break;
+        continue;
       case 'a':
         cfg->run_mode = ATTACH;
-        break;
+        continue;
       case 'z':
         cfg->run_mode = DETACH;
-        break;
+        continue;
       case 'r':
         cfg->run_mode = REWRITE;
-        break;
+        continue;
       case 'd':
         cfg->run_mode = DROP;
-        break;
+        continue;
       case 'f':
         cfg->dump_mode = FRIENDLY;
-        break;
+        continue;
       default:
         break;
     }
@@ -58,10 +58,14 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
   if (optind == argc) {
     assert((cfg->run_mode == ATTACH) | (cfg->run_mode == DETACH) |
            (cfg->run_mode = DUMPALL));
+    if (cfg->run_mode == ATTACH)
+      printf("ATTACH\n");
+    if (cfg->run_mode == DUMPALL)
+      printf("DUMPALL\n");
     return;
   }
   // FILTER mode.
-  if ((cfg->run_mode != REWRITE) | (cfg->run_mode != DROP)) {
+  if ((cfg->run_mode != REWRITE) && (cfg->run_mode != DROP)) {
     cfg->run_mode = FILTER;
   }
 
@@ -92,6 +96,13 @@ void parse_cmdline(int argc, char** argv, struct config* cfg) {
       if (!strcmp(value, "icmp")) {
         strcpy(filt->ip_proto, "IPPROTO_ICMP");
       }
+      continue;
+    }
+
+    // ip_ttl
+    if (!strcmp(key, "ip_ttl")) {
+      strcpy(filt->ip_ttl, value);
+      LOG_INFO("ip_ttl is %s\n", filt->ip_ttl);
       continue;
     }
 
