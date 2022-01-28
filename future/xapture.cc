@@ -5,19 +5,23 @@
 #include "base/config.h"
 #include "base/logger.h"
 #include "base/parse_cmdline.h"
+#include "core/gen/generator.h"
+#include "core/xdp/loader.h"
 
 extern "C" {
 #include <linux/if_link.h>
 }
 
 int xapture(std::shared_ptr<struct config> cfg) {
-  switch (cfg.run_mode) {
+  std::shared_ptr<int> map_fd;
+
+  switch (cfg->run_mode) {
   case RunMode::DUMPALL:
   case RunMode::DROP:
   case RunMode::FILTER:
   case RunMode::REWRITE:
     // Generate XDP program.
-    if (gen(cfg)) {
+    if (Gen(cfg)) {
       LOG_ERROR("Error while generating XDP program.\n");
       return 1;
     }
@@ -25,21 +29,21 @@ int xapture(std::shared_ptr<struct config> cfg) {
 
   case RunMode::ATTACH:
     // Atach XDP program to network interface.
-    if (attach(cfg, map_fd)) {
+    if (Attach(cfg, map_fd)) {
       LOG_ERROR("Error while attaching XDP program.\n");
       return 1;
     }
 
     // Perf event.
-    if (perf_event(cfg, map_fd)) {
-      LOG_ERROR("Error while handling perf_event.\n");
-      return 1;
-    }
+    // if (perf_event(cfg, *map_fd)) {
+    //  LOG_ERROR("Error while handling perf_event.\n");
+    //  return 1;
+    //}
     break;
 
   case RunMode::DETACH:
     // Detach XDP program.
-    if (detach(cfg)) {
+    if (Detach(cfg)) {
       LOG_ERROR("Error while detaching XDP program.\n");
       return 1;
     }
