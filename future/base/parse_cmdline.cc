@@ -1,7 +1,6 @@
 #include "base/parse_cmdline.h"
 
 #include <cassert>
-#include <memory>
 #include <string>
 
 extern "C" {
@@ -20,35 +19,35 @@ int check_range_port(uint16_t port) {
   }
   return 0;
 }
-} // namespace
+}  // namespace
 
-int parse_cmdline(int argc, char *argv[], std::shared_ptr<struct config> cfg) {
+int parse_cmdline(int argc, char* argv[], struct config& cfg) {
   int opt;
   bool has_i_option = false;
   while ((opt = getopt(argc, argv, "i:d::f::r::a::z::")) != -1) {
     switch (opt) {
-    case 'i':
-      has_i_option = true;
-      cfg->ifname = optarg;
-      cfg->ifindex = if_nametoindex(cfg->ifname);
-      continue;
-    case 'a':
-      cfg->run_mode = RunMode::ATTACH;
-      continue;
-    case 'z':
-      cfg->run_mode = RunMode::DETACH;
-      continue;
-    case 'r':
-      cfg->run_mode = RunMode::REWRITE;
-      continue;
-    case 'd':
-      cfg->run_mode = RunMode::DROP;
-      continue;
-    case 'f':
-      cfg->dump_mode = DumpMode::FRIENDLY;
-      continue;
-    default:
-      break;
+      case 'i':
+        has_i_option = true;
+        cfg.ifname = optarg;
+        cfg.ifindex = if_nametoindex(cfg.ifname);
+        continue;
+      case 'a':
+        cfg.run_mode = RunMode::ATTACH;
+        continue;
+      case 'z':
+        cfg.run_mode = RunMode::DETACH;
+        continue;
+      case 'r':
+        cfg.run_mode = RunMode::REWRITE;
+        continue;
+      case 'd':
+        cfg.run_mode = RunMode::DROP;
+        continue;
+      case 'f':
+        cfg.dump_mode = DumpMode::FRIENDLY;
+        continue;
+      default:
+        break;
     }
   }
 
@@ -60,14 +59,14 @@ int parse_cmdline(int argc, char *argv[], std::shared_ptr<struct config> cfg) {
   // ensure RunMode
   // DUMPALL, ATTACH, DETACH mode.
   if (optind == argc) {
-    assert((cfg->run_mode == RunMode::ATTACH) |
-           (cfg->run_mode == RunMode::DETACH) |
-           (cfg->run_mode == RunMode::DUMPALL));
+    assert((cfg.run_mode == RunMode::ATTACH) |
+           (cfg.run_mode == RunMode::DETACH) |
+           (cfg.run_mode == RunMode::DUMPALL));
     return 0;
   }
   // FILTER mode.
-  if ((cfg->run_mode != RunMode::REWRITE) && (cfg->run_mode != RunMode::DROP)) {
-    cfg->run_mode = RunMode::FILTER;
+  if ((cfg.run_mode != RunMode::REWRITE) && (cfg.run_mode != RunMode::DROP)) {
+    cfg.run_mode = RunMode::FILTER;
   }
 
   struct filter filt;
@@ -100,6 +99,6 @@ int parse_cmdline(int argc, char *argv[], std::shared_ptr<struct config> cfg) {
     return 1;
   }
 
-  cfg->filter = filt;
+  cfg.filter = filt;
   return 0;
 }

@@ -1,0 +1,12 @@
+BasedOnStyle: Chromium
+
+IndentWidth: 2
+
+Language: Cpp
+
+Standard: Auto
+
+ColumnLimit: 80
+
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: Inline
