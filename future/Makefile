@@ -7,7 +7,8 @@ LIBS = -l:libbpf.a -lelf
 XAPTURE_SRC=\
 	base/parse_cmdline.cc \
 	core/gen/generator.cc \
-	core/xdp/loader.cc
+	core/xdp/loader.cc \
+	core/xdp/perf_handler.cc
 XAPTURE_H = $(XAPTURE_SRC:.cc=.h)
 XAPTURE_OBJ=$(XAPTURE_SRC:.cc=.o) xapture.o
 

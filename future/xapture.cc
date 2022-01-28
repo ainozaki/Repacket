@@ -1,12 +1,14 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <optional>
 
 #include "base/config.h"
 #include "base/logger.h"
 #include "base/parse_cmdline.h"
 #include "core/gen/generator.h"
 #include "core/xdp/loader.h"
+#include "core/xdp/perf_handler.h"
 
 extern "C" {
 #include <linux/if_link.h>
@@ -14,6 +16,7 @@ extern "C" {
 
 int xapture(const struct config& cfg) {
   int map_fd;
+  std::optional<PerfHandler> perf_handler;
 
   switch (cfg.run_mode) {
     case RunMode::DUMPALL:
@@ -36,10 +39,8 @@ int xapture(const struct config& cfg) {
       }
 
       // Perf event.
-      // if (perf_event(cfg, *map_fd)) {
-      //  LOG_ERROR("Error while handling perf_event.\n");
-      //  return 1;
-      //}
+      perf_handler = std::make_optional<PerfHandler>(cfg, map_fd);
+      perf_handler->Start();
       break;
 
     case RunMode::DETACH:
@@ -48,8 +49,7 @@ int xapture(const struct config& cfg) {
         LOG_ERROR("Error while detaching XDP program.\n");
         return 1;
       }
-    default:
-      assert(false);
+      break;
   }
   return 0;
 }
