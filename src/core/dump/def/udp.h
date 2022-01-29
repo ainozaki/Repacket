@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct udp {
+struct udp_header {
   uint16_t src;
   uint16_t dest;
   uint16_t len;

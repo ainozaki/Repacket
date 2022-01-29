@@ -1,32 +1,62 @@
 #include "core/dump/print.h"
 
+#include <string>
+
+extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+}
 
 #include "core/dump/binary_utils.h"
 #include "core/dump/def/ip.h"
 
-void ip_print(const unsigned char* p, uint8_t len) {
-  const struct ip* ip;
-  uint8_t proto;
-  char* src;
-  char* dst;
+void IpPrint(const struct config& cfg, const unsigned char* p, uint8_t len) {
+  const struct ip_header* iph = (struct ip_header*)p;
+  const uint8_t tos = iph->tos;
+  const uint16_t tot_len = GET_U16(&iph->tot_len);
+  const uint16_t id = GET_U16(&iph->id);
 
-  ip = (const struct ip*)p;
-  proto = GET_U8(ip->protocol);
-  src = GET_IPADDR(ip->saddr);
-  dst = GET_IPADDR(ip->daddr);
-  uint8_t ttl = GET_U8(&ip->ttl);
+  const uint16_t flag_and_flag_off = iph->frag_off;
+  const uint8_t flag = flag_and_flag_off >> 13;
+  const uint16_t flag_off = flag_and_flag_off & 0x1fff;
+  std::string flags;
+  if (flag & 0x02) {
+    flags = "DF";
+  } else if (flag & 0x01) {
+    flags = "MF";
+  } else {
+    flags = "NA";
+  }
 
-  uint8_t hdl = (GET_U8(ip->vhl) & 0x0F) * 4;
+  const uint8_t ttl = iph->ttl;
+  const uint8_t proto = GET_U8(&iph->protocol);
+  const uint16_t csum = GET_U16(&iph->check);
+  const char* src = GET_IPADDR(&iph->saddr);
+  const char* dest = GET_IPADDR(&iph->daddr);
+
+  uint8_t hdl = (GET_U8(&iph->vhl) & 0x0F) * 4;
   p += hdl;
   len -= hdl;
 
-  printf("IP %s > %s: ttl %d ", src, dst, ttl);
+  switch (cfg.dump_mode) {
+    case DumpMode::FRIENDLY:
+      printf("\t|v%2d|hl%1d|tos%4d|totlen%9d|\n", 4, 5, tos, tot_len);
+      printf("\t|id%13d|%s|offset%6d|\n", id, flags.c_str(), flag_off);
+      printf("\t|ttl%4d|proto%2d|csum%11d|\n", ttl, proto, csum);
+      printf("\t|src%28s|\n", src);
+      printf("\t|dst%28s|\n", dest);
+      break;
+    case DumpMode::NORMAL:
+      printf("IP %s > %s: ttl %d ", src, dest, ttl);
+      break;
+    default:
+      break;
+  }
+
   switch (proto) {
     case X_IPPROTO_ICMP:
-      icmp_print(p, len);
+      IcmpPrint(cfg, p, len);
       break;
     case X_IPPROTO_IGMP:
       printf("IGMP");
@@ -35,7 +65,7 @@ void ip_print(const unsigned char* p, uint8_t len) {
       printf("IP");
       break;
     case X_IPPROTO_TCP:
-      tcp_print(p, len);
+      TcpPrint(cfg, p, len);
       break;
     case X_IPPROTO_CBT:
       printf("CBT");
@@ -47,7 +77,7 @@ void ip_print(const unsigned char* p, uint8_t len) {
       printf("IGP");
       break;
     case X_IPPROTO_UDP:
-      udp_print(p, len);
+      UdpPrint(cfg, p, len);
       break;
     case X_IPPROTO_IPv6:
       printf("IPv6");
@@ -105,49 +135,6 @@ void ip_print(const unsigned char* p, uint8_t len) {
       break;
     case X_IPPROTO_L2TP:
       printf("L2TP");
-      break;
-  }
-}
-
-void ip_friendly_print(const unsigned char* p, uint8_t len) {
-  const struct ip* ip;
-  char* src;
-  char* dst;
-  char flag[3] = "";
-
-  ip = (const struct ip*)p;
-  uint8_t tos = GET_U8(ip->tos);
-  uint16_t tot_len = GET_U16(ip->tot_len);
-  uint16_t id = GET_U16(ip->id);
-  uint8_t flag_8 = GET_U8(ip->frag_off);
-  int one = flag_8 & 0x08;
-  int two = flag_8 & 0x04;
-  if (one) {
-    strcpy(flag, "MF");
-  } else if (two) {
-    strcpy(flag, "DF");
-  } else {
-    strcpy(flag, "NA");
-  }
-  uint16_t flag_off = GET_U16(ip->frag_off) & 0x1fff;
-  uint8_t ttl = GET_U8(ip->ttl);
-  uint8_t proto = GET_U8(ip->protocol);
-  uint16_t csum = GET_U16(ip->check);
-  src = GET_IPADDR(ip->saddr);
-  dst = GET_IPADDR(ip->daddr);
-
-  uint8_t hdl = (GET_U8(ip->vhl) & 0x0F) * 4;
-  p += hdl;
-  len -= hdl;
-  printf("\t|v%2d|hl%1d|tos%4d|totlen%9d|\n", 4, 5, tos, tot_len);
-  printf("\t|id%13d|%s|offset%6d|\n", id, flag, flag_off);
-  printf("\t|ttl%4d|proto%2d|csum%11d|\n", ttl, proto, csum);
-  printf("\t|src%28s|\n", src);
-  printf("\t|dst%28s|\n", dst);
-
-  switch (proto) {
-    case X_IPPROTO_ICMP:
-      icmp_friendly_print(p, len);
       break;
   }
 }

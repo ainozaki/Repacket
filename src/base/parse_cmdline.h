@@ -3,6 +3,6 @@
 
 #include "base/config.h"
 
-void parse_cmdline(int argc, char** argv, struct config* cfg);
+int parse_cmdline(int argc, char* argv[], struct config& cfg);
 
 #endif  // PARSE_CMDLINE_H_

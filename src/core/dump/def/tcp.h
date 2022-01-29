@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct tcp {
+struct tcp_header {
   uint16_t src;
   uint16_t dest;
   uint32_t seq;

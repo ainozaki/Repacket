@@ -11,7 +11,7 @@
 #define ICMP_ECHO_REQUEST 8
 #define ICMP_TIME_EXCEEDED 11
 
-struct icmp {
+struct icmp_header {
   uint8_t type;
   uint8_t code;
   uint16_t chsum;

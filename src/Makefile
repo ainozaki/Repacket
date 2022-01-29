@@ -1,96 +1,55 @@
-CC = gcc
-AR = ar
-LLC = llc
-PROG = xapture
+CC = clang++
 
-BPF_INCL = -I../deps/include/ -I../deps/include/bpf
-CFLAGS = -I. $(BPF_INCL) -g -O2 -Wall
-LDFLAGS = -L../deps/lib
+CPPFLAGS = -std=c++2a -I./
+BPFFLAGS = -I../deps/include/ -I../deps/include/bpf
+LFLAGS = -L../deps/lib
 LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
-
-XDP_SRC:=xdp-generated-kern.c
-XDP_OBJ:=$(XDP_SRC:.c=.o)
-
-C_SRC = xapture.c
-C_OBJ = $(C_SRC:.c=.o)
-
-LIBXAPTURE_SRC=\
-	base/parse_cmdline.c \
-	core/dump/binary_utils.c \
-	core/dump/print_arp.c \
-	core/dump/print_ether.c \
-	core/dump/print_icmp.c \
-	core/dump/print_ip.c \
-	core/dump/print_tcp.c \
-	core/dump/print_udp.c \
-	core/gen/generator.c \
-	core/xdp/loader.c \
-	core/xdp/perf_event_handler.c
-LIBXAPTURE_OBJ=$(LIBXAPTURE_SRC:.c=.o)
-LIBXAPTURE=libxapture.a
-
-# for format
-HDRS=\
+XAPTURE_SRC=\
+	base/parse_cmdline.cc \
+	core/dump/binary_utils.cc \
+	core/dump/print_arp.cc \
+	core/dump/print_ether.cc \
+	core/dump/print_icmp.cc \
+	core/dump/print_ip.cc \
+	core/dump/print_tcp.cc \
+	core/dump/print_udp.cc \
+	core/gen/generator.cc \
+	core/xdp/loader.cc \
+	core/xdp/perf_handler.cc
+XAPTURE_H=\
 	base/config.h \
-	base/parse_cmdline.h \
 	base/logger.h \
+	base/parse_cmdline.h \
 	core/dump/binary_utils.h \
-	core/dump/def/icmp.h \
-	core/dump/def/ip.h \
-	core/dump/def/ether.h \
-	core/dump/def/tcp.h \
-	core/dump/def/types.h \
-	core/dump/def/udp.h \
-	core/gen/generator.h \
 	core/dump/print.h \
+	core/gen/xdp_base.h \
+	core/gen/generator.h \
 	core/xdp/loader.h \
-	core/xdp/perf_event_handler.h
+	core/xdp/perf_handler.h
+XAPTURE_OBJ=$(XAPTURE_SRC:.cc=.o)
+XAPTURE_O = xapture.o
 
-TEST := tests/parse_cmdline_unittest.cc
+TEST_SRC=\
+	tests/parse_cmdline_unittest.cc
 
-all: $(PROG) $(LIBXAPTURE_SRC) $(C_SRC) $(HDRS)
+.PHONY: all
+.PHONY: clean
 
-$(PROG): $(C_OBJ) $(LIBXAPTURE) $(HDRS)
-	rm -f $@
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(C_OBJ) $(LIBXAPTURE) $(LIBS)
+all: $(XAPTURE_OBJ) $(XAPTURE_H) $(XAPTURE_O) Makefile
+	$(CC) $(CPPFLAGS) $(LFLAGS) -o xapture $(XAPTURE_OBJ) $(XAPTURE_O) $(LIBS)
 
-$(LIBXAPTURE): $(LIBXAPTURE_OBJ)
-	rm -f $@
-	$(AR) cr $@ $(LIBXAPTURE_OBJ)
+test: $(XAPTURE_SRC) $(XAPTURE_H) $(TEST_SRC) Makefile
+	$(CC) $(CPPFLAGS) $(BPFFLAGS) $(LFLAGS) -o test $(XAPTURE_SRC) $(TEST_SRC) $(LIBS) $(LIBS_TEST) -pthread
 
-$(LIBXAPTURE_OBJ): %.o: %.c $(HDRS)
-	$(CC) -c $(CFLAGS) $< -o $@
+$(XAPTURE_OBJ): %.o: %.cc
+	$(CC) $(CPPFLAGS) $(BPFFLAGS) -o $(<:.cc=.o) -c $<
 
-$(C_OBJ): %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+$(XAPTURE_O): %.o: %.cc
+	$(CC) $(CPPFLAGS) $(BPFFLAGS) -o $(<:.cc=.o) -c $<
 
-xdp: $(XDP_SRC)
-	clang -S \
-	    -target bpf \
-	    -D __BPF_TRACING__ \
-	    $(BPF_INCL) \
-	    -Wall \
-	    -Wno-unused-value \
-	    -Wno-pointer-sign \
-	    -Wno-compare-distinct-pointer-types \
-	    -Werror \
-	    -O2 -emit-llvm -c -g -o $(XDP_OBJ:.o=.ll) $<
-	$(LLC) -march=bpf -filetype=obj -o $(XDP_OBJ) $(XDP_OBJ:.o=.ll)
-
-run:
-	sudo ./xapture -i eth1
-
-off:
-	sudo ./xapture -i eth1 -d
-
-#test: $(TEST)
-#	gcc -Wall $(BPF_INCLUDE) $(CFLAGS) -c $(USER_C)
-#	g++ -std=c++14 -Wall $(CFLAGS) $(LDFLAGS) -o $@ $^ $(USER_OBJ) $(LIBS) $(LIBS_TEST) -pthread
-
-format:
-	clang-format -i $(LIBXAPTURE_SRC) $(LIBXAPTURE_H) $(C_SRC) $(HDRS)
-
+format: $(XAPTURE_SRC) $(XAPTURE_H) $(HEADER_ONLY)
+	clang-format -i $^ xapture.cc
 clean:
-	rm -f $(LIBXAPTURE) $(XDP_OBJ:.o=.ll) $(PROG)
 	find ./ -name "*.o" -type f -delete
+	rm -f xapture xdp-generated-kern.o xdp-generated-kern.ll

@@ -1,6 +1,10 @@
 #ifndef ETHER_H_
 #define ETHER_H_
 
+#include <cstdint>
+
+#include "core/dump/def/types.h"
+
 #define MAC_ADDR_LEN 6U  // Length of MAC address.
 #define ETHER_PROTO_LEN 2U
 
@@ -18,5 +22,11 @@
 #define X_ETH_P_PPP_DS 0x8863
 #define X_ETH_P_PPP_SES 0x8864
 #define X_ETH_P_LOOPBACK 0x9000
+
+struct ether_header {
+	n_uint48_t dest;
+	n_uint48_t src;
+	uint16_t type;
+};
 
 #endif  // ETHER_H_

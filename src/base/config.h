@@ -1,36 +1,47 @@
 #ifndef DEFINE_H_
 #define DEFINE_H_
 
-#include <linux/types.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include <cstdint>
+#include <optional>
 
-enum run_mode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
+#ifndef XDP_FLAGS_UPDATE_IF_NOEXIST
+#define XDP_FLAGS_UPDATE_IF_NOEXIST 1U << 0
+#endif
 
-enum dump_mode { NORMAL, FRIENDLY };
+enum class RunMode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
+
+enum class DumpMode { NORMAL, FRIENDLY };
 
 enum proto { ICMP };
 
 struct filter {
-  char ip_dst[16];
-  char ip_src[16];
-  char ip_ttl[4];
-  char ip_proto[16];
-  char tcp_src[6];
-  char tcp_dst[6];
-  char udp_src[6];
-  char udp_dst[6];
+  uint32_t ip_src = 0;
+  uint32_t ip_dest = 0;  // Don't use so far.
+  uint8_t ip_ttl = 0;
+  uint8_t ip_proto = 0;
+  uint8_t ip_tos = 0;
+  uint16_t ip_tot_len = 0;
+  uint16_t tcp_src = 0;
+  uint16_t tcp_dest = 0;
+  bool tcp_urg = false;
+  bool tcp_ack = false;
+  bool tcp_psh = false;
+  bool tcp_rst = false;
+  bool tcp_syn = false;
+  bool tcp_fin = false;
+  uint16_t udp_src = 0;
+  uint16_t udp_dest = 0;
 };
 
 struct config {
-  __u32 xdp_flags;
-  int ifindex;
+  uint32_t xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+  int ifindex = -1;
   char* ifname;
-  enum run_mode run_mode;
-  enum dump_mode dump_mode;
-  struct filter* filter;
-  struct filter* if_filter;
-  struct filter* then_filter;
+  RunMode run_mode = RunMode::DUMPALL;
+  DumpMode dump_mode = DumpMode::NORMAL;
+  std::optional<struct filter> filter;
+  std::optional<struct filter> if_filter;
+  std::optional<struct filter> then_filter;
 };
 
 #endif  // DEFINE_H_

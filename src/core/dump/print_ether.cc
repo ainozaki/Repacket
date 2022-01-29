@@ -1,28 +1,34 @@
 #include "core/dump/print.h"
 
+extern "C" {
 #include <linux/types.h>
 #include <stdio.h>
 #include <sys/time.h>
 #include <time.h>
+}
 
 #include "core/dump/binary_utils.h"
 #include "core/dump/def/ether.h"
 #include "core/dump/def/ip.h"
 #include "core/dump/print.h"
 
-void start_dump(struct config* config, const unsigned char* p, uint8_t len) {
-  switch (config->dump_mode) {
-    case NORMAL:
-      ether_print(p, len);
+void StartDump(struct config& config, const unsigned char* p, uint8_t len) {
+  switch (config.dump_mode) {
+    case DumpMode::NORMAL:
+    case DumpMode::FRIENDLY:
+      EtherPrint(config, p, len);
       break;
-    case FRIENDLY:
-      ether_friendly_print(p, len);
+    default:
+      // future work
       break;
   }
   printf("\n");
 }
 
-void ether_print(const unsigned char* p, uint8_t len) {
+void EtherPrint(const struct config& config,
+                const unsigned char* p,
+                uint8_t len) {
+  // time
   struct timeval t;
   struct tm* tm;
   gettimeofday(&t, NULL);
@@ -30,19 +36,21 @@ void ether_print(const unsigned char* p, uint8_t len) {
   printf("%02d:%02d:%02d.%06ld ", tm->tm_hour, tm->tm_min, tm->tm_sec,
          t.tv_usec);
 
-  p += MAC_ADDR_LEN * 2;
-  len -= MAC_ADDR_LEN * 2;
+  struct ether_header* ethh = (struct ether_header*)p;
+  uint16_t type = GET_U16(&ethh->type);
+  p += sizeof(struct ether_header);
+  len -= sizeof(struct ether_header);
 
-  uint16_t ethertype = GET_U16(p);
-  p += ETHER_PROTO_LEN;
-  len -= ETHER_PROTO_LEN;
+  if (config.dump_mode == DumpMode::FRIENDLY) {
+    printf("\n\t|-------8------16------24------32\n");
+  }
 
-  switch (ethertype) {
+  switch (type) {
     case X_ETH_P_IPV4:
-      ip_print(p, len);
+      IpPrint(config, p, len);
       break;
     case X_ETH_P_ARP:
-      arp_print(p, len);
+      ArpPrint(config, p, len);
       break;
     case X_ETH_P_RARP:
       printf("RARP");
@@ -82,25 +90,6 @@ void ether_print(const unsigned char* p, uint8_t len) {
       break;
     default:
       printf("unknown ethertype");
-      break;
-  }
-}
-
-void ether_friendly_print(const unsigned char* p, uint8_t len) {
-  p += MAC_ADDR_LEN * 2;
-  len -= MAC_ADDR_LEN * 2;
-
-  uint16_t ethertype = GET_U16(p);
-  p += ETHER_PROTO_LEN;
-  len -= ETHER_PROTO_LEN;
-
-  printf("\t|-------8------16------24------32\n");
-  switch (ethertype) {
-    case X_ETH_P_ARP:
-      arp_friendly_print(p, len);
-      break;
-    case X_ETH_P_IPV4:
-      ip_friendly_print(p, len);
       break;
   }
 }

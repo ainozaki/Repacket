@@ -1,9 +1,12 @@
 #include "core/dump/binary_utils.h"
 
+#include <cstdint>
+
+extern "C" {
 #include <arpa/inet.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+}
 
 #include "core/dump/def/types.h"
 
