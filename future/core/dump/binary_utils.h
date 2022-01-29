@@ -1,7 +1,7 @@
 #ifndef BINARY_UTILS_H_
 #define BINARY_UTILS_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "core/dump/def/types.h"
 

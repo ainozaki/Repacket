@@ -29,7 +29,6 @@ int xapture(const struct config& cfg) {
         return 1;
       }
       // Continue to attach.
-      break;
 
     case RunMode::ATTACH:
       // Atach XDP program to network interface.

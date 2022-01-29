@@ -121,11 +121,17 @@ int PerfHandler::SetupPerf() {
   attr.wakeup_events = 1;
 
   int key;
+  LOG_DEBUG("cpu_num_ : %d\n", cpu_num_);
   for (int i = 0; i < cpu_num_; i++) {
     key = i;
-    pmu_fds_[i] = syscall(SYS_perf_event_open, &attr, /*pid=*/-1, /*cpu=*/i,
-                          /*group_fd*/ -1, 0);
-    assert(pmu_fds_[i] >= 0);
+    int fd = syscall(SYS_perf_event_open, &attr, /*pid=*/-1, /*cpu=*/i,
+                     /*group_fd*/ -1, 0);
+    LOG_DEBUG("fd is %d\n", fd);
+    pmu_fds_[i] = fd;
+    if (pmu_fds_[i] < 0) {
+      LOG_ERROR("perf event open failed. pmu_fds_[%d] = %d\n", i, pmu_fds_[i]);
+      Cleanup();
+    }
     bpf_map_update_elem(map_fd_, &key, &pmu_fds_[i], BPF_ANY);
     ioctl(pmu_fds_[i], PERF_EVENT_IOC_ENABLE, 0);
   }
@@ -208,4 +214,5 @@ void PerfHandler::Cleanup() {
   if (Detach(config)) {
     LOG_ERROR("Failed to detach XDP from %s\n", config.ifname);
   }
+  exit(1);
 }

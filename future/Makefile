@@ -6,16 +6,23 @@ LFLAGS = -L../deps/lib
 LIBS = -l:libbpf.a -lelf
 XAPTURE_SRC=\
 	base/parse_cmdline.cc \
+	core/dump/binary_utils.cc \
+	core/dump/print_arp.cc \
+	core/dump/print_ether.cc \
 	core/gen/generator.cc \
 	core/xdp/loader.cc \
 	core/xdp/perf_handler.cc
-XAPTURE_H = $(XAPTURE_SRC:.cc=.h)
-XAPTURE_OBJ=$(XAPTURE_SRC:.cc=.o) xapture.o
-
-HEADER_ONLY = \
+XAPTURE_H=\
 	base/config.h \
 	base/logger.h \
-	core/gen/xdp_base.h
+	base/parse_cmdline.h \
+	core/dump/binary_utils.h \
+	core/dump/print.h \
+	core/gen/xdp_base.h \
+	core/gen/generator.h \
+	core/xdp/loader.h \
+	core/xdp/perf_handler.h
+XAPTURE_OBJ=$(XAPTURE_SRC:.cc=.o) xapture.o
 
 .PHONY: all
 .PHONY: clean
