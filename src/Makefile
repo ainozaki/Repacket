@@ -16,6 +16,7 @@ XAPTURE_SRC=\
 	core/dump/print_udp.cc \
 	core/gen/generator.cc \
 	core/xdp/loader.cc \
+	core/xdp/map_handler.cc \
 	core/xdp/perf_handler.cc
 XAPTURE_H=\
 	base/config.h \
@@ -52,4 +53,4 @@ format: $(XAPTURE_SRC) $(XAPTURE_H) $(HEADER_ONLY)
 	clang-format -i $^ xapture.cc
 clean:
 	find ./ -name "*.o" -type f -delete
-	rm -f xapture xdp-generated-kern.o xdp-generated-kern.ll
+	rm -f xapture xdp-generated-kern.o xdp-generated-kern.ll test

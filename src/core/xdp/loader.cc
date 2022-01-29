@@ -3,11 +3,15 @@
 #include <cassert>
 #include <memory>
 
+extern "C" {
 #include <bpf/bpf.h>
 #include <libbpf.h>
+#include <unistd.h>
+}
 
 #include "base/config.h"
 #include "base/logger.h"
+#include "core/xdp/map_handler.h"
 #include "core/xdp/perf_handler.h"
 
 Loader::Loader(const struct config& cfg) : config_(cfg) {}
@@ -23,10 +27,17 @@ int Loader::Start() {
   // Setup for collecting stats.
   switch (config_.run_mode) {
     case RunMode::DROP:
+      // Map
+      err = PinMaps();
+      if (err) {
+        LOG_ERROR("Error while perf.\n");
+        return 1;
+      }
+      map_handler_ = std::make_optional<MapHandler>(config_);
+      map_handler_->Start();
       break;
     default:
       // Perf event.
-      LOG_DEBUG("map_fd_ : %d\n", map_fd_);
       perf_handler_ = std::make_optional<PerfHandler>(config_, map_fd_);
       err = perf_handler_->Start();
       if (err) {
@@ -41,7 +52,6 @@ int Loader::Start() {
 int Loader::Attach() {
   int err;
   int prog_fd;
-  struct bpf_object* bpfobj;
   char bpf_file[] = "xdp-generated-kern.o";
   char bpf_mapname[] = "perf_map";
 
@@ -49,7 +59,7 @@ int Loader::Attach() {
   assert(config_.ifindex > 0);
 
   // Load BPF program and get fd.
-  err = bpf_prog_load(bpf_file, BPF_PROG_TYPE_XDP, &bpfobj, &prog_fd);
+  err = bpf_prog_load(bpf_file, BPF_PROG_TYPE_XDP, &bpf_obj_, &prog_fd);
   if (!prog_fd) {
     LOG_ERROR("ERR: Cannot load %s (fd: %d)\n", bpf_file, prog_fd);
     return err;
@@ -64,15 +74,38 @@ int Loader::Attach() {
   }
 
   // Find fd for the map.
-  map_fd_ = bpf_object__find_map_fd_by_name(bpfobj, bpf_mapname);
+  map_fd_ = bpf_object__find_map_fd_by_name(bpf_obj_, bpf_mapname);
   if (map_fd_ < 0) {
     LOG_ERROR("ERR: Cannot find fd for %s (map_fd: %d)\n", bpf_mapname,
               map_fd_);
     return 1;
   }
-  LOG_DEBUG("map_fd_ : %d\n", map_fd_);
 
   LOG_INFO("Success: Attach %s to interface %s\n", bpf_file, config_.ifname);
+  return 0;
+}
+
+int Loader::PinMaps() {
+  char pin_dir[32];
+  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname);
+  int err;
+  // Unpin maps in advance.
+  if (access(pin_dir, F_OK) != -1) {
+    err = bpf_object__unpin_maps(bpf_obj_, pin_dir);
+    if (err) {
+      LOG_ERROR("Failed: Cannot unpinning maps to %s.", pin_dir);
+      return 1;
+    }
+    LOG_INFO("Success: Unpinned maps!!!");
+  }
+
+  // Pin maps.
+  err = bpf_object__pin_maps(bpf_obj_, pin_dir);
+  if (err) {
+    LOG_ERROR("Failed: Cannot pinning maps at %s.", pin_dir);
+    return 1;
+  }
+  LOG_INFO("Success: Pinning maps at %s.", pin_dir);
   return 0;
 }
 
