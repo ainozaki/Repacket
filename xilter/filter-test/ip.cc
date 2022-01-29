@@ -20,7 +20,7 @@ TEST(IPTest, FilterByProtocol) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_protocol");
 
   Stats stats("veth1", "filter-test/ip_protocol.yaml");
@@ -50,7 +50,7 @@ TEST(IPTest, FilterBySaddr) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_saddr");
 
   Stats stats("veth1", "filter-test/ip_saddr.yaml");
@@ -86,7 +86,7 @@ TEST(IPTest, FilterByToS) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_tos");
 
   Stats stats("veth1", "filter-test/ip_tos.yaml");
@@ -122,7 +122,7 @@ TEST(IPTest, FilterByTTLMin) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_ttl");
 
   Stats stats("veth1", "filter-test/ip_ttl_min.yaml");
@@ -171,7 +171,7 @@ TEST(IPTest, FilterByTTLMax) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_ttl");
 
   Stats stats("veth1", "filter-test/ip_ttl_max.yaml");
@@ -218,7 +218,7 @@ TEST(IPTest, FilterByTotLenMin) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_tot_len");
 
   Stats stats("veth1", "filter-test/ip_tot_len_min.yaml");
@@ -267,7 +267,7 @@ TEST(IPTest, FilterByTotLenMax) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/ip.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/ip.sh "
       "ip_tot_len");
 
   Stats stats("veth1", "filter-test/ip_tot_len_max.yaml");

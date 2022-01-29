@@ -19,7 +19,7 @@ TEST(UdpTest, FilterBySrc) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/udp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/udp.sh "
       "udp_src");
 
   Stats stats("veth1", "filter-test/udp_src.yaml");
@@ -54,7 +54,7 @@ TEST(UdpTest, FilterByDst) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/udp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/udp.sh "
       "udp_dst");
 
   Stats stats("veth1", "filter-test/udp_dst.yaml");

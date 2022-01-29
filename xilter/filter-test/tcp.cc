@@ -19,7 +19,7 @@ TEST(TcpTest, FilterBySrc) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/tcp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/tcp.sh "
       "tcp_src");
 
   Stats stats("veth1", "filter-test/tcp_src.yaml");
@@ -54,7 +54,7 @@ TEST(TcpTest, FilterByDst) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/tcp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/tcp.sh "
       "tcp_dst");
 
   Stats stats("veth1", "filter-test/tcp_dst.yaml");
@@ -89,7 +89,7 @@ TEST(TcpTest, FilterByFlags) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/tcp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/tcp.sh "
       "tcp_flags");
 
   Stats stats("veth1", "filter-test/tcp_flags.yaml");

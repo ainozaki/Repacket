@@ -19,7 +19,7 @@ TEST(IcmpTest, DropByType) {
                 cfg.bpf_filepath, cfg.progsec);
   loader.Start();
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/icmp.sh "
       "icmp_type");
 
   Stats stats("veth1", "filter-test/icmp_type.yaml");
@@ -55,7 +55,7 @@ TEST(IcmpTest, DropByCode) {
   loader.Start();
 
   system(
-      "/usr/bin/bash /home/vagrant/MocTok/src/filter-test/icmp.sh "
+      "/usr/bin/bash /home/aino/Projects/xapture/xilter/filter-test/icmp.sh "
       "icmp_code");
 
   Stats stats("veth1", "filter-test/icmp_code.yaml");
