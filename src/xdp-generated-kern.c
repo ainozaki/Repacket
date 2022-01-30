@@ -64,8 +64,8 @@ if (iph->protocol == IPPROTO_UDP){
 udph = nh.pos;
 if (udph + 1 > data_end) { return XDP_ABORTED;}
 nh.pos += sizeof(*udph);}
-if (udph && udph->dest!=8080 ){
- return XDP_PASS; }
+if (udph ){
+udph->dest==8080;}
 metadata.cookie = 0xdead;
 metadata.packet_len = (__u16)(data_end - data);
 sample_size = metadata.packet_len <= SAMPLE_SIZE ? metadata.packet_len : SAMPLE_SIZE;

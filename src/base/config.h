@@ -15,8 +15,8 @@ enum class DumpMode { NORMAL, FRIENDLY };
 enum proto { ICMP };
 
 struct filter {
-  uint32_t ip_src = 0;
-  uint32_t ip_dest = 0;  // Don't use so far.
+  std::string ip_src = "";
+  std::string ip_dest = "";  // Don't use so far.
   uint8_t ip_ttl = 0;
   uint8_t ip_proto = 0;
   uint8_t ip_tos = 0;

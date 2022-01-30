@@ -33,6 +33,14 @@ int Gen(const struct config& cfg) {
       file << FilteringStatement(cfg);
       file << filter_base_b;
       break;
+    case RunMode::REWRITE:
+      LOG_INFO("REWRITE mode.\n");
+      file << rewrite_base_f;
+      file << RewriteFilteringStatement(cfg);
+      file << rewrite_base_m;
+      file << RewriteStatement(cfg);
+      file << rewrite_base_b;
+      break;
     default:
       // case DUMPALL
       LOG_INFO("DUMPALL mode.\n");
@@ -87,8 +95,31 @@ std::string FilteringStatement(const struct config& cfg) {
   const struct filter filter = cfg.filter.value();
   // If config has filtering attributes, convert them into string.
   if (filter.udp_dest) {
-    s += "udph && udph->dest!=";
+    s = "udph && udph->dest==";
     s += std::to_string(filter.udp_dest);
+  }
+  return s;
+}
+
+std::string RewriteFilteringStatement(const struct config& cfg) {
+  assert(cfg.filter.has_value());
+  std::string s;
+  const struct filter filter = cfg.filter.value();
+  // If config has filtering attributes, convert them into string.
+  if (filter.udp_dest) {
+    s = "udph";
+  }
+  return s;
+}
+
+std::string RewriteStatement(const struct config& cfg) {
+  assert(cfg.filter.has_value());
+  std::string s;
+  const struct filter filter = cfg.filter.value();
+  if (filter.udp_dest) {
+    s = "udph->dest==";
+    s += std::to_string(filter.udp_dest);
+    s += ";";
   }
   return s;
 }

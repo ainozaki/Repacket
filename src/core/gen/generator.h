@@ -14,4 +14,6 @@ void filter_conditional_statement(const struct config* cfg, char buf[]);
 void rewrite_statement(const struct config* cfg, char buf[], char buf2[]);
 
 std::string FilteringStatement(const struct config& cfg);
+std::string RewriteFilteringStatement(const struct config& cfg);
+std::string RewriteStatement(const struct config& cfg);
 #endif  // GENERATOR_H_

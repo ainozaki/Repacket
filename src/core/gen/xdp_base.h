@@ -109,4 +109,8 @@ std::string action_base =
 std::string filter_base_f = "if (";
 std::string filter_base_b = " ){\n return XDP_PASS; }\n";
 
+std::string rewrite_base_f = "if (";
+std::string rewrite_base_m = " ){\n";
+std::string rewrite_base_b = "}\n";
+
 #endif  // XDP_PROG_BASE_H_
