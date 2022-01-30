@@ -106,7 +106,14 @@ std::string RewriteFilteringStatement(const struct config& cfg) {
   std::string s;
   const struct filter filter = cfg.filter.value();
   // If config has filtering attributes, convert them into string.
-  if (filter.udp_dest) {
+  if (filter.ip_src != "" | filter.ip_ttl | filter.ip_proto |
+      filter.ip_tot_len) {
+    s = "iph";
+  } else if (filter.tcp_dest | filter.tcp_src | filter.tcp_urg |
+             filter.tcp_ack | filter.tcp_psh | filter.tcp_rst | filter.tcp_syn |
+             filter.tcp_fin) {
+    s = "tcph";
+  } else if (filter.udp_dest | filter.udp_src) {
     s = "udph";
   }
   return s;
@@ -116,10 +123,43 @@ std::string RewriteStatement(const struct config& cfg) {
   assert(cfg.filter.has_value());
   std::string s;
   const struct filter filter = cfg.filter.value();
-  if (filter.udp_dest) {
-    s = "udph->dest==";
+  if (filter.ip_src != "") {
+    s = "iph->src=";
+    s += filter.ip_src;
+  } else if (filter.ip_ttl) {
+    s = "iph->ttl=";
+    s += std::to_string(filter.ip_ttl);
+  } else if (filter.ip_proto) {
+    s = "iph->proto=";
+    s += std::to_string(filter.ip_proto);
+  } else if (filter.ip_tot_len) {
+    s = "iph->tot_len=";
+    s += std::to_string(filter.ip_tot_len);
+  } else if (filter.tcp_urg) {
+    s = "tcph->urg=1";
+  } else if (filter.tcp_ack) {
+    s = "tcph->ack=1";
+  } else if (filter.tcp_psh) {
+    s = "tcph->psh=1";
+  } else if (filter.tcp_rst) {
+    s = "tcph->rst=1";
+  } else if (filter.tcp_syn) {
+    s = "tcph->syn=1";
+  } else if (filter.tcp_fin) {
+    s = "tcph->fin=1";
+  } else if (filter.tcp_dest) {
+    s = "tcph->dest=";
+    s += std::to_string(filter.tcp_dest);
+  } else if (filter.tcp_src) {
+    s = "tcph->src=";
+    s += std::to_string(filter.tcp_src);
+  } else if (filter.udp_dest) {
+    s = "udph->dest=";
     s += std::to_string(filter.udp_dest);
-    s += ";";
+  } else if (filter.udp_src) {
+    s = "udph->src=";
+    s += std::to_string(filter.udp_src);
   }
+  s += ";";
   return s;
 }
