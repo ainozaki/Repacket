@@ -1,60 +1,39 @@
 ## Xapture
-This is a packet capture using XDP.
+Xapture = XDP + Packet Capture.
+This is a tool to play with packets!
 Xapture can
-- rewrite packets.
-- use multiple filter.
-- work with flood packets.
+- dump packets. (BASIC)
+- rewrite packets. (REWRITE)
+- drop packets. (DROP)
 
 ### Usage
 
 ```
 usage: xapture [mode] [options] ... 
-mode:
-  -N/A               Run packet capture.
-  -g, --gen          Generate XDP program. (string)
-  -d, --detach       Detach XDP program.
+	BASIC:   xapture [-c count][-f][-i interface][-w file][-x][expression]
+	REWRITE: xapture -r if [expression] then [expression]
+	         xapture -r if [expression] then [expression]
+	DROP: xapture -d [expression]
 
-options:
-  -i, --interface    Specify interface. (string [=eth1])
-  -b  --bpf          BPF filepath. (string [=xdp-generated.o])
-  -p, --pcap         Save to pcap file.
+optional:
+  -g, --gen          Only generating XDP program.
+  -a, --attach       Attach your XDP program.
+  -z, --detach       Detach XDP program.
   -h, --help         Print usage.
 ```
 
-### How to use
-#### Setup and build
+
+### Installation
+Xapture uses `libbpf` and `clang` inside.
 ```
-git clone https://github.com/ainnooo/MocTok.git
-cd MocTok
+git clone https://github.com/ainozaki/xapture.git
+cd xapture
 ./setup.sh
-make
+xapture -i eth1
 ```
 
-#### Conigure
-Xapture can use multiple filter. See Configuration section.
-
-#### Generate xdp prog and run
-```
-./xapture --gen
-make xdp
-./xapture -i veth1 
-
-./xapture --detach	// Stop filtering.
-```
-
-### Configuration
-To filter packets, create `xilter.yaml`. 
-The higher-written filter will be given higher priority.
-
-```
- - action: pass
-   ip_protocol: icmp
- - action: drop
-   tcp_dest: 22
-	 tcp_syn: on
-```
-
-Filtering rules are specified using following parameter.
+### Parameters
+Filtering rules (shown as [expression] in `Usage`) are specified using following parameter.
 
 | **Parameter**  | **Example**  | **Explanation**                                                                             | **Test** |
 |----------------|--------------|---------------------------------------------------------------------------------------------|----------|
@@ -88,16 +67,8 @@ Filtering rules are specified using following parameter.
 | udp_dst        | 22           | Destination port.                                                                           | o        |
 
 
-## Xilter
-Originally, this repository was a packet filter using XDP.
-
 ### Respectful Implementation
 [facebookincubator/katran](https://github.com/facebookincubator/katran)  
 [linux/samples/bpf](https://github.com/torvalds/linux/tree/master/samples/bpf)  
 [xdp-project/xdp-tutorial](https://github.com/xdp-project/xdp-tutorial)  
 [takehaya/Vinbero](https://github.com/takehaya/Vinbero)  
-
-
-### Libs
-[tanakh/cmdline](https://github.com/tanakh/cmdline)  
-[jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)  
