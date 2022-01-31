@@ -12,8 +12,6 @@ enum class RunMode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
 
 enum class DumpMode { NORMAL, FRIENDLY };
 
-enum proto { ICMP };
-
 struct filter {
   // ip
   uint8_t ip_ver = 0;
@@ -31,7 +29,7 @@ struct filter {
   // TODO: change to uint16_t
   std::string ip_src = "";
   std::string ip_dest = "";  // Don't use so far.
-                             // tcp
+  // tcp
   uint16_t tcp_src = 0;
   uint16_t tcp_dest = 0;
   uint32_t tcp_seq = 0;
