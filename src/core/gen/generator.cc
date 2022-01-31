@@ -9,6 +9,47 @@
 #include "base/logger.h"
 #include "core/gen/xdp_base.h"
 
+namespace {
+std::string ConvertDecimalIntToHexString(int dec) {
+  if (!dec) {
+    return std::string("00");
+  }
+  std::string hex;
+  const char hc = 'a';
+  while (dec != 0) {
+    int d = dec & 15;
+    if (d < 10) {
+      hex.insert(hex.begin(), d + '0');
+    } else {
+      hex.insert(hex.begin(), d - 10 + hc);
+    }
+    dec >>= 4;
+  }
+  if (hex.length() == 1) {
+    return "0" + hex;
+  } else {
+    return hex;
+  }
+}
+
+// Convert String ip address to hex string.
+std::string ConvertIPAddressToHexString(const std::string& address) {
+  std::string::size_type pos;
+  std::string splitter = ".";
+  std::string subpart;
+  std::string hex;
+  // TODO: Rethinking!
+  std::string str_address = address;
+  for (int i = 0; i < 4; i++) {
+    pos = str_address.find(splitter);
+    subpart = str_address.substr(0, pos);
+    hex = ConvertDecimalIntToHexString(stoi(subpart)) + hex;
+    str_address.erase(0, pos + splitter.size());
+  }
+  return "0x" + hex;
+}
+}  // namespace
+
 int Gen(const struct config& cfg) {
   std::ofstream file;
   const std::string filename = "xdp-generated-kern.c";
@@ -106,7 +147,7 @@ std::string RewriteFilteringStatement(const struct config& cfg) {
   std::string s;
   const struct filter filter = cfg.filter.value();
   // If config has filtering attributes, convert them into string.
-  if (filter.ip_src != "" | filter.ip_ttl | filter.ip_proto |
+  if (filter.ip_src != "" | filter.ip_ttl | filter.ip_protocol |
       filter.ip_tot_len) {
     s = "iph";
   } else if (filter.tcp_dest | filter.tcp_src | filter.tcp_urg |
@@ -124,14 +165,15 @@ std::string RewriteStatement(const struct config& cfg) {
   std::string s;
   const struct filter filter = cfg.filter.value();
   if (filter.ip_src != "") {
-    s = "iph->src=";
-    s += filter.ip_src;
+    s = "iph->saddr=bpf_htons(";
+    s += ConvertIPAddressToHexString(filter.ip_src);
+    s += ")";
   } else if (filter.ip_ttl) {
     s = "iph->ttl=";
     s += std::to_string(filter.ip_ttl);
-  } else if (filter.ip_proto) {
+  } else if (filter.ip_protocol) {
     s = "iph->proto=";
-    s += std::to_string(filter.ip_proto);
+    s += std::to_string(filter.ip_protocol);
   } else if (filter.ip_tot_len) {
     s = "iph->tot_len=";
     s += std::to_string(filter.ip_tot_len);
@@ -148,17 +190,21 @@ std::string RewriteStatement(const struct config& cfg) {
   } else if (filter.tcp_fin) {
     s = "tcph->fin=1";
   } else if (filter.tcp_dest) {
-    s = "tcph->dest=";
+    s = "tcph->dest=bpf_htons(";
     s += std::to_string(filter.tcp_dest);
+    s += ")";
   } else if (filter.tcp_src) {
-    s = "tcph->src=";
+    s = "tcph->source=bpf_htons(";
     s += std::to_string(filter.tcp_src);
+    s += ")";
   } else if (filter.udp_dest) {
-    s = "udph->dest=";
+    s = "udph->dest=bpf_htons(";
     s += std::to_string(filter.udp_dest);
+    s += ")";
   } else if (filter.udp_src) {
-    s = "udph->src=";
+    s = "udph->source=bpf_htons(";
     s += std::to_string(filter.udp_src);
+    s += ")";
   }
   s += ";";
   return s;

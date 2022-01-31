@@ -35,7 +35,7 @@ uint32_t ipaddr_from_string(std::string s) {
   return addr;
 }
 
-int check_range_u8(uint8_t value) {
+int check_range_u8(uint16_t value) {
   if ((value < 0) | (255 < value)) {
     LOG_ERROR("Value is %d. It must be between 0-255.\n", value);
     return 1;
@@ -43,7 +43,7 @@ int check_range_u8(uint8_t value) {
   return 0;
 }
 
-int check_range_u16(uint16_t value) {
+int check_range_u16(uint32_t value) {
   if ((value < 0) | (65535 < value)) {
     LOG_ERROR("Value is %d. It must be between 0-65535.\n", value);
     return 1;
@@ -51,9 +51,9 @@ int check_range_u16(uint16_t value) {
   return 0;
 }
 
-int check_range_u32(uint32_t value) {
+int check_range_u32(uint64_t value) {
   if ((value < 0) | (std::pow(2, 32) - 1 < value)) {
-    LOG_ERROR("Value is %d. It must be between 0-4294967295.\n", value);
+    LOG_ERROR("Value is %ld. It must be between 0-4294967295.\n", value);
     return 1;
   }
   return 0;
@@ -162,7 +162,7 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
       if (check_range_u8(proto)) {
         return 1;
       }
-      filt.ip_proto = proto;
+      filt.ip_protocol = proto;
       LOG_INFO(
           "ip_proto changed, but Xapture will parse packet as the original "
           "one.\n");
@@ -171,7 +171,7 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
 
     // tcp_dest
     if (key == "tcp_dest") {
-      uint16_t port = std::stoi(value);
+      uint32_t port = std::stoi(value);
       if (check_range_u16(port)) {
         return 1;
       }
@@ -181,7 +181,7 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
 
     // tcp_src
     if (key == "tcp_src") {
-      uint16_t port = std::stoi(value);
+      uint32_t port = std::stoi(value);
       if (check_range_u16(port)) {
         return 1;
       }
@@ -269,7 +269,7 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
 
     // udp_dest
     if (key == "udp_dest") {
-      uint16_t port = std::stoi(value);
+      uint32_t port = std::stoi(value);
       if (check_range_u16(port)) {
         return 1;
       }
@@ -279,7 +279,7 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
 
     // udp_src
     if (key == "udp_src") {
-      uint16_t port = std::stoi(value);
+      uint32_t port = std::stoi(value);
       if (check_range_u16(port)) {
         return 1;
       }
