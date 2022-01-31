@@ -230,6 +230,16 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
       continue;
     }
 
+    // tcp_src
+    if (key == "tcp_src") {
+      uint32_t port = std::stoi(value);
+      if (check_range_u16(port, key)) {
+        return 1;
+      }
+      filt.tcp_src = port;
+      continue;
+    }
+
     // tcp_dest
     if (key == "tcp_dest") {
       uint32_t port = std::stoi(value);
@@ -240,13 +250,54 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
       continue;
     }
 
-    // tcp_src
-    if (key == "tcp_src") {
-      uint32_t port = std::stoi(value);
-      if (check_range_u16(port, key)) {
+    // tcp_seq
+    if (key == "tcp_seq") {
+      uint64_t seq = std::stoi(value);
+      if (check_range_u32(seq, key)) {
         return 1;
       }
-      filt.tcp_src = port;
+      filt.tcp_seq = seq;
+      continue;
+    }
+
+    // tcp_ack_seq
+    if (key == "tcp_ack_seq") {
+      uint64_t ack_seq = std::stoi(value);
+      if (check_range_u32(ack_seq, key)) {
+        return 1;
+      }
+      filt.tcp_ack_seq = ack_seq;
+      continue;
+    }
+
+    // tcp_doff
+    if (key == "tcp_doff") {
+      uint8_t doff = std::stoi(value);
+      if (check_range_u4(doff, key)) {
+        return 1;
+      }
+      filt.tcp_doff = doff;
+      continue;
+    }
+
+    // tcp_res1
+    if (key == "tcp_res1") {
+      uint8_t res1 = std::stoi(value);
+      if (check_range_u4(res1, key)) {
+        return 1;
+      }
+      filt.tcp_res1 = res1;
+      continue;
+    }
+
+    // tcp_res2
+    if (key == "tcp_res2") {
+      uint8_t res2 = std::stoi(value);
+      // res2 field is 2 bit.
+      if (res2<0 | res2> 3) {
+        return 1;
+      }
+      filt.tcp_res2 = res2;
       continue;
     }
 
@@ -328,13 +379,37 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
       continue;
     }
 
-    // udp_dest
-    if (key == "udp_dest") {
-      uint32_t port = std::stoi(value);
-      if (check_range_u16(port, key)) {
+    // tcp_window
+    if (key == "tcp_window") {
+      uint32_t window = std::stoi(value);
+      if (check_range_u16(window, key)) {
         return 1;
       }
-      filt.udp_dest = port;
+      filt.tcp_window = window;
+      continue;
+    }
+
+    // tcp_
+    if (key == "tcp_check") {
+      uint32_t check = std::stoi(value);
+      if (check_range_u16(check, key)) {
+        return 1;
+      }
+      LOG_INFO(
+          "TCP checksum is to be rewritten. Xapture doesn't calculate the "
+          "right "
+          "check sum.\n");
+      filt.tcp_check = check;
+      continue;
+    }
+
+    // tcp_urg_ptr
+    if (key == "tcp_urg_ptr") {
+      uint32_t urg_ptr = std::stoi(value);
+      if (check_range_u16(urg_ptr, key)) {
+        return 1;
+      }
+      filt.tcp_urg_ptr = urg_ptr;
       continue;
     }
 
@@ -345,6 +420,40 @@ int parse_cmdline(int argc, char* argv[], struct config& cfg) {
         return 1;
       }
       filt.udp_src = port;
+      continue;
+    }
+
+    // udp_dest
+    if (key == "udp_dest") {
+      uint32_t port = std::stoi(value);
+      if (check_range_u16(port, key)) {
+        return 1;
+      }
+      filt.udp_dest = port;
+      continue;
+    }
+
+    // udp_len
+    if (key == "udp_len") {
+      uint32_t len = std::stoi(value);
+      if (check_range_u16(len, key)) {
+        return 1;
+      }
+      filt.udp_len = len;
+      continue;
+    }
+
+    // udp_check
+    if (key == "udp_check") {
+      uint32_t check = std::stoi(value);
+      if (check_range_u16(check, key)) {
+        return 1;
+      }
+      LOG_INFO(
+          "UDP checksum is to be rewritten. Xapture doesn't calculate the "
+          "right "
+          "check sum.\n");
+      filt.udp_check = check;
       continue;
     }
 
