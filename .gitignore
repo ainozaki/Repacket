@@ -1,5 +1,8 @@
 deps/
 demo/
+setup.sh
+setup-performance.sh
+setup-testenv.sh
 src/for-demo/
 src/benri_commands.sh
 src/xdp-goal.c
