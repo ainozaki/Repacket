@@ -55,7 +55,7 @@ int Loader::Attach() {
   char bpf_file[] = "xdp-generated-kern.o";
   char bpf_mapname[] = "perf_map";
 
-  assert(config_.ifname);
+  assert(config_.ifname != "");
   assert(config_.ifindex > 0);
 
   // Load BPF program and get fd.
@@ -68,7 +68,7 @@ int Loader::Attach() {
   // Set xdp to the interface.
   err = bpf_set_link_xdp_fd(config_.ifindex, prog_fd, config_.xdp_flags);
   if (err) {
-    LOG_ERROR("ERR: Cannot set xdp to %s (index %d)\n", config_.ifname,
+    LOG_ERROR("ERR: Cannot set xdp to %s (index %d)\n", config_.ifname.c_str(),
               config_.ifindex);
     return err;
   }
@@ -81,13 +81,14 @@ int Loader::Attach() {
     return 1;
   }
 
-  LOG_INFO("Success: Attach %s to interface %s\n", bpf_file, config_.ifname);
+  LOG_INFO("Success: Attach %s to interface %s\n", bpf_file,
+           config_.ifname.c_str());
   return 0;
 }
 
 int Loader::PinMaps() {
   char pin_dir[32];
-  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname);
+  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname.c_str());
   int err;
   // Unpin maps in advance.
   if (access(pin_dir, F_OK) != -1) {
@@ -117,6 +118,7 @@ int Loader::Detach() {
               config_.ifindex);
     return 1;
   }
-  LOG_INFO("Success: Detach XDP program from interface %s\n", config_.ifname);
+  LOG_INFO("Success: Detach XDP program from interface %s\n",
+           config_.ifname.c_str());
   return 0;
 }

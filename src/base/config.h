@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 
 #ifndef XDP_FLAGS_UPDATE_IF_NOEXIST
 #define XDP_FLAGS_UPDATE_IF_NOEXIST 1U << 0
@@ -56,7 +57,7 @@ struct filter {
 struct config {
   uint32_t xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
   int ifindex = -1;
-  char* ifname;
+  std::string ifname;
   RunMode run_mode = RunMode::DUMPALL;
   DumpMode dump_mode = DumpMode::NORMAL;
   std::optional<struct filter> filter;

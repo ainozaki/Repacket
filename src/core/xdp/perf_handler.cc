@@ -215,7 +215,7 @@ void PerfHandler::Cleanup() {
   Loader loader(config);
   int err = loader.Detach();
   if (err) {
-    LOG_ERROR("Failed to detach XDP from %s\n", config.ifname);
+    LOG_ERROR("Failed to detach XDP from %s\n", config.ifname.c_str());
   }
   exit(1);
 }

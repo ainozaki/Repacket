@@ -53,7 +53,7 @@ int xapture(const struct config& cfg) {
 int main(int argc, char* argv[]) {
   struct config cfg;
 
-  if (parse_cmdline(argc, argv, cfg)) {
+  if (ParseCmdline(argc, argv, cfg)) {
     LOG_ERROR("Invalid cmdline option is detected. Abort.\n");
     return 1;
   }

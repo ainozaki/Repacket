@@ -40,7 +40,7 @@ double calc_period(struct record* rec, struct record* prev) {
 
 MapHandler::MapHandler(const struct config& config) : config_(config) {
   char pin_dir[32];
-  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname);
+  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname.c_str());
   map_fd_ = bpf_obj_get(pin_dir);
 }
 
