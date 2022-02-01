@@ -35,7 +35,7 @@ void IpPrint(const struct config& cfg, const unsigned char* p, uint8_t len) {
   const char* src = GET_IPADDR(&iph->saddr);
   const char* dest = GET_IPADDR(&iph->daddr);
 
-  uint8_t hdl = (GET_U8(&iph->vhl) & 0x0F) * 4;
+  uint8_t hdl = iph->hl * 4;
   p += hdl;
   len -= hdl;
 

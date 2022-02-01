@@ -14,7 +14,7 @@
 struct icmp_header {
   uint8_t type;
   uint8_t code;
-  uint16_t chsum;
+  uint16_t check;
   uint16_t id;
   uint16_t seq;
 };

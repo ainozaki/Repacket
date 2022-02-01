@@ -32,7 +32,8 @@
 #define X_IPPROTO_L2TP 115
 
 struct ip_header {
-  uint8_t vhl;
+	unsigned int ver:4;
+	unsigned int hl:4;
   uint8_t tos;
   uint16_t tot_len;
   uint16_t id;
