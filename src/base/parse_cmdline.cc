@@ -76,7 +76,7 @@ int ParseCmdline(int argc, char* argv[], struct config& cfg) {
   return ParseCmdline(argc, argv_new, cfg);
 }
 
-int ParseCmdline(int argc, std::string argv[], struct config& cfg) {
+int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
   int index = 1;
   bool has_i_option = false;
   struct filter filt;

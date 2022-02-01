@@ -5,7 +5,7 @@
 
 #include "base/config.h"
 
-int ParseCmdline(int argc, std::string argv[], struct config& cfg);
+int ParseCmdline(int argc, const std::string argv[], struct config& cfg);
 int ParseCmdline(int argc, char* argv[], struct config& cfg);
 
 #endif  // PARSE_CMDLINE_H_
