@@ -5,7 +5,7 @@ BPFFLAGS = -I../deps/include/ -I../deps/include/bpf
 LFLAGS = -L../deps/lib
 LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
-XAPTURE_SRC=\
+SRC=\
 	base/parse_cmdline.cc \
 	core/dump/binary_utils.cc \
 	core/dump/print_arp.cc \
@@ -18,7 +18,7 @@ XAPTURE_SRC=\
 	core/xdp/loader.cc \
 	core/xdp/map_handler.cc \
 	core/xdp/perf_handler.cc
-XAPTURE_H=\
+HEADER=\
 	base/config.h \
 	base/logger.h \
 	base/parse_cmdline.h \
@@ -28,28 +28,37 @@ XAPTURE_H=\
 	core/gen/generator.h \
 	core/xdp/loader.h \
 	core/xdp/perf_handler.h
-XAPTURE_OBJ=$(XAPTURE_SRC:.cc=.o)
-XAPTURE_O = xapture.o
-
+XAPTURE = xapture.cc
 TEST_SRC=\
+	tests/gen_unittest.cc \
 	tests/parse_cmdline_unittest.cc
 
-all: $(XAPTURE_OBJ) $(XAPTURE_H) $(XAPTURE_O) Makefile
-	$(CC) $(CPPFLAGS) $(LFLAGS) -o xapture $(XAPTURE_OBJ) $(XAPTURE_O) $(LIBS)
+OBJ=$(SRC:.cc=.o)
+XAPTURE_OBJ=$(XAPTURE:.cc=.o)
+TEST_OBJ=$(TEST_SRC:.cc=.o)
 
-test: $(XAPTURE_SRC) $(XAPTURE_H) $(TEST_SRC) Makefile
-	$(CC) $(CPPFLAGS) $(BPFFLAGS) $(LFLAGS) -o test $(XAPTURE_SRC) $(TEST_SRC) $(LIBS) $(LIBS_TEST) -pthread
+.PHONY: all
+all: $(OBJ) $(XAPTURE_OBJ)
+	$(CC) $(LFLAGS) -o xapture $^ $(LIBS)
+
+.PHONY: test
+test: $(OBJ) $(TEST_OBJ)
+	$(CC) $(LFLAGS) -o test $^ $(LIBS) $(LIBS_TEST) -pthread
+
+
+$(OBJ): %.o: %.cc $(HEADER)
+	$(CC) $(CPPFLAGS) $(BPFFLAGS) -o $(<:.cc=.o) -c $<
 
 $(XAPTURE_OBJ): %.o: %.cc
 	$(CC) $(CPPFLAGS) $(BPFFLAGS) -o $(<:.cc=.o) -c $<
 
-$(XAPTURE_O): %.o: %.cc
+$(TEST_OBJ): %.o: %.cc $(HEADER)
 	$(CC) $(CPPFLAGS) $(BPFFLAGS) -o $(<:.cc=.o) -c $<
 
-format: $(XAPTURE_SRC) $(XAPTURE_H) $(HEADER_ONLY)
+.PHONY: format
+format: $(SRC) $(HEADER) $(TEST_SRC) $(XAPTURE)
 	clang-format -i $^ xapture.cc
-clean:
-	find ./ -name "*.o" -type f -delete
-	rm -f xapture xdp-generated-kern.o xdp-generated-kern.ll test
 
-.PHONY: all clean test format
+.PHONY: clean
+clean:
+	rm -f $(OBJ) $(TEST_OBJ) $(XAPTURE_OBJ) xapture test xdp-generated-kern.o xdp-generated-kern.ll
