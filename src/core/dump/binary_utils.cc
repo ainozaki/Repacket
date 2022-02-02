@@ -8,7 +8,7 @@ extern "C" {
 #include <string.h>
 }
 
-#include "core/dump/def/types.h"
+#include "core/dump/types.h"
 
 // static functions
 

@@ -34,9 +34,6 @@ XAPTURE_O = xapture.o
 TEST_SRC=\
 	tests/parse_cmdline_unittest.cc
 
-.PHONY: all
-.PHONY: clean
-
 all: $(XAPTURE_OBJ) $(XAPTURE_H) $(XAPTURE_O) Makefile
 	$(CC) $(CPPFLAGS) $(LFLAGS) -o xapture $(XAPTURE_OBJ) $(XAPTURE_O) $(LIBS)
 
@@ -54,3 +51,5 @@ format: $(XAPTURE_SRC) $(XAPTURE_H) $(HEADER_ONLY)
 clean:
 	find ./ -name "*.o" -type f -delete
 	rm -f xapture xdp-generated-kern.o xdp-generated-kern.ll test
+
+.PHONY: all clean test format

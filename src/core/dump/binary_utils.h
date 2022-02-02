@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include "core/dump/def/types.h"
+#include "core/dump/types.h"
 
 // Get each size of int from pointer.
 // Pass pointer with network-order, since this handles byte-order inside.

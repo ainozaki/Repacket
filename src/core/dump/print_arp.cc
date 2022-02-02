@@ -4,7 +4,22 @@
 
 #include "base/config.h"
 #include "core/dump/binary_utils.h"
-#include "core/dump/def/arp.h"
+#include "core/dump/types.h"
+
+#define ARP_REQUEST 1
+#define ARP_REPLY 2
+
+struct arp_header {
+  uint16_t hw_type;
+  uint16_t proto_type;
+  uint8_t hw_len;
+  uint8_t proto_len;
+  uint16_t opcode;
+  n_uint48_t src_hw;
+  n_uint32_t src_ip;
+  n_uint48_t dest_hw;
+  n_uint32_t dest_ip;
+};
 
 void ArpPrint(const struct config& cfg, const unsigned char* p, uint8_t len) {
   struct arp_header* arph = (struct arp_header*)p;

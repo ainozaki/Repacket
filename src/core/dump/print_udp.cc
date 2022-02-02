@@ -4,7 +4,13 @@
 
 #include "base/config.h"
 #include "core/dump/binary_utils.h"
-#include "core/dump/def/udp.h"
+
+struct udp_header {
+  uint16_t src;
+  uint16_t dest;
+  uint16_t len;
+  uint16_t check;
+};
 
 void UdpPrint(const struct config& cfg, const unsigned char* p, uint8_t len) {
   struct udp_header* udp = (struct udp_header*)p;
