@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/config.h"
 #include "base/logger.h"
@@ -132,13 +133,19 @@ int Compile() {
 
 std::string FilteringStatement(const struct config& cfg) {
   assert(cfg.filter.has_value());
-  std::string s;
   const struct filter filter = cfg.filter.value();
+  std::vector<std::string> filter_elements;
   // If config has filtering attributes, convert them into string.
   if (filter.udp_dest) {
-    s = "udph && udph->dest==";
-    s += std::to_string(filter.udp_dest);
+    filter_elements.push_back("udph->dest==" + std::to_string(filter.udp_dest));
   }
+
+  std::string s;
+  for (const auto& elements : filter_elements) {
+    s += elements;
+    s += "&&";
+  }
+  s = s.substr(0, s.length() - 2);
   return s;
 }
 
