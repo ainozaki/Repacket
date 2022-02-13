@@ -39,8 +39,7 @@ int xapture(const struct config& cfg) {
 
     case RunMode::DETACH:
       // Detach XDP program.
-      loader = std::make_optional<Loader>(cfg);
-      err = loader->Detach();
+      err = Loader::Detach(cfg);
       if (err) {
         LOG_ERROR("Error while detaching XDP program.\n");
         return 1;

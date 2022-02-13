@@ -121,15 +121,15 @@ int Loader::PinMaps() {
   return 0;
 }
 
-int Loader::Detach() {
+// static
+int Loader::Detach(const struct config& cfg) {
   // Set xdp to the interface.
   // bpf_set_link_xdp_fd() unloads BPF program when fd is -1.
-  if (bpf_set_link_xdp_fd(config_.ifindex, /*fd=*/-1, config_.xdp_flags)) {
-    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n",
-              config_.ifindex);
+  if (bpf_set_link_xdp_fd(cfg.ifindex, /*fd=*/-1, cfg.xdp_flags)) {
+    LOG_ERROR("ERR: Cannot set xdp to interface on index %d.\n", cfg.ifindex);
     return 1;
   }
   LOG_INFO("Success: Detach XDP program from interface %s\n",
-           config_.ifname.c_str());
+           cfg.ifname.c_str());
   return 0;
 }

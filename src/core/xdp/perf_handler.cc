@@ -27,11 +27,12 @@ extern "C" {
 #define MAX_CPUS 12
 #define PAGE_CNT 8
 
-bool catch_signal = false;
 int packet_captured = 0;
 struct config config;
 
 namespace {
+
+bool catch_signal = false;
 
 void SignalHandler(int signum) {
   catch_signal = true;
@@ -212,8 +213,7 @@ void SignalHandler() {
 
 void PerfHandler::Cleanup() {
   std::cout << "\n" << packet_captured << " packets captured." << std::endl;
-  Loader loader(config);
-  int err = loader.Detach();
+  int err = Loader::Detach(config);
   if (err) {
     LOG_ERROR("Failed to detach XDP from %s\n", config.ifname.c_str());
   }

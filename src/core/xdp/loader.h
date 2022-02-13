@@ -19,7 +19,7 @@ class Loader {
   int Start();
 
   // Detach xdp program.
-  int Detach();
+  static int Detach(const struct config& cfg);
 
  private:
   // Attach "xdp-generated-kern.o" to cfg->ifindex.

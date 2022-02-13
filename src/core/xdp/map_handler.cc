@@ -5,6 +5,7 @@
 extern "C" {
 #include <bpf.h>
 #include <libbpf.h>
+#include <signal.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
@@ -12,8 +13,11 @@ extern "C" {
 
 #include "base/config.h"
 #include "base/logger.h"
+#include "core/xdp/loader.h"
 
 namespace {
+
+bool catch_signal = false;
 
 __u64 gettime() {
   struct timespec t;
@@ -36,10 +40,21 @@ double calc_period(struct record* rec, struct record* prev) {
   return period_;
 }
 
+void signal_handler(int signum) {
+  catch_signal = true;
+}
+
 }  // namespace
 
 MapHandler::MapHandler(const struct config& config, const int map_fd)
-    : config_(config), map_fd_(map_fd) {}
+    : config_(config), map_fd_(map_fd) {
+  // register SIGNINT handler.
+  struct sigaction sa;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_handler = signal_handler;
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
+}
 
 void MapHandler::Start() {
   // TODO: make map_info a member of Map
@@ -94,12 +109,15 @@ void MapHandler::StatsPoll(struct bpf_map_info* info) {
   StatsCollect(info->type, &record);
   usleep(1000000 / 4);
 
-  while (1) {
+  while (!catch_signal) {
     prev = record;
     StatsCollect(info->type, &record);
     StatsPrint(&record, &prev);
     sleep(1);
   }
+
+  fprintf(stderr, "\n");
+  Loader::Detach(config_);
 }
 
 bool MapHandler::StatsCollect(__u32 map_type, struct record* rec) {
@@ -132,9 +150,7 @@ void MapHandler::StatsPrint(struct record* rec, struct record* prev) {
 
   std::string action;
 
-  const char* fmt =
-      "\rrewrite  %'11lld pkts (%'12.0f pps)"
-      " period:%f";
+  const char* fmt = "\rrewrite  %'11lld pkts (%'12.0f pps)	(%f s)";
 
   period = calc_period(rec, prev);
   if (period == 0)
