@@ -10,7 +10,6 @@
 #include "core/xdp/loader.h"
 
 int xapture(const struct config& cfg) {
-  int err;
   std::optional<Loader> loader;
 
   switch (cfg.run_mode) {
@@ -25,16 +24,14 @@ int xapture(const struct config& cfg) {
     case RunMode::ATTACH:
       // Atach XDP program to network interface.
       loader = std::make_optional<Loader>(cfg);
-      err = loader->Start();
-      if (err) {
+      if (loader->Start()) {
         LOG_ERROR("Error while attaching XDP program.\n");
         return 1;
       }
 
     case RunMode::DETACH:
       // Detach XDP program.
-      err = Loader::Detach(cfg);
-      if (err) {
+      if (Loader::Detach(cfg)) {
         LOG_ERROR("Error while detaching XDP program.\n");
         return 1;
       }

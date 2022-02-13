@@ -14,29 +14,29 @@ extern "C" {
 #include "core/xdp/map_handler.h"
 
 Loader::Loader(const struct config& cfg) : config_(cfg) {
+  // TODO: support input of map_name
   switch (config_.run_mode) {
     case RunMode::REWRITE:
       map_name_ = "array_map";
       break;
     default:
-      map_name_ = "perf_map";
+      map_name_ = "map";
   }
 }
 
 int Loader::Start() {
   // Attach XDP program.
-  int err = Attach();
-  if (err) {
+  if (Attach()) {
     LOG_ERROR("Error while attaching XDP program.\n");
     return 1;
   }
 
   // Setup for collecting stats.
-	// Map array
-	map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
-	map_handler_->Start();
-  
-	return 0;
+  // Map array
+  map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
+  map_handler_->Start();
+
+  return 0;
 }
 
 int Loader::Attach() {
@@ -75,6 +75,7 @@ int Loader::Attach() {
   return 0;
 }
 
+// Not used currently
 int Loader::PinMaps() {
   char pin_dir[32];
   sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname.c_str());
