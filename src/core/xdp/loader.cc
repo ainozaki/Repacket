@@ -34,16 +34,6 @@ int Loader::Start() {
 
   // Setup for collecting stats.
   switch (config_.run_mode) {
-    case RunMode::DROP:
-      // Map
-      err = PinMaps();
-      if (err) {
-        LOG_ERROR("Error while perf.\n");
-        return 1;
-      }
-      map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
-      map_handler_->Start();
-      break;
     case RunMode::REWRITE:
       map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
       map_handler_->Start();

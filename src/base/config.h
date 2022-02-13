@@ -9,7 +9,7 @@
 #define XDP_FLAGS_UPDATE_IF_NOEXIST 1U << 0
 #endif
 
-enum class RunMode { ATTACH, DETACH, DUMPALL, DROP, FILTER, REWRITE };
+enum class RunMode { ATTACH, DETACH, DUMPALL, REWRITE };
 
 enum class DumpMode { NORMAL, FRIENDLY };
 

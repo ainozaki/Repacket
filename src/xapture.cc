@@ -18,8 +18,6 @@ int xapture(const struct config& cfg) {
 
   switch (cfg.run_mode) {
     case RunMode::DUMPALL:
-    case RunMode::DROP:
-    case RunMode::FILTER:
     case RunMode::REWRITE:
       // Generate XDP program.
       if (Gen(cfg)) {

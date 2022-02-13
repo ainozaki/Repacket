@@ -100,9 +100,6 @@ int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
         case 'r':
           cfg.run_mode = RunMode::REWRITE;
           continue;
-        case 'd':
-          cfg.run_mode = RunMode::DROP;
-          continue;
         case 'f':
           cfg.dump_mode = DumpMode::FRIENDLY;
           continue;
