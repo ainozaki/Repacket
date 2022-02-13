@@ -29,7 +29,24 @@ std::string include =
     "#endif\n";
 
 // struct
-std::string define_struct =
+std::string define_common =
+    "struct hdr_cursor {\n"
+    "void *pos;\n"
+    "};\n";
+
+std::string define_struct_map =
+    "struct datarec {\n"
+    "__u64 rx_packets;\n"
+    "__u64 rx_bytes;\n"
+    "};\n"
+    "struct bpf_map_def SEC(\"maps\") array_map = {\n"
+    ".type        = BPF_MAP_TYPE_PERCPU_ARRAY,\n"
+    ".key_size    = sizeof(__u32),\n"
+    ".value_size  = sizeof(struct datarec),\n"
+    ".max_entries = 5,\n"
+    "};\n";
+
+std::string define_struct_perf =
     "struct bpf_map_def SEC(\"maps\") perf_map = {\n"
     ".type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,\n"
     ".key_size = sizeof(int),\n"
@@ -38,14 +55,10 @@ std::string define_struct =
     "};\n"
     "struct S {\n"
     "__u16 cookie;\n"
-    "__u16 packet_len;\n"
-    "} __packed;\n"
-    "struct hdr_cursor {\n"
-    "void *pos;\n"
-    "};\n";
+    "__u16 packet_len;\n";
 
 // inline func
-std::string always_inline =
+std::string inline_csum =
     "static __always_inline __u16 csum_fold_helper(__u32 csum){"
     "return ~((csum & 0xffff) + (csum >> 16));"
     "}\n"
@@ -55,7 +68,7 @@ std::string always_inline =
     "*csum = csum_fold_helper(*csum);"
     "}\n";
 
-std::string sec_base_f =
+std::string sec_perf_top =
     "SEC(\"xdp_generated\") "
     "int xdp_parse_prog(struct xdp_md* ctx){\n"
     "void *data = (void *)(long)ctx->data;\n"
@@ -64,7 +77,7 @@ std::string sec_base_f =
     "__u16 sample_size;\n"
     "int ret;\n"
     "struct S metadata;\n";
-std::string sec_base_b =
+std::string sec_perf_bottom =
     "metadata.cookie = 0xdead;\n"
     "metadata.packet_len = (__u16)(data_end - data);\n"
     "sample_size = metadata.packet_len <= SAMPLE_SIZE ? "
@@ -75,10 +88,23 @@ std::string sec_base_b =
     "if (ret){\n"
     "bpf_printk(\"perf_event_output failed\");\n"
     "}\n"
-    "return XDP_PASS;\n"
-    "}\n";
+    "return XDP_PASS;}\n";
 
-std::string action_base =
+std::string sec_map_top =
+    "SEC(\"xdp_generated\") "
+    "int xdp_parse_prog(struct xdp_md* ctx){\n"
+    "void *data = (void *)(long)ctx->data;\n"
+    "void *data_end = (void *)(long)ctx->data_end;\n";
+
+std::string sec_map_bottom =
+    "struct datarec *rec;\n"
+    "__u32 key = 1;\n"
+    "rec = bpf_map_lookup_elem(&array_map, &key);\n"
+    "if (!rec){return XDP_ABORTED;}\n"
+    "rec->rx_packets++;\n"
+    "return XDP_PASS;}\n";
+
+std::string parse_common =
     "struct hdr_cursor nh;\n"
     "nh.pos = data;\n"
     "struct ethhdr *eth = nh.pos;\n"
@@ -105,12 +131,5 @@ std::string action_base =
     "udph = nh.pos;\n"
     "if (udph + 1 > data_end) { return XDP_ABORTED;}\n"
     "nh.pos += sizeof(*udph);}\n";
-
-std::string filter_base_f = "if (";
-std::string filter_base_b = " ){\n return XDP_PASS; }\n";
-
-std::string rewrite_base_f = "if (";
-std::string rewrite_base_m = " ){\n";
-std::string rewrite_base_b = "}\n";
 
 #endif  // XDP_PROG_BASE_H_

@@ -23,7 +23,7 @@ struct record {
 
 class MapHandler {
  public:
-  MapHandler(const struct config& config);
+  MapHandler(const struct config& config, const int map_fd);
   ~MapHandler() = default;
   MapHandler(const MapHandler&) = default;
 

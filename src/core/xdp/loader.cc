@@ -14,7 +14,15 @@ extern "C" {
 #include "core/xdp/map_handler.h"
 #include "core/xdp/perf_handler.h"
 
-Loader::Loader(const struct config& cfg) : config_(cfg) {}
+Loader::Loader(const struct config& cfg) : config_(cfg) {
+  switch (config_.run_mode) {
+    case RunMode::REWRITE:
+      map_name_ = "array_map";
+      break;
+    default:
+      map_name_ = "perf_map";
+  }
+}
 
 int Loader::Start() {
   // Attach XDP program.
@@ -33,7 +41,11 @@ int Loader::Start() {
         LOG_ERROR("Error while perf.\n");
         return 1;
       }
-      map_handler_ = std::make_optional<MapHandler>(config_);
+      map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
+      map_handler_->Start();
+      break;
+    case RunMode::REWRITE:
+      map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
       map_handler_->Start();
       break;
     default:
@@ -53,7 +65,6 @@ int Loader::Attach() {
   int err;
   int prog_fd;
   char bpf_file[] = "xdp-generated-kern.o";
-  char bpf_mapname[] = "perf_map";
 
   assert(config_.ifname != "");
   assert(config_.ifindex > 0);
@@ -74,9 +85,9 @@ int Loader::Attach() {
   }
 
   // Find fd for the map.
-  map_fd_ = bpf_object__find_map_fd_by_name(bpf_obj_, bpf_mapname);
+  map_fd_ = bpf_object__find_map_fd_by_name(bpf_obj_, map_name_.c_str());
   if (map_fd_ < 0) {
-    LOG_ERROR("ERR: Cannot find fd for %s (map_fd: %d)\n", bpf_mapname,
+    LOG_ERROR("ERR: Cannot find fd for %s (map_fd: %d)\n", map_name_.c_str(),
               map_fd_);
     return 1;
   }

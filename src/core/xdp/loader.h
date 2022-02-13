@@ -32,6 +32,8 @@ class Loader {
 
   int map_fd_;
 
+  std::string map_name_;
+
   struct bpf_object* bpf_obj_;
 
   std::optional<PerfHandler> perf_handler_;

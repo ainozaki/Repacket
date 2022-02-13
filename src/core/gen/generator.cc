@@ -62,32 +62,32 @@ int Gen(const struct config& cfg) {
     return 1;
   }
 
-  // Generate XDP program.
   file << include;
-  file << define_struct;
-  file << sec_base_f;
-  file << action_base;
+  file << define_common;
 
+  // Generate XDP program.
   switch (cfg.run_mode) {
     case RunMode::FILTER:
       LOG_INFO("FILTER mode.\n");
-      file << filter_base_f;
+      file << define_struct_perf;
+      file << sec_perf_top;
+      file << parse_common;
       file << FilteringStatement(cfg);
-      file << filter_base_b;
+      file << sec_perf_bottom;
       break;
     case RunMode::REWRITE:
       LOG_INFO("REWRITE mode.\n");
-      file << rewrite_base_f;
-      file << rewrite_base_m;
+      file << define_struct_map;
+      file << sec_map_top;
+      file << parse_common;
       file << RewriteStatement(cfg);
-      file << rewrite_base_b;
+      file << sec_map_bottom;
       break;
     default:
       // case DUMPALL
       LOG_INFO("DUMPALL mode.\n");
       break;
   }
-  file << sec_base_b;
   file << license;
 
   file.close();
@@ -174,18 +174,30 @@ std::string FilteringStatement(const struct config& cfg) {
     s += "&&";
   }
   s = s.substr(0, s.length() - 2);
-  return s;
+
+  std::string ret = "if(" + s + "){return XDP_PASS;}";
+  return ret;
 }
 
 std::string RewriteStatement(const struct config& cfg) {
   assert(cfg.filter.has_value());
   std::string s;
+  std::string r;
+  bool use_udp = false;
   const struct filter filter = cfg.filter.value();
   if (filter.udp_dest.has_value()) {
-    s = "udph->dest=bpf_htons(";
-    s += std::to_string(filter.udp_dest.value());
-    s += ")";
+    use_udp = true;
+    r = "udph->dest=bpf_htons(";
+    r += std::to_string(filter.udp_dest.value());
+    r += ");";
   }
-  s += ";";
+
+  s = "if(";
+  if (use_udp) {
+    s += "udph";
+  }
+  s += "){";
+  s += r;
+  s += "}else {return XDP_PASS;}\n";
   return s;
 }

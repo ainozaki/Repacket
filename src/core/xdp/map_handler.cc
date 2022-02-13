@@ -38,11 +38,8 @@ double calc_period(struct record* rec, struct record* prev) {
 
 }  // namespace
 
-MapHandler::MapHandler(const struct config& config) : config_(config) {
-  char pin_dir[32];
-  sprintf(pin_dir, "/sys/fs/bpf/%s", config_.ifname.c_str());
-  map_fd_ = bpf_obj_get(pin_dir);
-}
+MapHandler::MapHandler(const struct config& config, const int map_fd)
+    : config_(config), map_fd_(map_fd) {}
 
 void MapHandler::Start() {
   // TODO: make map_info a member of Map

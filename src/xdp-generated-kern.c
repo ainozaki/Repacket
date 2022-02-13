@@ -18,26 +18,22 @@
 #ifndef IPPROTO_UDP
 #define IPPROTO_UDP 17
 #endif
-struct bpf_map_def SEC("maps") perf_map = {
-.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-.key_size = sizeof(int),
-.value_size = sizeof(__u32),
-.max_entries = MAX_CPUS,
-};
-struct S {
-__u16 cookie;
-__u16 packet_len;
-} __packed;
 struct hdr_cursor {
 void *pos;
+};
+struct datarec {
+__u64 rx_packets;
+__u64 rx_bytes;
+};
+struct bpf_map_def SEC("maps") array_map = {
+.type        = BPF_MAP_TYPE_PERCPU_ARRAY,
+.key_size    = sizeof(__u32),
+.value_size  = sizeof(struct datarec),
+.max_entries = 5,
 };
 SEC("xdp_generated") int xdp_parse_prog(struct xdp_md* ctx){
 void *data = (void *)(long)ctx->data;
 void *data_end = (void *)(long)ctx->data_end;
-__u64 flags = BPF_F_CURRENT_CPU;
-__u16 sample_size;
-int ret;
-struct S metadata;
 struct hdr_cursor nh;
 nh.pos = data;
 struct ethhdr *eth = nh.pos;
@@ -64,14 +60,11 @@ if (iph->protocol == IPPROTO_UDP){
 udph = nh.pos;
 if (udph + 1 > data_end) { return XDP_ABORTED;}
 nh.pos += sizeof(*udph);}
-metadata.cookie = 0xdead;
-metadata.packet_len = (__u16)(data_end - data);
-sample_size = metadata.packet_len <= SAMPLE_SIZE ? metadata.packet_len : SAMPLE_SIZE;
-flags |= 	(__u64)sample_size << 32;
-ret = bpf_perf_event_output(ctx, &perf_map, flags, &metadata, sizeof(metadata));
-if (ret){
-bpf_printk("perf_event_output failed");
-}
-return XDP_PASS;
-}
+if(udph){udph->dest=bpf_htons(8080);}else {return XDP_PASS;}
+struct datarec *rec;
+__u32 key = 1;
+rec = bpf_map_lookup_elem(&array_map, &key);
+if (!rec){return XDP_ABORTED;}
+rec->rx_packets++;
+return XDP_PASS;}
 char _license[] SEC("license") = "GPL";
