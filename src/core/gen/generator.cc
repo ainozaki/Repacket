@@ -67,19 +67,12 @@ int Gen(const struct config& cfg) {
 
   // Generate XDP program.
   switch (cfg.run_mode) {
-    case RunMode::FILTER:
-      LOG_INFO("FILTER mode.\n");
-      file << define_struct_perf;
-      file << sec_perf_top;
-      file << parse_common;
-      file << FilteringStatement(cfg);
-      file << sec_perf_bottom;
-      break;
     case RunMode::REWRITE:
       LOG_INFO("REWRITE mode.\n");
       file << define_struct_map;
       file << sec_map_top;
       file << parse_common;
+      file << FilteringStatement(cfg);
       file << RewriteStatement(cfg);
       file << sec_map_bottom;
       break;
@@ -131,8 +124,7 @@ int Compile() {
 }
 
 std::string FilteringStatement(const struct config& cfg) {
-  assert(cfg.filter.has_value());
-  const struct filter filter = cfg.filter.value();
+  const struct filter filter = cfg.if_filter;
   std::vector<std::string> filter_elements;
   bool use_udph = false;
 
@@ -166,38 +158,35 @@ std::string FilteringStatement(const struct config& cfg) {
   }
 
   std::string s;
-  if (use_udph) {
+  if (cfg.use_udp) {
     s += "udph&&";
+  } else if (cfg.use_tcp) {
+    s += "tcph&&";
+  } else if (cfg.use_icmp) {
+    s += "icmph&&";
   }
+
   for (const auto& elements : filter_elements) {
     s += elements;
     s += "&&";
   }
   s = s.substr(0, s.length() - 2);
 
-  std::string ret = "if(" + s + "){return XDP_PASS;}";
+  std::string ret = "if(" + s + ")";
   return ret;
 }
 
 std::string RewriteStatement(const struct config& cfg) {
-  assert(cfg.filter.has_value());
-  std::string s;
-  std::string r;
+  std::string s = "{";
   bool use_udp = false;
-  const struct filter filter = cfg.filter.value();
+  const struct filter filter = cfg.then_filter;
   if (filter.udp_dest.has_value()) {
     use_udp = true;
-    r = "udph->dest=bpf_htons(";
-    r += std::to_string(filter.udp_dest.value());
-    r += ");";
+    s += "udph->dest=bpf_htons(";
+    s += std::to_string(filter.udp_dest.value());
+    s += ");";
   }
 
-  s = "if(";
-  if (use_udp) {
-    s += "udph";
-  }
-  s += "){";
-  s += r;
   s += "}else {return XDP_PASS;}\n";
   return s;
 }

@@ -61,8 +61,12 @@ struct config {
   RunMode run_mode = RunMode::DUMPALL;
   DumpMode dump_mode = DumpMode::NORMAL;
   std::optional<struct filter> filter;
-  std::optional<struct filter> if_filter;
-  std::optional<struct filter> then_filter;
+  struct filter if_filter;
+  struct filter then_filter;
+  bool use_ip;
+  bool use_udp;
+  bool use_tcp;
+  bool use_icmp;
 };
 
 #endif  // DEFINE_H_
