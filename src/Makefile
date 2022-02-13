@@ -7,27 +7,16 @@ LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
 SRC=\
 	base/parse_cmdline.cc \
-	core/dump/binary_utils.cc \
-	core/dump/print_arp.cc \
-	core/dump/print_ether.cc \
-	core/dump/print_icmp.cc \
-	core/dump/print_ip.cc \
-	core/dump/print_tcp.cc \
-	core/dump/print_udp.cc \
 	core/gen/generator.cc \
 	core/xdp/loader.cc \
-	core/xdp/map_handler.cc \
-	core/xdp/perf_handler.cc
+	core/xdp/map_handler.cc
 HEADER=\
 	base/config.h \
 	base/logger.h \
 	base/parse_cmdline.h \
-	core/dump/binary_utils.h \
-	core/dump/print.h \
 	core/gen/xdp_base.h \
 	core/gen/generator.h \
-	core/xdp/loader.h \
-	core/xdp/perf_handler.h
+	core/xdp/loader.h
 XAPTURE = xapture.cc
 TEST_SRC=\
 	tests/gen_unittest.cc \

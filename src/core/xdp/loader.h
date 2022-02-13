@@ -7,7 +7,6 @@ extern "C" {
 
 #include "base/config.h"
 #include "core/xdp/map_handler.h"
-#include "core/xdp/perf_handler.h"
 
 class Loader {
  public:
@@ -35,8 +34,6 @@ class Loader {
   std::string map_name_;
 
   struct bpf_object* bpf_obj_;
-
-  std::optional<PerfHandler> perf_handler_;
 
   std::optional<MapHandler> map_handler_;
 };

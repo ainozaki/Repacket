@@ -8,16 +8,12 @@
 #include "base/parse_cmdline.h"
 #include "core/gen/generator.h"
 #include "core/xdp/loader.h"
-#include "core/xdp/perf_handler.h"
 
 int xapture(const struct config& cfg) {
-  int map_fd;
   int err;
-  std::optional<PerfHandler> perf_handler;
   std::optional<Loader> loader;
 
   switch (cfg.run_mode) {
-    case RunMode::DUMPALL:
     case RunMode::REWRITE:
       // Generate XDP program.
       if (Gen(cfg)) {

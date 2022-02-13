@@ -12,7 +12,6 @@ extern "C" {
 #include "base/config.h"
 #include "base/logger.h"
 #include "core/xdp/map_handler.h"
-#include "core/xdp/perf_handler.h"
 
 Loader::Loader(const struct config& cfg) : config_(cfg) {
   switch (config_.run_mode) {
@@ -33,22 +32,11 @@ int Loader::Start() {
   }
 
   // Setup for collecting stats.
-  switch (config_.run_mode) {
-    case RunMode::REWRITE:
-      map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
-      map_handler_->Start();
-      break;
-    default:
-      // Perf event.
-      perf_handler_ = std::make_optional<PerfHandler>(config_, map_fd_);
-      err = perf_handler_->Start();
-      if (err) {
-        LOG_ERROR("Error while perf.\n");
-        return 1;
-      }
-      break;
-  }
-  return 0;
+	// Map array
+	map_handler_ = std::make_optional<MapHandler>(config_, map_fd_);
+	map_handler_->Start();
+  
+	return 0;
 }
 
 int Loader::Attach() {

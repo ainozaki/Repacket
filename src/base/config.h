@@ -9,9 +9,7 @@
 #define XDP_FLAGS_UPDATE_IF_NOEXIST 1U << 0
 #endif
 
-enum class RunMode { ATTACH, DETACH, DUMPALL, REWRITE };
-
-enum class DumpMode { NORMAL, FRIENDLY };
+enum class RunMode { ATTACH, DETACH, REWRITE };
 
 struct filter {
   // ip
@@ -58,8 +56,7 @@ struct config {
   uint32_t xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
   int ifindex = -1;
   std::string ifname;
-  RunMode run_mode = RunMode::DUMPALL;
-  DumpMode dump_mode = DumpMode::NORMAL;
+  RunMode run_mode = RunMode::REWRITE;
   std::optional<struct filter> filter;
   struct filter if_filter;
   struct filter then_filter;
