@@ -26,7 +26,7 @@ __u64 rx_packets;
 __u64 rx_bytes;
 };
 struct bpf_map_def SEC("maps") array_map = {
-.type        = BPF_MAP_TYPE_PERCPU_ARRAY,
+.type        = BPF_MAP_TYPE_ARRAY,
 .key_size    = sizeof(__u32),
 .value_size  = sizeof(struct datarec),
 .max_entries = 5,

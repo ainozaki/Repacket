@@ -40,7 +40,7 @@ std::string define_struct_map =
     "__u64 rx_bytes;\n"
     "};\n"
     "struct bpf_map_def SEC(\"maps\") array_map = {\n"
-    ".type        = BPF_MAP_TYPE_PERCPU_ARRAY,\n"
+    ".type        = BPF_MAP_TYPE_ARRAY,\n"
     ".key_size    = sizeof(__u32),\n"
     ".value_size  = sizeof(struct datarec),\n"
     ".max_entries = 5,\n"

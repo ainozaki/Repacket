@@ -65,23 +65,23 @@ int MapHandler::CheckMapInfo(struct bpf_map_info* exp_info,
   // BPF-info via bpf-syscall
   __u32 info_len = sizeof(*info);
   if (bpf_obj_get_info_by_fd(map_fd_, info, &info_len)) {
-    LOG_ERROR("ERR: Cannot get info.");
+    LOG_ERROR("ERR: Cannot get info.\n");
     return 1;
   }
   if (exp_info->key_size && exp_info->key_size != info->key_size) {
-    LOG_ERROR("ERR: Unexpected size.");
+    LOG_ERROR("ERR: Unexpected size.\n");
     return 1;
   }
   if (exp_info->value_size && exp_info->value_size != info->value_size) {
-    LOG_ERROR("ERR: Unexpected value size.");
+    LOG_ERROR("ERR: Unexpected value size.\n");
     return 1;
   }
   if (exp_info->max_entries && exp_info->max_entries != info->max_entries) {
-    LOG_ERROR("ERR: Unexpected max_entries value.");
+    LOG_ERROR("ERR: Unexpected max_entries value.\n");
     return 1;
   }
   if (exp_info->type && exp_info->type != info->type) {
-    LOG_ERROR("ERR: Unexpected type.");
+    LOG_ERROR("ERR: Unexpected type.\n");
     return 1;
   }
   return 0;
@@ -131,15 +131,10 @@ void MapHandler::StatsPrint(struct record* rec, struct record* prev) {
   double pps, bps;
 
   std::string action;
-  int filter_priority;
 
-  printf(
-      "----------------------------------------------------------------------"
-      "-------------------------------------\n");
   const char* fmt =
-      "filter  %'11lld pkts (%'12.0f pps)"
-      " %'11lld bytes (%'12.0f bps)"
-      " period:%f\n";
+      "\rrewrite  %'11lld pkts (%'12.0f pps)"
+      " period:%f";
 
   period = calc_period(rec, prev);
   if (period == 0)
@@ -148,9 +143,6 @@ void MapHandler::StatsPrint(struct record* rec, struct record* prev) {
   packets = rec->total.rx_packets - prev->total.rx_packets;
   pps = packets / period;
 
-  bytes = rec->total.rx_bytes - prev->total.rx_bytes;
-  bps = bytes / period;
-
-  printf(fmt, filter_priority, rec->total.rx_packets, pps, rec->total.rx_bytes,
-         bps, period);
+  fprintf(stderr, fmt, rec->total.rx_packets, pps, rec->total.rx_bytes, period);
+  fflush(stderr);
 }
