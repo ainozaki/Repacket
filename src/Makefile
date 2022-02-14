@@ -7,19 +7,20 @@ LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
 SRC=\
 	base/parse_cmdline.cc \
-	core/gen/generator.cc \
+	core/gen/gen_controller.cc \
+	core/gen/gen_dynamic.cc \
 	core/xdp/loader.cc \
 	core/xdp/map_handler.cc
 HEADER=\
 	base/config.h \
 	base/logger.h \
 	base/parse_cmdline.h \
-	core/gen/xdp_base.h \
-	core/gen/generator.h \
+	core/gen/gen_controller.h \
+	core/gen/gen_dynamic.h \
+	core/gen/gen_static.h \
 	core/xdp/loader.h
 XAPTURE = xapture.cc
 TEST_SRC=\
-	tests/gen_unittest.cc \
 	tests/parse_cmdline_unittest.cc
 
 OBJ=$(SRC:.cc=.o)

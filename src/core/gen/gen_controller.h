@@ -1,5 +1,5 @@
-#ifndef GENERATOR_H_
-#define GENERATOR_H_
+#ifndef GEN_CONTROLLER_H_
+#define GEN_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,4 @@ int Compile();
 void filter_conditional_statement(const struct config* cfg, char buf[]);
 void rewrite_statement(const struct config* cfg, char buf[], char buf2[]);
 
-std::string FilteringStatement(const struct config& cfg);
-std::string RewriteFilteringStatement(const struct config& cfg);
-std::string RewriteStatement(const struct config& cfg);
-#endif  // GENERATOR_H_
+#endif  // GEN_CONTROLLER_H_

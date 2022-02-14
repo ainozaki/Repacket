@@ -6,7 +6,7 @@
 #include "base/config.h"
 #include "base/logger.h"
 #include "base/parse_cmdline.h"
-#include "core/gen/generator.h"
+#include "core/gen/gen_controller.h"
 #include "core/xdp/loader.h"
 
 int xapture(const struct config& cfg) {

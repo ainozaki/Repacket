@@ -94,7 +94,7 @@ int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
         case 'a':
           cfg.run_mode = RunMode::ATTACH;
           continue;
-        case 'z':
+        case 'd':
           cfg.run_mode = RunMode::DETACH;
           continue;
         case 'r':

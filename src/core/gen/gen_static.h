@@ -1,5 +1,5 @@
-#ifndef XDP_PROG_BASE_H_
-#define XDP_PROG_BASE_H_
+#ifndef GEN_STATIC_H_
+#define GEN_STATIC_H_
 
 #include <string>
 
@@ -132,4 +132,4 @@ std::string parse_common =
     "if (udph + 1 > data_end) { return XDP_ABORTED;}\n"
     "nh.pos += sizeof(*udph);}\n";
 
-#endif  // XDP_PROG_BASE_H_
+#endif  // GEN_STATIC_H_

@@ -9,7 +9,7 @@ TEST(Generator, FilteringUdpDest) {
   struct config cfg;
   struct filter filter;
   filter.udp_dest = 49365;
-  cfg.filter = std::make_optional<struct filter>(filter);
+  cfg.if_filter = filter;
   std::string s = FilteringStatement(cfg);
   EXPECT_EQ("udph&&udph->dest==bpf_htons(49365)", s);
 }
@@ -18,7 +18,7 @@ TEST(Generator, FilteringUdpSrc) {
   struct config cfg;
   struct filter filter;
   filter.udp_src = 49365;
-  cfg.filter = std::make_optional<struct filter>(filter);
+  cfg.if_filter = filter;
   std::string s = FilteringStatement(cfg);
   EXPECT_EQ("udph&&udph->source==bpf_htons(49365)", s);
 }
@@ -28,7 +28,7 @@ TEST(Generator, FilteringTwoElements) {
   struct filter filter;
   filter.udp_src = 49365;
   filter.udp_dest = 49356;
-  cfg.filter = std::make_optional<struct filter>(filter);
+  cfg.if_filter = filter;
   std::string s = FilteringStatement(cfg);
   EXPECT_EQ(
       "udph&&udph->source==bpf_htons(49365)&&udph->dest==bpf_htons(49356)", s);
