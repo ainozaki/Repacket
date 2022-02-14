@@ -7,6 +7,7 @@ LIBS = -l:libbpf.a -lelf
 LIBS_TEST = -lgtest -lgtest_main
 SRC=\
 	base/parse_cmdline.cc \
+	base/utils.cc \
 	core/gen/gen_controller.cc \
 	core/gen/gen_dynamic.cc \
 	core/xdp/loader.cc \
@@ -14,6 +15,7 @@ SRC=\
 HEADER=\
 	base/config.h \
 	base/logger.h \
+	base/utils.h \
 	base/parse_cmdline.h \
 	core/gen/gen_controller.h \
 	core/gen/gen_dynamic.h \
