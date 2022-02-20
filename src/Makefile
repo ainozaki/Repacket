@@ -7,6 +7,7 @@ LIBS_TEST=-lgtest -lgtest_main
 
 SRC=\
 	base/parse_cmdline.cc \
+	base/parse_rewrite_option.cc \
 	base/utils.cc \
 	core/gen/gen_controller.cc \
 	core/gen/gen_dynamic.cc \
@@ -17,6 +18,7 @@ HEADER=\
 	base/logger.h \
 	base/utils.h \
 	base/parse_cmdline.h \
+	base/parse_rewrite_option.h \
 	core/gen/gen_controller.h \
 	core/gen/gen_dynamic.h \
 	core/gen/gen_static.h \
@@ -29,7 +31,8 @@ TARGET = repacket
 TEST_TARGET = test
 
 TEST_SRC=\
-	tests/parse_cmdline_unittest.cc
+	tests/parse_cmdline_unittest.cc \
+	tests/parse_rewrite_option_unittest.cc
 TEST_OBJ=$(TEST_SRC:.cc=.o)
 
 .PHONY: all
