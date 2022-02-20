@@ -14,7 +14,7 @@ extern "C" {
 
 int ParseRewriteOption(const std::string& key,
                        const std::string& value,
-                       struct filter* filt,
+                       struct filter& filt,
                        struct config& cfg) {
   // ip_ver
   if (key == "ip_ver") {
@@ -25,7 +25,7 @@ int ParseRewriteOption(const std::string& key,
     if (ver != 4) {
       LOG_INFO("Xapture supports only ipv4. Continue.\n");
     }
-    filt->ip_ver = ver;
+    filt.ip_ver = ver;
     cfg.use_ip = true;
     return 0;
   }
@@ -36,19 +36,18 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u4(hlen, key)) {
       return 1;
     }
-    filt->ip_hl = hlen;
+    filt.ip_hl = hlen;
     cfg.use_ip = true;
     return 0;
   }
 
   // ip_tos
   if (key == "ip_tos") {
-    // Type of Service is entered as a hex value.
-    uint16_t tos = std::stoi(value, nullptr, 8);
+    uint16_t tos = std::stoi(value);
     if (check_range_u8(tos, key)) {
       return 1;
     }
-    filt->ip_tos = tos;
+    filt.ip_tos = tos;
     cfg.use_ip = true;
     return 0;
   }
@@ -59,12 +58,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u32(len, key)) {
       return 1;
     }
-    if (len<64 | len> 1500) {
-      LOG_INFO(
-          "The specified total length may don't work correctly. In that "
-          "case, please use between 64-1500.\n");
-    }
-    filt->ip_tot_len = len;
+    filt.ip_tot_len = len;
     cfg.use_ip = true;
     return 0;
   }
@@ -75,7 +69,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u32(id, key)) {
       return 1;
     }
-    filt->ip_id = id;
+    filt.ip_id = id;
     cfg.use_ip = true;
     return 0;
   }
@@ -86,7 +80,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(ttl, key)) {
       return 1;
     }
-    filt->ip_ttl = ttl;
+    filt.ip_ttl = ttl;
     cfg.use_ip = true;
     return 0;
   }
@@ -97,18 +91,18 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u8(protocol, key)) {
       return 1;
     }
-    filt->ip_protocol = protocol;
+    filt.ip_protocol = protocol;
     cfg.use_ip = true;
     return 0;
   }
 
   // ip_check
   if (key == "ip_check") {
-    uint32_t check = std::stoi(value);
+    uint32_t check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }
-    filt->ip_check = check;
+    filt.ip_check = check;
     LOG_INFO(
         "Ip checksum is to be rewritten. Xapture doesn't calculate the "
         "right "
@@ -119,8 +113,11 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_src
   if (key == "ip_src") {
-    uint32_t ipaddr = ipaddr_from_string(value + ".");
-    filt->ip_src = value;
+    if (check_range_ipaddr(value)) {
+      LOG_ERROR("Invalid IP address.\n");
+      return 1;
+    }
+    filt.ip_src = value;
     cfg.use_ip = true;
     return 0;
   }
@@ -131,7 +128,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(port, key)) {
       return 1;
     }
-    filt->tcp_src = port;
+    filt.tcp_src = port;
     cfg.use_tcp = true;
     return 0;
   }
@@ -142,7 +139,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(port, key)) {
       return 1;
     }
-    filt->tcp_dest = port;
+    filt.tcp_dest = port;
     cfg.use_tcp = true;
     return 0;
   }
@@ -153,7 +150,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u32(seq, key)) {
       return 1;
     }
-    filt->tcp_seq = seq;
+    filt.tcp_seq = seq;
     cfg.use_tcp = true;
     return 0;
   }
@@ -164,7 +161,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u32(ack_seq, key)) {
       return 1;
     }
-    filt->tcp_ack_seq = ack_seq;
+    filt.tcp_ack_seq = ack_seq;
     cfg.use_tcp = true;
     return 0;
   }
@@ -175,7 +172,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u4(doff, key)) {
       return 1;
     }
-    filt->tcp_doff = doff;
+    filt.tcp_doff = doff;
     cfg.use_tcp = true;
     return 0;
   }
@@ -186,7 +183,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u4(res1, key)) {
       return 1;
     }
-    filt->tcp_res1 = res1;
+    filt.tcp_res1 = res1;
     cfg.use_tcp = true;
     return 0;
   }
@@ -198,7 +195,7 @@ int ParseRewriteOption(const std::string& key,
     if (res2<0 | res2> 3) {
       return 1;
     }
-    filt->tcp_res2 = res2;
+    filt.tcp_res2 = res2;
     cfg.use_tcp = true;
     return 0;
   }
@@ -206,9 +203,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_urg
   if (key == "tcp_urg") {
     if (value == "on" | value == "ON") {
-      filt->tcp_urg = true;
+      filt.tcp_urg = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_urg = false;
+      filt.tcp_urg = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -220,9 +217,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_ack
   if (key == "tcp_ack") {
     if (value == "on" | value == "ON") {
-      filt->tcp_ack = true;
+      filt.tcp_ack = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_ack = false;
+      filt.tcp_ack = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -234,9 +231,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_psh
   if (key == "tcp_psh") {
     if (value == "on" | value == "ON") {
-      filt->tcp_psh = true;
+      filt.tcp_psh = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_psh = false;
+      filt.tcp_psh = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -248,9 +245,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_rst
   if (key == "tcp_rst") {
     if (value == "on" | value == "ON") {
-      filt->tcp_rst = true;
+      filt.tcp_rst = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_rst = false;
+      filt.tcp_rst = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -262,9 +259,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_syn
   if (key == "tcp_syn") {
     if (value == "on" | value == "ON") {
-      filt->tcp_syn = true;
+      filt.tcp_syn = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_syn = false;
+      filt.tcp_syn = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -276,9 +273,9 @@ int ParseRewriteOption(const std::string& key,
   // tcp_fin
   if (key == "tcp_fin") {
     if (value == "on" | value == "ON") {
-      filt->tcp_fin = true;
+      filt.tcp_fin = true;
     } else if (value == "off" | value == "OFF") {
-      filt->tcp_fin = false;
+      filt.tcp_fin = false;
     } else {
       LOG_ERROR("Unknown tcp_urg value.\n");
       return 1;
@@ -293,7 +290,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(window, key)) {
       return 1;
     }
-    filt->tcp_window = window;
+    filt.tcp_window = window;
     cfg.use_tcp = true;
     return 0;
   }
@@ -308,7 +305,7 @@ int ParseRewriteOption(const std::string& key,
         "TCP checksum is to be rewritten. Xapture doesn't calculate the "
         "right "
         "check sum.\n");
-    filt->tcp_check = check;
+    filt.tcp_check = check;
     cfg.use_tcp = true;
     return 0;
   }
@@ -319,7 +316,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(urg_ptr, key)) {
       return 1;
     }
-    filt->tcp_urg_ptr = urg_ptr;
+    filt.tcp_urg_ptr = urg_ptr;
     cfg.use_tcp = true;
     return 0;
   }
@@ -330,7 +327,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(port, key)) {
       return 1;
     }
-    filt->udp_src = port;
+    filt.udp_src = port;
     cfg.use_udp = true;
     return 0;
   }
@@ -341,7 +338,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(port, key)) {
       return 1;
     }
-    filt->udp_dest = port;
+    filt.udp_dest = port;
     cfg.use_udp = true;
     return 0;
   }
@@ -352,7 +349,7 @@ int ParseRewriteOption(const std::string& key,
     if (check_range_u16(len, key)) {
       return 1;
     }
-    filt->udp_len = len;
+    filt.udp_len = len;
     cfg.use_udp = true;
     return 0;
   }
@@ -367,7 +364,7 @@ int ParseRewriteOption(const std::string& key,
         "UDP checksum is to be rewritten. Xapture doesn't calculate the "
         "right "
         "check sum.\n");
-    filt->udp_check = check;
+    filt.udp_check = check;
     cfg.use_udp = true;
     return 0;
   }

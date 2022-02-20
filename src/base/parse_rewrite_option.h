@@ -7,7 +7,7 @@
 
 int ParseRewriteOption(const std::string& key,
                        const std::string& value,
-                       struct filter* filt,
+                       struct filter& filt,
                        struct config& cfg);
 
 #endif  // PARSE_REWRITE_OPTION_H_

@@ -25,9 +25,7 @@ struct filter {
   std::optional<uint8_t> ip_ttl;
   std::optional<uint8_t> ip_protocol;
   std::optional<uint16_t> ip_check;
-  // TODO: change to uint16_t
   std::optional<std::string> ip_src;
-  std::optional<std::string> ip_dest;  // Don't use so far.
   // tcp
   std::optional<uint16_t> tcp_src;
   std::optional<uint16_t> tcp_dest;

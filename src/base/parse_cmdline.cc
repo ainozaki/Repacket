@@ -83,12 +83,12 @@ int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
       std::string key = argv[index++];
       std::string value = argv[index];
       if (parse_if) {
-        if (ParseRewriteOption(key, value, &cfg.if_filter, cfg)) {
+        if (ParseRewriteOption(key, value, cfg.if_filter, cfg)) {
           LOG_ERROR("Invalid rewrite option in [if] expression.\n");
           return 1;
         }
       } else if (parse_then) {
-        if (ParseRewriteOption(key, value, &cfg.then_filter, cfg)) {
+        if (ParseRewriteOption(key, value, cfg.then_filter, cfg)) {
           LOG_ERROR("Invalid rewrite option in [then] expression.\n");
           return 1;
         }
