@@ -9,7 +9,7 @@
 #include "core/gen/gen_controller.h"
 #include "core/xdp/loader.h"
 
-int xapture(const struct config& cfg) {
+int repacket(const struct config& cfg) {
   std::optional<Loader> loader;
 
   switch (cfg.run_mode) {
@@ -48,5 +48,5 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  return xapture(cfg);
+  return repacket(cfg);
 }
