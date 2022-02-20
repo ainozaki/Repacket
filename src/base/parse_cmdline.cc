@@ -26,28 +26,42 @@ int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
   int err;
 
   while (index < argc) {
+    // -a, -d and -i option.
     if (argv[index][0] == '-') {
       const char opt = argv[index][1];
-      index++;
       switch (opt) {
         case 'i':
           has_i_option = true;
-          cfg.ifname = argv[index++];
+          index++;
+          cfg.ifname = argv[index];
           cfg.ifindex = if_nametoindex(cfg.ifname.c_str());
-          continue;
+          if (!cfg.ifindex) {
+            LOG_ERROR("Cannot find interface name %s\n", cfg.ifname.c_str());
+            return 1;
+          }
+          break;
         case 'a':
+          if (cfg.run_mode != RunMode::NONE) {
+            LOG_ERROR("Cannot specify multiple mode.\n");
+            return 1;
+          }
           cfg.run_mode = RunMode::ATTACH;
-          continue;
+          break;
         case 'd':
+          if (cfg.run_mode != RunMode::NONE) {
+            LOG_ERROR("Cannot specify multiple mode.\n");
+            return 1;
+          }
           cfg.run_mode = RunMode::DETACH;
-          continue;
-        case 'r':
-          cfg.run_mode = RunMode::REWRITE;
-          continue;
+          break;
         default:
+          LOG_ERROR("Unknown option %s\n", argv[index].c_str());
+          return 1;
           break;
       }
+
     } else {
+      // Rewrite options.
       struct filter* filt;
       if (argv[index] == "if") {
         filt = &(cfg.if_filter);
@@ -423,12 +437,18 @@ int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
       return 1;
 
     }  // else
-  }    // while
+
+    index++;
+  }  // while
 
   if (!has_i_option) {
     LOG_ERROR("Interface must be specified.\n");
     return 1;
   }
 
+  // Default mode.
+  if (cfg.run_mode == RunMode::NONE) {
+    cfg.run_mode = RunMode::REWRITE;
+  }
   return 0;
 }

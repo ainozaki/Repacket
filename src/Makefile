@@ -37,7 +37,7 @@ all: $(SRC_OBJ) $(MAIN_OBJ)
 	$(CC) $(LFLAGS) -o $(TARGET) $^ $(LIBS)
 
 .PHONY: test
-test: $(OBJ) $(TEST_OBJ)
+test: $(SRC_OBJ) $(TEST_OBJ)
 	$(CC) $(LFLAGS) -o $(TEST_TARGET) $^ $(LIBS) $(LIBS_TEST) -pthread
 
 

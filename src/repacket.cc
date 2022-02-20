@@ -36,6 +36,9 @@ int repacket(const struct config& cfg) {
         return 1;
       }
       break;
+    default:
+      LOG_ERROR("Unspecified RunMode");
+      return 1;
   }
   return 0;
 }
