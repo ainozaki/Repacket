@@ -38,13 +38,35 @@ TEST(ParseRewriteOption, IpHlen) {
 
 TEST(ParseRewriteOption, IpToS) {
   std::string key = "ip_tos";
-  std::string value = "0";
+  std::string value = "0xff";
   struct filter filt;
   struct config cfg;
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(0, err);
   EXPECT_EQ(true, cfg.use_ip);
-  EXPECT_EQ(0, filt.ip_tos);
+  EXPECT_EQ(0xff, filt.ip_tos);
+}
+
+TEST(ParseRewriteOption, IpDSCP) {
+  std::string key = "ip_dscp";
+  std::string value = "0x3f";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(0x3f, filt.ip_dscp);
+}
+
+TEST(ParseRewriteOption, IpECN) {
+  std::string key = "ip_ecn";
+  std::string value = "0x03";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(0x03, filt.ip_ecn);
 }
 
 TEST(ParseRewriteOption, IpTotLen) {

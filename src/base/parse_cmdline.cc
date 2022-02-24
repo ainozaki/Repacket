@@ -22,11 +22,17 @@ int ParseCmdline(int argc, char* argv[], struct config& cfg) {
 }
 
 int ParseCmdline(int argc, const std::string argv[], struct config& cfg) {
-  int index = 1;
+  int index;
   bool has_i_option = false;
   int err;
   bool parse_if = false;
   bool parse_then = false;
+
+  if (argv[0] == "sudo") {
+    index = 2;
+  } else {
+    index = 1;
+  }
 
   while (index < argc) {
     // -a, -d and -i option.

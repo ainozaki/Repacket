@@ -18,7 +18,7 @@ int ParseRewriteOption(const std::string& key,
                        struct config& cfg) {
   // ip_ver
   if (key == "ip_ver") {
-    uint8_t ver = std::stoi(value);
+    uint32_t ver = std::stoi(value, nullptr, 0);
     if (check_range_u4(ver, key)) {
       return 1;
     }
@@ -32,7 +32,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_hl
   if (key == "ip_hl") {
-    uint8_t hlen = std::stoi(value);
+    uint32_t hlen = std::stoi(value, nullptr, 0);
     if (check_range_u4(hlen, key)) {
       return 1;
     }
@@ -43,7 +43,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_tos
   if (key == "ip_tos") {
-    uint16_t tos = std::stoi(value);
+    uint32_t tos = std::stoi(value, nullptr, 0);
     if (check_range_u8(tos, key)) {
       return 1;
     }
@@ -52,10 +52,32 @@ int ParseRewriteOption(const std::string& key,
     return 0;
   }
 
+  // ip_dscp
+  if (key == "ip_dscp") {
+    uint32_t dscp = std::stoi(value, nullptr, 0);
+    if (check_range_u6(dscp, key)) {
+      return 1;
+    }
+    filt.ip_dscp = dscp;
+    cfg.use_ip = true;
+    return 0;
+  }
+
+  // ip_ecn
+  if (key == "ip_ecn") {
+    uint32_t ecn = std::stoi(value, nullptr, 0);
+    if (check_range_u2(ecn, key)) {
+      return 1;
+    }
+    filt.ip_ecn = ecn;
+    cfg.use_ip = true;
+    return 0;
+  }
+
   // ip_tot_len
   if (key == "ip_tot_len") {
-    uint32_t len = std::stoi(value);
-    if (check_range_u32(len, key)) {
+    uint32_t len = std::stoi(value, nullptr, 0);
+    if (check_range_u16(len, key)) {
       return 1;
     }
     filt.ip_tot_len = len;
@@ -65,8 +87,8 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_id
   if (key == "ip_id") {
-    uint32_t id = std::stoi(value);
-    if (check_range_u32(id, key)) {
+    uint32_t id = std::stoi(value, nullptr, 0);
+    if (check_range_u16(id, key)) {
       return 1;
     }
     filt.ip_id = id;
@@ -74,10 +96,74 @@ int ParseRewriteOption(const std::string& key,
     return 0;
   }
 
+  // ip_flags
+  if (key == "ip_flags") {
+    uint32_t flags = std::stoi(value, nullptr, 0);
+    if (check_range_u4(flags, key)) {
+      return 1;
+    }
+    filt.ip_flags = flags;
+    cfg.use_ip = true;
+    return 0;
+  }
+
+  // ip_flag_res
+  if (key == "ip_flag_res") {
+    if (value == "on") {
+      filt.ip_flag_res = true;
+    } else if (value == "off") {
+      filt.ip_flag_res = false;
+    } else {
+      LOG_ERROR("ip_flag_res expects only on/off.\n");
+      return 1;
+    }
+    cfg.use_ip = true;
+    return 0;
+  }
+
+  // ip_flag_df
+  if (key == "ip_flag_df") {
+    if (value == "on") {
+      filt.ip_flag_df = true;
+    } else if (value == "off") {
+      filt.ip_flag_df = false;
+    } else {
+      LOG_ERROR("ip_flag_df expects only on/off.\n");
+      return 1;
+    }
+    cfg.use_ip = true;
+    return 0;
+  }
+
+  // ip_flag_mf
+  if (key == "ip_flag_mf") {
+    if (value == "on") {
+      filt.ip_flag_mf = true;
+    } else if (value == "off") {
+      filt.ip_flag_mf = false;
+    } else {
+      LOG_ERROR("ip_flag_mf expects only on/off.\n");
+      return 1;
+    }
+    cfg.use_ip = true;
+    return 0;
+  }
+
+  // ip_offset
+  if (key == "ip_offset") {
+    uint32_t offset = std::stoi(value, nullptr, 0);
+    if (check_range_u2(offset, key)) {
+      return 1;
+    }
+    filt.ip_offset = offset;
+    cfg.use_ip = true;
+    return 0;
+  }
+
   // ip_ttl
   if (key == "ip_ttl") {
-    uint16_t ttl = std::stoi(value);
-    if (check_range_u16(ttl, key)) {
+    uint32_t ttl = std::stoi(value, nullptr, 0);
+    if (check_range_u8(ttl, key)) {
       return 1;
     }
     filt.ip_ttl = ttl;
@@ -87,7 +173,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_protocol
   if (key == "ip_protocol") {
-    uint16_t protocol = std::stoi(value);
+    uint32_t protocol = std::stoi(value, nullptr, 0);
     if (check_range_u8(protocol, key)) {
       return 1;
     }

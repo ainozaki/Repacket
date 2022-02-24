@@ -16,12 +16,15 @@ struct filter {
   std::optional<uint8_t> ip_ver;
   std::optional<uint8_t> ip_hl;
   std::optional<uint8_t> ip_tos;
+  std::optional<uint8_t> ip_dscp;
+  std::optional<uint8_t> ip_ecn;
   std::optional<uint16_t> ip_tot_len;
   std::optional<uint16_t> ip_id;
-  std::optional<bool> ip_flag_0;
+  std::optional<uint8_t> ip_flags;
+  std::optional<bool> ip_flag_res;
   std::optional<bool> ip_flag_df;
   std::optional<bool> ip_flag_mf;
-  std::optional<uint16_t> ip_flag_off;
+  std::optional<uint8_t> ip_offset;
   std::optional<uint8_t> ip_ttl;
   std::optional<uint8_t> ip_protocol;
   std::optional<uint16_t> ip_check;
