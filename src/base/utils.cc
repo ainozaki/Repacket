@@ -26,6 +26,10 @@ int check_range_ipaddr(std::string s) {
     // Future.
     addr += pow(2, i * 8) * sub;
   }
+  if (s.length()) {
+    LOG_ERROR("Invalid ip address length.\n");
+    return 1;
+  }
   return 0;
 }
 

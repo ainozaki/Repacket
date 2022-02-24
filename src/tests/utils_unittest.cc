@@ -94,3 +94,24 @@ TEST(Utils, RungeU32) {
   EXPECT_EQ(1, err_ng_min);
   EXPECT_EQ(1, err_ng_max);
 }
+
+TEST(Utils, RungeIpAddr) {
+  std::string key_ok_min = "0.0.0.0";
+  std::string key_ok_max = "255.255.255.255";
+  std::string key_ng_min = "0.0.0.-1";
+  std::string key_ng_max = "255.255.255.256";
+  std::string key_ng_less = "255.255.255";
+  std::string key_ng_more = "255.255.255.255.255";
+  int err_ok_min = check_range_ipaddr(key_ok_min);
+  int err_ok_max = check_range_ipaddr(key_ok_max);
+  int err_ng_min = check_range_ipaddr(key_ng_min);
+  int err_ng_max = check_range_ipaddr(key_ng_max);
+  int err_ng_less = check_range_ipaddr(key_ng_less);
+  int err_ng_more = check_range_ipaddr(key_ng_more);
+  EXPECT_EQ(0, err_ok_min);
+  EXPECT_EQ(0, err_ok_max);
+  EXPECT_EQ(1, err_ng_min);
+  EXPECT_EQ(1, err_ng_max);
+  EXPECT_EQ(1, err_ng_less);
+  EXPECT_EQ(1, err_ng_more);
+}
