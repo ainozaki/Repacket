@@ -18,7 +18,7 @@ int ParseRewriteOption(const std::string& key,
                        struct config& cfg) {
   // ip_ver
   if (key == "ip_ver") {
-    uint32_t ver = std::stoi(value, nullptr, 0);
+    int ver = std::stoi(value, nullptr, 0);
     if (check_range_u4(ver, key)) {
       return 1;
     }
@@ -32,7 +32,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_hl
   if (key == "ip_hl") {
-    uint32_t hlen = std::stoi(value, nullptr, 0);
+    int hlen = std::stoi(value, nullptr, 0);
     if (check_range_u4(hlen, key)) {
       return 1;
     }
@@ -43,7 +43,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_tos
   if (key == "ip_tos") {
-    uint32_t tos = std::stoi(value, nullptr, 0);
+    int tos = std::stoi(value, nullptr, 0);
     if (check_range_u8(tos, key)) {
       return 1;
     }
@@ -54,7 +54,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_dscp
   if (key == "ip_dscp") {
-    uint32_t dscp = std::stoi(value, nullptr, 0);
+    int dscp = std::stoi(value, nullptr, 0);
     if (check_range_u6(dscp, key)) {
       return 1;
     }
@@ -65,7 +65,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_ecn
   if (key == "ip_ecn") {
-    uint32_t ecn = std::stoi(value, nullptr, 0);
+    int ecn = std::stoi(value, nullptr, 0);
     if (check_range_u2(ecn, key)) {
       return 1;
     }
@@ -76,7 +76,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_tot_len
   if (key == "ip_tot_len") {
-    uint32_t len = std::stoi(value, nullptr, 0);
+    int len = std::stoi(value, nullptr, 0);
     if (check_range_u16(len, key)) {
       return 1;
     }
@@ -87,7 +87,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_id
   if (key == "ip_id") {
-    uint32_t id = std::stoi(value, nullptr, 0);
+    int id = std::stoi(value, nullptr, 0);
     if (check_range_u16(id, key)) {
       return 1;
     }
@@ -98,7 +98,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_flags
   if (key == "ip_flags") {
-    uint32_t flags = std::stoi(value, nullptr, 0);
+    int flags = std::stoi(value, nullptr, 0);
     if (check_range_u4(flags, key)) {
       return 1;
     }
@@ -151,7 +151,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_offset
   if (key == "ip_offset") {
-    uint32_t offset = std::stoi(value, nullptr, 0);
+    int offset = std::stoi(value, nullptr, 0);
     if (check_range_u2(offset, key)) {
       return 1;
     }
@@ -162,7 +162,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_ttl
   if (key == "ip_ttl") {
-    uint32_t ttl = std::stoi(value, nullptr, 0);
+    int ttl = std::stoi(value, nullptr, 0);
     if (check_range_u8(ttl, key)) {
       return 1;
     }
@@ -173,7 +173,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_protocol
   if (key == "ip_protocol") {
-    uint32_t protocol = std::stoi(value, nullptr, 0);
+    int protocol = std::stoi(value, nullptr, 0);
     if (check_range_u8(protocol, key)) {
       return 1;
     }
@@ -184,7 +184,7 @@ int ParseRewriteOption(const std::string& key,
 
   // ip_check
   if (key == "ip_check") {
-    uint32_t check = std::stoi(value, nullptr, 0);
+    int check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }

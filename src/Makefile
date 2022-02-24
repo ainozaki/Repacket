@@ -32,7 +32,8 @@ TEST_TARGET = test
 
 TEST_SRC=\
 	tests/parse_cmdline_unittest.cc \
-	tests/parse_rewrite_option_unittest.cc
+	tests/parse_rewrite_option_unittest.cc \
+	tests/utils_unittest.cc
 TEST_OBJ=$(TEST_SRC:.cc=.o)
 
 .PHONY: all

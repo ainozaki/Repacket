@@ -29,7 +29,7 @@ int check_range_ipaddr(std::string s) {
   return 0;
 }
 
-int check_range_u2(const uint32_t value, const std::string& key) {
+int check_range_u2(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 2) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 2) - 1);
@@ -38,7 +38,7 @@ int check_range_u2(const uint32_t value, const std::string& key) {
   return 0;
 }
 
-int check_range_u4(const uint32_t value, const std::string& key) {
+int check_range_u4(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 4) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 4) - 1);
@@ -47,7 +47,7 @@ int check_range_u4(const uint32_t value, const std::string& key) {
   return 0;
 }
 
-int check_range_u6(const uint32_t value, const std::string& key) {
+int check_range_u6(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 6) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 6) - 1);
@@ -56,7 +56,7 @@ int check_range_u6(const uint32_t value, const std::string& key) {
   return 0;
 }
 
-int check_range_u8(const uint32_t value, const std::string& key) {
+int check_range_u8(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 8) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 8) - 1);
@@ -65,7 +65,7 @@ int check_range_u8(const uint32_t value, const std::string& key) {
   return 0;
 }
 
-int check_range_u16(const uint32_t value, const std::string& key) {
+int check_range_u16(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 16) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 16) - 1);
@@ -74,7 +74,7 @@ int check_range_u16(const uint32_t value, const std::string& key) {
   return 0;
 }
 
-int check_range_u32(const uint64_t value, const std::string& key) {
+int check_range_u32(const int64_t value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 32) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
               (int)std::pow(2, 32) - 1);
