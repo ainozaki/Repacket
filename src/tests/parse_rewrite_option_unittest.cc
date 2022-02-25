@@ -143,3 +143,51 @@ TEST(ParseRewriteOption, IpSrc_Invalid) {
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(1, err);
 }
+
+TEST(ParseRewriteOption, UdpSrc) {
+  std::string key = "udp_src";
+  std::string value = "80";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(true, cfg.use_udp);
+  EXPECT_EQ(80, filt.udp_src);
+}
+
+TEST(ParseRewriteOption, UdpDest) {
+  std::string key = "udp_dest";
+  std::string value = "80";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(true, cfg.use_udp);
+  EXPECT_EQ(80, filt.udp_dest);
+}
+
+TEST(ParseRewriteOption, UdpLen) {
+  std::string key = "udp_len";
+  std::string value = "52";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(true, cfg.use_udp);
+  EXPECT_EQ(52, filt.udp_len);
+}
+
+TEST(ParseRewriteOption, UdpCheck) {
+  std::string key = "udp_check";
+  std::string value = "0xcafe";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_ip);
+  EXPECT_EQ(true, cfg.use_udp);
+  EXPECT_EQ(0xcafe, filt.udp_check);
+}

@@ -409,7 +409,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_src
   if (key == "udp_src") {
-    uint32_t port = std::stoi(value);
+    uint32_t port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -420,7 +420,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_dest
   if (key == "udp_dest") {
-    uint32_t port = std::stoi(value);
+    uint32_t port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -431,7 +431,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_len
   if (key == "udp_len") {
-    uint32_t len = std::stoi(value);
+    uint32_t len = std::stoi(value, nullptr, 0);
     if (check_range_u16(len, key)) {
       return 1;
     }
@@ -442,12 +442,12 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_check
   if (key == "udp_check") {
-    uint32_t check = std::stoi(value);
+    uint32_t check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }
     LOG_INFO(
-        "UDP checksum is to be rewritten. Xapture doesn't calculate the "
+        "UDP checksum is to be rewritten. Repacket doesn't calculate the "
         "right "
         "check sum.\n");
     filt.udp_check = check;
