@@ -455,6 +455,43 @@ int ParseRewriteOption(const std::string& key,
     return 0;
   }
 
+  // icmp_type
+  if (key == "icmp_type") {
+    uint32_t type = std::stoi(value, nullptr, 0);
+    if (check_range_u8(type, key)) {
+      return 1;
+    }
+    filt.icmp_type = type;
+    cfg.use_icmp = true;
+    return 0;
+  }
+
+  // icmp_code
+  if (key == "icmp_code") {
+    uint32_t code = std::stoi(value, nullptr, 0);
+    if (check_range_u8(code, key)) {
+      return 1;
+    }
+    filt.icmp_code = code;
+    cfg.use_icmp = true;
+    return 0;
+  }
+
+  // icmp_check
+  if (key == "icmp_check") {
+    uint32_t check = std::stoi(value, nullptr, 0);
+    if (check_range_u16(check, key)) {
+      return 1;
+    }
+    LOG_INFO(
+        "ICMP checksum is to be rewritten. Repacket doesn't calculate the "
+        "right "
+        "check sum.\n");
+    filt.icmp_check = check;
+    cfg.use_icmp = true;
+    return 0;
+  }
+
   // UNREACHABLE
   LOG_ERROR("Unknown option. Abort execution.\n");
   return 1;

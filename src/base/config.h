@@ -51,6 +51,10 @@ struct filter {
   std::optional<uint16_t> udp_dest;
   std::optional<uint16_t> udp_len;
   std::optional<uint16_t> udp_check;
+  // icmp
+  std::optional<uint8_t> icmp_type;
+  std::optional<uint8_t> icmp_code;
+  std::optional<uint16_t> icmp_check;
 };
 
 struct config {
@@ -61,10 +65,10 @@ struct config {
   std::optional<struct filter> filter;
   struct filter if_filter;
   struct filter then_filter;
-  bool use_ip;
-  bool use_udp;
-  bool use_tcp;
-  bool use_icmp;
+  bool use_ip = false;
+  bool use_udp = false;
+  bool use_tcp = false;
+  bool use_icmp = false;
 };
 
 #endif  // DEFINE_H_

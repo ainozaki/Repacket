@@ -151,7 +151,6 @@ TEST(ParseRewriteOption, UdpSrc) {
   struct config cfg;
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(0, err);
-  EXPECT_EQ(true, cfg.use_ip);
   EXPECT_EQ(true, cfg.use_udp);
   EXPECT_EQ(80, filt.udp_src);
 }
@@ -163,7 +162,6 @@ TEST(ParseRewriteOption, UdpDest) {
   struct config cfg;
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(0, err);
-  EXPECT_EQ(true, cfg.use_ip);
   EXPECT_EQ(true, cfg.use_udp);
   EXPECT_EQ(80, filt.udp_dest);
 }
@@ -175,7 +173,6 @@ TEST(ParseRewriteOption, UdpLen) {
   struct config cfg;
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(0, err);
-  EXPECT_EQ(true, cfg.use_ip);
   EXPECT_EQ(true, cfg.use_udp);
   EXPECT_EQ(52, filt.udp_len);
 }
@@ -187,7 +184,39 @@ TEST(ParseRewriteOption, UdpCheck) {
   struct config cfg;
   int err = ParseRewriteOption(key, value, filt, cfg);
   EXPECT_EQ(0, err);
-  EXPECT_EQ(true, cfg.use_ip);
   EXPECT_EQ(true, cfg.use_udp);
   EXPECT_EQ(0xcafe, filt.udp_check);
+}
+
+TEST(ParseRewriteOption, IcmpType) {
+  std::string key = "icmp_type";
+  std::string value = "3";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_icmp);
+  EXPECT_EQ(3, filt.icmp_type);
+}
+
+TEST(ParseRewriteOption, IcmpCode) {
+  std::string key = "icmp_code";
+  std::string value = "1";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_icmp);
+  EXPECT_EQ(1, filt.icmp_code);
+}
+
+TEST(ParseRewriteOption, IcmpCheck) {
+  std::string key = "icmp_check";
+  std::string value = "0xcafe";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_icmp);
+  EXPECT_EQ(0xcafe, filt.icmp_check);
 }
