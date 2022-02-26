@@ -1,7 +1,0 @@
-filter:
- - action: pass
-   ip_protocol: icmp
- - action: pass
-   ip_protocol: tcp
- - action: pass
-   ip_protocol: udp
