@@ -8,35 +8,48 @@
 std::string FilteringStatement(const struct config& cfg) {
   const struct filter filter = cfg.if_filter;
   std::vector<std::string> filter_elements;
-  bool use_udph = false;
 
   // If config has filtering attributes, convert them into string.
   // udp_src
   if (filter.udp_src.has_value()) {
-    use_udph = true;
     filter_elements.push_back("udph->source==bpf_htons(" +
                               std::to_string(filter.udp_src.value()) + ")");
   }
 
   // udp_dest
   if (filter.udp_dest.has_value()) {
-    use_udph = true;
     filter_elements.push_back("udph->dest==bpf_htons(" +
                               std::to_string(filter.udp_dest.value()) + ")");
   }
 
   // udp_len
   if (filter.udp_len.has_value()) {
-    use_udph = true;
     filter_elements.push_back("udph->len==bpf_htons(" +
                               std::to_string(filter.udp_len.value()) + ")");
   }
 
   // udp_check
   if (filter.udp_check.has_value()) {
-    use_udph = true;
     filter_elements.push_back("udph->check==bpf_htons(" +
                               std::to_string(filter.udp_check.value()) + ")");
+  }
+
+  // icmp_type
+  if (filter.icmp_type.has_value()) {
+    filter_elements.push_back("icmph->type==bpf_htons(" +
+                              std::to_string(filter.icmp_type.value()) + ")");
+  }
+
+  // icmp_code
+  if (filter.icmp_code.has_value()) {
+    filter_elements.push_back("icmph->code==bpf_htons(" +
+                              std::to_string(filter.icmp_code.value()) + ")");
+  }
+
+  // icmp_check
+  if (filter.icmp_check.has_value()) {
+    filter_elements.push_back("icmph->checksum==bpf_htons(" +
+                              std::to_string(filter.icmp_check.value()) + ")");
   }
 
   std::string s;

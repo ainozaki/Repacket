@@ -31,6 +31,7 @@ TARGET = repacket
 TEST_TARGET = test
 
 TEST_SRC=\
+	tests/gen_dynamic_unittest.cc \
 	tests/parse_cmdline_unittest.cc \
 	tests/parse_rewrite_option_unittest.cc \
 	tests/utils_unittest.cc
