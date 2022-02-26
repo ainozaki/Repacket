@@ -34,9 +34,11 @@ struct filter {
   std::optional<uint16_t> tcp_dest;
   std::optional<uint32_t> tcp_seq;
   std::optional<uint32_t> tcp_ack_seq;
-  std::optional<uint8_t> tcp_doff;
-  std::optional<uint8_t> tcp_res1;
-  std::optional<uint8_t> tcp_res2;
+  std::optional<uint8_t> tcp_hlen;
+  std::optional<uint8_t> tcp_res;
+  std::optional<bool> tcp_nonce;
+  std::optional<bool> tcp_cwr;
+  std::optional<bool> tcp_ece;
   std::optional<bool> tcp_urg;
   std::optional<bool> tcp_ack;
   std::optional<bool> tcp_psh;

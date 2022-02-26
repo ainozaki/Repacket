@@ -144,6 +144,194 @@ TEST(ParseRewriteOption, IpSrc_Invalid) {
   EXPECT_EQ(1, err);
 }
 
+TEST(ParseRewriteOption, TcpSrc) {
+  std::string key = "tcp_src";
+  std::string value = "80";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(80, filt.tcp_src);
+}
+
+TEST(ParseRewriteOption, TcpDest) {
+  std::string key = "tcp_dest";
+  std::string value = "80";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(80, filt.tcp_dest);
+}
+
+// TEST(ParseRewriteOption, TcpSeq) {
+//  std::string key = "tcp_seq";
+//  std::string value = "0xcafecafe";
+//  struct filter filt;
+//  struct config cfg;
+//  int err = ParseRewriteOption(key, value, filt, cfg);
+//  EXPECT_EQ(0, err);
+//  EXPECT_EQ(true, cfg.use_tcp);
+//  EXPECT_EQ(0xcafecafe, filt.tcp_seq);
+//}
+//
+// TEST(ParseRewriteOption, TcpAckSeq) {
+//  std::string key = "tcp_ack_seq";
+//  std::string value = "0xcafecafe";
+//  struct filter filt;
+//  struct config cfg;
+//  int err = ParseRewriteOption(key, value, filt, cfg);
+//  EXPECT_EQ(0, err);
+//  EXPECT_EQ(true, cfg.use_tcp);
+//  EXPECT_EQ(0xcafecafe, filt.tcp_ack_seq);
+//}
+
+TEST(ParseRewriteOption, TcpHlen) {
+  std::string key = "tcp_hlen";
+  std::string value = "5";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(5, filt.tcp_hlen);
+}
+
+TEST(ParseRewriteOption, TcpRes) {
+  std::string key = "tcp_res";
+  std::string value = "7";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(7, filt.tcp_res);
+}
+
+TEST(ParseRewriteOption, TcpNonce) {
+  std::string key = "tcp_nonce";
+  std::string value = "on";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(true, filt.tcp_nonce);
+}
+
+TEST(ParseRewriteOption, TcpCWR) {
+  std::string key = "tcp_cwr";
+  std::string value = "on";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(true, filt.tcp_cwr);
+}
+
+TEST(ParseRewriteOption, TcpECE) {
+  std::string key = "tcp_ece";
+  std::string value = "on";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(true, filt.tcp_ece);
+}
+
+TEST(ParseRewriteOption, TcpFlags) {
+  std::string key = "tcp_urg";
+  std::string value = "on";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(true, filt.tcp_urg);
+
+  key = "tcp_ack";
+  value = "on";
+  struct filter filt2;
+  struct config cfg2;
+  err = ParseRewriteOption(key, value, filt2, cfg2);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg2.use_tcp);
+  EXPECT_EQ(true, filt2.tcp_ack);
+
+  key = "tcp_psh";
+  value = "on";
+  struct filter filt3;
+  struct config cfg3;
+  err = ParseRewriteOption(key, value, filt3, cfg3);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg3.use_tcp);
+  EXPECT_EQ(true, filt3.tcp_psh);
+
+  key = "tcp_rst";
+  value = "off";
+  struct filter filt4;
+  struct config cfg4;
+  err = ParseRewriteOption(key, value, filt4, cfg4);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg4.use_tcp);
+  EXPECT_EQ(false, filt4.tcp_rst);
+
+  key = "tcp_syn";
+  value = "off";
+  struct filter filt5;
+  struct config cfg5;
+  err = ParseRewriteOption(key, value, filt5, cfg5);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg5.use_tcp);
+  EXPECT_EQ(false, filt5.tcp_syn);
+
+  key = "tcp_fin";
+  value = "off";
+  struct filter filt6;
+  struct config cfg6;
+  err = ParseRewriteOption(key, value, filt6, cfg6);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg6.use_tcp);
+  EXPECT_EQ(false, filt6.tcp_fin);
+}
+
+TEST(ParseRewriteOption, TcpWindow) {
+  std::string key = "tcp_window";
+  std::string value = "3900";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(3900, filt.tcp_window);
+}
+
+TEST(ParseRewriteOption, TcpCheck) {
+  std::string key = "tcp_check";
+  std::string value = "0xcafe";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(0xcafe, filt.tcp_check);
+}
+
+TEST(ParseRewriteOption, TcpUrgPtr) {
+  std::string key = "tcp_urg_ptr";
+  std::string value = "10";
+  struct filter filt;
+  struct config cfg;
+  int err = ParseRewriteOption(key, value, filt, cfg);
+  EXPECT_EQ(0, err);
+  EXPECT_EQ(true, cfg.use_tcp);
+  EXPECT_EQ(10, filt.tcp_urg_ptr);
+}
+
 TEST(ParseRewriteOption, UdpSrc) {
   std::string key = "udp_src";
   std::string value = "80";

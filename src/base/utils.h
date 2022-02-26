@@ -6,6 +6,7 @@
 int check_range_ipaddr(std::string s);
 
 int check_range_u2(const int value, const std::string& key);
+int check_range_u3(const int value, const std::string& key);
 int check_range_u4(const int value, const std::string& key);
 int check_range_u6(const int value, const std::string& key);
 int check_range_u8(const int value, const std::string& key);

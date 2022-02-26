@@ -42,6 +42,15 @@ int check_range_u2(const int value, const std::string& key) {
   return 0;
 }
 
+int check_range_u3(const int value, const std::string& key) {
+  if ((value < 0) | ((int)std::pow(2, 3) - 1 < value)) {
+    LOG_ERROR("%s must be between 0-%d\n", key.c_str(),
+              (int)std::pow(2, 3) - 1);
+    return 1;
+  }
+  return 0;
+}
+
 int check_range_u4(const int value, const std::string& key) {
   if ((value < 0) | ((int)std::pow(2, 4) - 1 < value)) {
     LOG_ERROR("%s must be between 0-%d\n", key.c_str(),

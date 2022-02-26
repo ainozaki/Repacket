@@ -210,7 +210,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_src
   if (key == "tcp_src") {
-    uint32_t port = std::stoi(value);
+    int port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -221,7 +221,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_dest
   if (key == "tcp_dest") {
-    uint32_t port = std::stoi(value);
+    int port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -232,7 +232,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_seq
   if (key == "tcp_seq") {
-    uint64_t seq = std::stoi(value);
+    int64_t seq = std::stoll(value, nullptr, 0);
     if (check_range_u32(seq, key)) {
       return 1;
     }
@@ -243,7 +243,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_ack_seq
   if (key == "tcp_ack_seq") {
-    uint64_t ack_seq = std::stoi(value);
+    int64_t ack_seq = std::stoll(value, nullptr, 0);
     if (check_range_u32(ack_seq, key)) {
       return 1;
     }
@@ -252,36 +252,66 @@ int ParseRewriteOption(const std::string& key,
     return 0;
   }
 
-  // tcp_doff
-  if (key == "tcp_doff") {
-    uint8_t doff = std::stoi(value);
-    if (check_range_u4(doff, key)) {
+  // tcp_hlen
+  if (key == "tcp_hlen") {
+    uint8_t hlen = std::stoi(value, nullptr, 0);
+    if (check_range_u4(hlen, key)) {
       return 1;
     }
-    filt.tcp_doff = doff;
+    filt.tcp_hlen = hlen;
     cfg.use_tcp = true;
     return 0;
   }
 
-  // tcp_res1
-  if (key == "tcp_res1") {
-    uint8_t res1 = std::stoi(value);
-    if (check_range_u4(res1, key)) {
+  // tcp_res
+  if (key == "tcp_res") {
+    uint8_t res = std::stoi(value, nullptr, 0);
+    if (check_range_u3(res, key)) {
       return 1;
     }
-    filt.tcp_res1 = res1;
+    filt.tcp_res = res;
     cfg.use_tcp = true;
     return 0;
   }
 
-  // tcp_res2
-  if (key == "tcp_res2") {
-    uint8_t res2 = std::stoi(value);
-    // res2 field is 2 bit.
-    if (res2<0 | res2> 3) {
+  // tcp_nonce
+  if (key == "tcp_nonce") {
+    if (value == "on" | value == "ON") {
+      filt.tcp_nonce = true;
+    } else if (value == "off" | value == "OFF") {
+      filt.tcp_nonce = false;
+    } else {
+      LOG_ERROR("Unknown tcp_nonce value.\n");
       return 1;
     }
-    filt.tcp_res2 = res2;
+    cfg.use_tcp = true;
+    return 0;
+  }
+
+  // tcp_cwr
+  if (key == "tcp_cwr") {
+    if (value == "on" | value == "ON") {
+      filt.tcp_cwr = true;
+    } else if (value == "off" | value == "OFF") {
+      filt.tcp_cwr = false;
+    } else {
+      LOG_ERROR("Unknown tcp_cwr value.\n");
+      return 1;
+    }
+    cfg.use_tcp = true;
+    return 0;
+  }
+
+  // tcp_ece
+  if (key == "tcp_ece") {
+    if (value == "on" | value == "ON") {
+      filt.tcp_ece = true;
+    } else if (value == "off" | value == "OFF") {
+      filt.tcp_ece = false;
+    } else {
+      LOG_ERROR("Unknown tcp_ece value.\n");
+      return 1;
+    }
     cfg.use_tcp = true;
     return 0;
   }
@@ -372,7 +402,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_window
   if (key == "tcp_window") {
-    uint32_t window = std::stoi(value);
+    int window = std::stoi(value, nullptr, 0);
     if (check_range_u16(window, key)) {
       return 1;
     }
@@ -381,14 +411,14 @@ int ParseRewriteOption(const std::string& key,
     return 0;
   }
 
-  // tcp_
+  // tcp_check
   if (key == "tcp_check") {
-    uint32_t check = std::stoi(value);
+    int check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }
     LOG_INFO(
-        "TCP checksum is to be rewritten. Xapture doesn't calculate the "
+        "TCP checksum is to be rewritten. Repacket doesn't calculate the "
         "right "
         "check sum.\n");
     filt.tcp_check = check;
@@ -398,7 +428,7 @@ int ParseRewriteOption(const std::string& key,
 
   // tcp_urg_ptr
   if (key == "tcp_urg_ptr") {
-    uint32_t urg_ptr = std::stoi(value);
+    int urg_ptr = std::stoi(value, nullptr, 0);
     if (check_range_u16(urg_ptr, key)) {
       return 1;
     }
@@ -409,7 +439,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_src
   if (key == "udp_src") {
-    uint32_t port = std::stoi(value, nullptr, 0);
+    int port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -420,7 +450,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_dest
   if (key == "udp_dest") {
-    uint32_t port = std::stoi(value, nullptr, 0);
+    int port = std::stoi(value, nullptr, 0);
     if (check_range_u16(port, key)) {
       return 1;
     }
@@ -431,7 +461,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_len
   if (key == "udp_len") {
-    uint32_t len = std::stoi(value, nullptr, 0);
+    int len = std::stoi(value, nullptr, 0);
     if (check_range_u16(len, key)) {
       return 1;
     }
@@ -442,7 +472,7 @@ int ParseRewriteOption(const std::string& key,
 
   // udp_check
   if (key == "udp_check") {
-    uint32_t check = std::stoi(value, nullptr, 0);
+    int check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }
@@ -457,7 +487,7 @@ int ParseRewriteOption(const std::string& key,
 
   // icmp_type
   if (key == "icmp_type") {
-    uint32_t type = std::stoi(value, nullptr, 0);
+    int type = std::stoi(value, nullptr, 0);
     if (check_range_u8(type, key)) {
       return 1;
     }
@@ -468,7 +498,7 @@ int ParseRewriteOption(const std::string& key,
 
   // icmp_code
   if (key == "icmp_code") {
-    uint32_t code = std::stoi(value, nullptr, 0);
+    int code = std::stoi(value, nullptr, 0);
     if (check_range_u8(code, key)) {
       return 1;
     }
@@ -479,7 +509,7 @@ int ParseRewriteOption(const std::string& key,
 
   // icmp_check
   if (key == "icmp_check") {
-    uint32_t check = std::stoi(value, nullptr, 0);
+    int check = std::stoi(value, nullptr, 0);
     if (check_range_u16(check, key)) {
       return 1;
     }
