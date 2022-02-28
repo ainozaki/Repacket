@@ -10,6 +10,12 @@ std::string FilteringStatement(const struct config& cfg) {
   std::vector<std::string> filter_elements;
 
   // If config has filtering attributes, convert them into string.
+  // ip_ver
+  if (filter.ip_ver.has_value()) {
+    filter_elements.push_back("iph->version==" +
+                              std::to_string(filter.ip_ver.value()));
+  }
+
   // udp_src
   if (filter.udp_src.has_value()) {
     filter_elements.push_back("udph->source==bpf_htons(" +
@@ -74,6 +80,13 @@ std::string FilteringStatement(const struct config& cfg) {
 std::string RewriteStatement(const struct config& cfg) {
   std::string s = "{";
   const struct filter filter = cfg.then_filter;
+
+  // ip_ver
+  if (filter.ip_ver.has_value()) {
+    s += "iph->version=";
+    s += std::to_string(filter.ip_ver.value());
+    s += ";";
+  }
 
   // tcp_src
   if (filter.tcp_src.has_value()) {
