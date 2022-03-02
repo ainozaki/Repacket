@@ -16,6 +16,42 @@ std::string FilteringStatement(const struct config& cfg) {
                               std::to_string(filter.ip_ver.value()));
   }
 
+  // ip_hlen
+  if (filter.ip_hl.has_value()) {
+    filter_elements.push_back("iph->ihl==" +
+                              std::to_string(filter.ip_hl.value()));
+  }
+
+  // ip_tos
+  if (filter.ip_tos.has_value()) {
+    filter_elements.push_back("iph->tos==" +
+                              std::to_string(filter.ip_tos.value()));
+  }
+
+  // ip_dscp
+  if (filter.ip_dscp.has_value()) {
+    filter_elements.push_back("(iph->tos&0xfc)==" +
+                              std::to_string(filter.ip_dscp.value()));
+  }
+
+  // ip_ecn
+  if (filter.ip_ecn.has_value()) {
+    filter_elements.push_back("(iph->tos&0x03)==" +
+                              std::to_string(filter.ip_ecn.value()));
+  }
+
+  // ip_tot_len
+  if (filter.ip_tot_len.has_value()) {
+    filter_elements.push_back("bpf_ntohs(iph->tot_len)==" +
+                              std::to_string(filter.ip_tot_len.value()));
+  }
+
+  // ip_id
+  if (filter.ip_id.has_value()) {
+    filter_elements.push_back("bpf_ntohs(iph->id)==" +
+                              std::to_string(filter.ip_id.value()));
+  }
+
   // udp_src
   if (filter.udp_src.has_value()) {
     filter_elements.push_back("udph->source==bpf_htons(" +
@@ -86,6 +122,48 @@ std::string RewriteStatement(const struct config& cfg) {
     s += "iph->version=";
     s += std::to_string(filter.ip_ver.value());
     s += ";";
+  }
+
+  // ip_hlen
+  if (filter.ip_hl.has_value()) {
+    s += "iph->ihl=";
+    s += std::to_string(filter.ip_hl.value());
+    s += ";";
+  }
+
+  // ip_tos
+  if (filter.ip_tos.has_value()) {
+    s += "iph->tos=";
+    s += std::to_string(filter.ip_tos.value());
+    s += ";";
+  }
+
+  // ip_dscp
+  if (filter.ip_dscp.has_value()) {
+    s += "iph->tos|=";
+    s += std::to_string(filter.ip_dscp.value());
+    s += ";";
+  }
+
+  // ip_ecn
+  if (filter.ip_ecn.has_value()) {
+    s += "iph->tos|=";
+    s += std::to_string(filter.ip_ecn.value());
+    s += ";";
+  }
+
+  // ip_tot_len
+  if (filter.ip_tot_len.has_value()) {
+    s += "iph->tot_len=bpf_htons(";
+    s += std::to_string(filter.ip_tot_len.value());
+    s += ");";
+  }
+
+  // ip_id
+  if (filter.ip_id.has_value()) {
+    s += "iph->id=bpf_htons(";
+    s += std::to_string(filter.ip_id.value());
+    s += ");";
   }
 
   // tcp_src
