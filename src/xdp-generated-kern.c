@@ -60,7 +60,7 @@ if (iph->protocol == IPPROTO_UDP){
 udph = nh.pos;
 if (udph + 1 > data_end) { return XDP_ABORTED;}
 nh.pos += sizeof(*udph);}
-if(iph->check==bpf_htons(51966)){iph->check=bpf_htons(57005);}else {return XDP_PASS;}
+if(tcph->urg_ptr==bpf_htons(10)){tcph->urg_ptr=bpf_htons(20);}else {return XDP_PASS;}
 struct datarec *rec;
 __u32 key = 1;
 rec = bpf_map_lookup_elem(&array_map, &key);

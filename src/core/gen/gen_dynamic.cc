@@ -103,6 +103,132 @@ std::string FilteringStatement(const struct config& cfg) {
                               std::to_string(filter.ip_check.value()) + ")");
   }
 
+  // tcp_src
+  if (filter.tcp_src.has_value()) {
+    filter_elements.push_back("tcph->source==bpf_htons(" +
+                              std::to_string(filter.tcp_src.value()) + ")");
+  }
+
+  // tcp_dest
+  if (filter.tcp_dest.has_value()) {
+    filter_elements.push_back("tcph->dest==bpf_htons(" +
+                              std::to_string(filter.tcp_dest.value()) + ")");
+  }
+
+  // tcp_seq
+  if (filter.tcp_seq.has_value()) {
+    filter_elements.push_back("tcph->seq==bpf_htons(" +
+                              std::to_string(filter.tcp_seq.value()) + ")");
+  }
+
+  // tcp_ack_seq
+  if (filter.tcp_ack_seq.has_value()) {
+    filter_elements.push_back("tcph->ack_seq==bpf_htons(" +
+                              std::to_string(filter.tcp_ack_seq.value()) + ")");
+  }
+
+  // tcp_hlen
+  if (filter.tcp_hlen.has_value()) {
+    filter_elements.push_back("tcph->doff==" +
+                              std::to_string(filter.tcp_hlen.value()));
+  }
+
+  // tcp_res
+  if (filter.tcp_res.has_value()) {
+    filter_elements.push_back("tcph->res1==" +
+                              std::to_string(filter.tcp_res.value()));
+  }
+
+  // tcp_cwr
+  if (filter.tcp_cwr.has_value()) {
+    if (filter.tcp_cwr.value()) {
+      filter_elements.push_back("tcph->cwr");
+    } else {
+      filter_elements.push_back("!tcph->cwr");
+    }
+  }
+
+  // tcp_ece
+  if (filter.tcp_ece.has_value()) {
+    if (filter.tcp_ece.value()) {
+      filter_elements.push_back("tcph->ece");
+    } else {
+      filter_elements.push_back("!tcph->ece");
+    }
+  }
+
+  // tcp_urg
+  if (filter.tcp_urg.has_value()) {
+    if (filter.tcp_urg.value()) {
+      filter_elements.push_back("tcph->urg");
+    } else {
+      filter_elements.push_back("!tcph->urg");
+    }
+  }
+
+  // tcp_ack
+  if (filter.tcp_ack.has_value()) {
+    if (filter.tcp_ack.value()) {
+      filter_elements.push_back("tcph->ack");
+    } else {
+      filter_elements.push_back("!tcph->ack");
+    }
+  }
+
+  // tcp_psh
+  if (filter.tcp_psh.has_value()) {
+    if (filter.tcp_psh.value()) {
+      filter_elements.push_back("tcph->psh");
+    } else {
+      filter_elements.push_back("!tcph->psh");
+    }
+  }
+
+  // tcp_rst
+  if (filter.tcp_rst.has_value()) {
+    if (filter.tcp_rst.value()) {
+      filter_elements.push_back("tcph->rst");
+    } else {
+      filter_elements.push_back("!tcph->rst");
+    }
+  }
+
+  // tcp_syn
+  if (filter.tcp_syn.has_value()) {
+    if (filter.tcp_syn.value()) {
+      filter_elements.push_back("tcph->syn");
+    } else {
+      filter_elements.push_back("!tcph->syn");
+    }
+  }
+
+  // tcp_fin
+  if (filter.tcp_fin.has_value()) {
+    if (filter.tcp_fin.value()) {
+      filter_elements.push_back("tcph->fin");
+    } else {
+      filter_elements.push_back("!tcph->fin");
+    }
+  }
+
+  // tcp_window
+  if (filter.tcp_window.has_value()) {
+    filter_elements.push_back("tcph->window==bpf_htons(" +
+                              std::to_string(filter.tcp_window.value()) + ")");
+  }
+
+  // tcp_check
+  if (filter.tcp_check.has_value()) {
+    filter_elements.push_back("tcph->check==bpf_htons(" +
+                              std::to_string(filter.tcp_check.value()) + ")");
+  }
+
+  // tcp_urg_ptr
+  if (filter.tcp_urg_ptr.has_value()) {
+    filter_elements.push_back("tcph->urg_ptr==bpf_htons(" +
+                              std::to_string(filter.tcp_urg_ptr.value()) + ")");
+  }
+
   // udp_src
   if (filter.udp_src.has_value()) {
     filter_elements.push_back("udph->source==bpf_htons(" +
@@ -274,7 +400,7 @@ std::string RewriteStatement(const struct config& cfg) {
 
   // tcp_src
   if (filter.tcp_src.has_value()) {
-    s += "tcph->src=bpf_htons(";
+    s += "tcph->source=bpf_htons(";
     s += std::to_string(filter.tcp_src.value());
     s += ");";
   }
@@ -298,6 +424,29 @@ std::string RewriteStatement(const struct config& cfg) {
     s += "tcph->ack_seq=bpf_htons(";
     s += std::to_string(filter.tcp_ack_seq.value());
     s += ");";
+  }
+
+  // tcp_hlen
+  if (filter.tcp_hlen.has_value()) {
+    s += "tcph->doff=";
+    s += std::to_string(filter.tcp_hlen.value());
+    s += ";";
+  }
+
+  // tcp_res
+  if (filter.tcp_res.has_value()) {
+    s += "tcph->res1=";
+    s += std::to_string(filter.tcp_res.value());
+    s += ";";
+  }
+
+  // tcp_cwr
+  if (filter.tcp_cwr.has_value()) {
+    if (filter.tcp_cwr.value()) {
+      s += "tcph->cwr=1;";
+    } else {
+      s += "tcph->cwr=0;";
+    }
   }
 
   // tcp_urg
@@ -352,6 +501,27 @@ std::string RewriteStatement(const struct config& cfg) {
     } else {
       s += "tcph->fin=0;";
     }
+  }
+
+  // tcp_window
+  if (filter.tcp_window.has_value()) {
+    s += "tcph->window=bpf_htons(";
+    s += std::to_string(filter.tcp_window.value());
+    s += ");";
+  }
+
+  // tcp_check
+  if (filter.tcp_check.has_value()) {
+    s += "tcph->check=bpf_htons(";
+    s += std::to_string(filter.tcp_check.value());
+    s += ");";
+  }
+
+  // tcp_urg_ptr
+  if (filter.tcp_urg_ptr.has_value()) {
+    s += "tcph->urg_ptr=bpf_htons(";
+    s += std::to_string(filter.tcp_urg_ptr.value());
+    s += ");";
   }
 
   // udp_dest
