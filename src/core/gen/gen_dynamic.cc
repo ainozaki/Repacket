@@ -52,6 +52,57 @@ std::string FilteringStatement(const struct config& cfg) {
                               std::to_string(filter.ip_id.value()));
   }
 
+  // ip_flag_res
+  if (filter.ip_flag_res.has_value()) {
+    if (filter.ip_flag_res.value()) {
+      filter_elements.push_back("iph->frag_off & 0x8000");
+    } else {
+      filter_elements.push_back("!(iph->frag_off & 0x8000)");
+    }
+  }
+
+  // ip_flag_df
+  if (filter.ip_flag_df.has_value()) {
+    if (filter.ip_flag_df.value()) {
+      filter_elements.push_back("iph->frag_off & 0x4000");
+    } else {
+      filter_elements.push_back("!(iph->frag_off & 0x4000)");
+    }
+  }
+
+  // ip_flag_mf
+  if (filter.ip_flag_mf.has_value()) {
+    if (filter.ip_flag_mf.value()) {
+      filter_elements.push_back("iph->frag_off & 0x2000");
+    } else {
+      filter_elements.push_back("!(iph->frag_off & 0x2000)");
+    }
+  }
+
+  // ip_offset
+  if (filter.ip_offset.has_value()) {
+    filter_elements.push_back("(iph->frag_off & 0x00ff)==" +
+                              std::to_string(filter.ip_offset.value()));
+  }
+
+  // ip_ttl
+  if (filter.ip_ttl.has_value()) {
+    filter_elements.push_back("iph->ttl==" +
+                              std::to_string(filter.ip_ttl.value()));
+  }
+
+  // ip_protocol
+  if (filter.ip_protocol.has_value()) {
+    filter_elements.push_back("iph->protocol==" +
+                              std::to_string(filter.ip_protocol.value()));
+  }
+
+  // ip_check
+  if (filter.ip_check.has_value()) {
+    filter_elements.push_back("iph->check==bpf_htons(" +
+                              std::to_string(filter.ip_check.value()) + ")");
+  }
+
   // udp_src
   if (filter.udp_src.has_value()) {
     filter_elements.push_back("udph->source==bpf_htons(" +
@@ -163,6 +214,61 @@ std::string RewriteStatement(const struct config& cfg) {
   if (filter.ip_id.has_value()) {
     s += "iph->id=bpf_htons(";
     s += std::to_string(filter.ip_id.value());
+    s += ");";
+  }
+
+  // ip_flag_res
+  if (filter.ip_flag_res.has_value()) {
+    if (filter.ip_flag_res.value()) {
+      s += "iph->frag_off |= bpf_htons(0x8000);";
+    } else {
+      s += "iph->frag_off &= bpf_htons(0x7fff);";
+    }
+  }
+
+  // ip_flag_df
+  if (filter.ip_flag_df.has_value()) {
+    if (filter.ip_flag_df.value()) {
+      s += "iph->frag_off |= bpf_htons(0x4000);";
+    } else {
+      s += "iph->frag_off &= bpf_htons(0xbfff);";
+    }
+  }
+
+  // ip_flag_mf
+  if (filter.ip_flag_mf.has_value()) {
+    if (filter.ip_flag_mf.value()) {
+      s += "iph->frag_off |= bpf_htons(0x2000);";
+    } else {
+      s += "iph->frag_off &= bpf_htons(0xdfff);";
+    }
+  }
+
+  // ip_offset
+  if (filter.ip_offset.has_value()) {
+    s += "iph->frag_off |= bpf_htons(";
+    s += std::to_string(filter.ip_offset.value());
+    s += ");";
+  }
+
+  // ip_ttl
+  if (filter.ip_ttl.has_value()) {
+    s += "iph->ttl=";
+    s += std::to_string(filter.ip_ttl.value());
+    s += ";";
+  }
+
+  // ip_protocol
+  if (filter.ip_protocol.has_value()) {
+    s += "iph->protocol=";
+    s += std::to_string(filter.ip_protocol.value());
+    s += ";";
+  }
+
+  // ip_check
+  if (filter.ip_check.has_value()) {
+    s += "iph->check=bpf_htons(";
+    s += std::to_string(filter.ip_check.value());
     s += ");";
   }
 
