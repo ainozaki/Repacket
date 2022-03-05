@@ -1,35 +1,40 @@
 ## Repacket
-Repacket is a CLI tool to rewrite packets!
+*Repacket is a CLI tool to rewrite packets using XDP!*
 
 ![Repacket](Repacket.png)
 
 
-### Usage
+## Usage
+Repacket requires root authority.
 
 ```
-usage: repacket if [expressions] then [expressions]  
-
+repacket if [expressions] then [expressions]  
 ```
 
 Repacket can be used as follows.
 
+
+:star2: Please specify if/then expressions.
+
 ```
-// Please specify if/then expressions.
 repacket if udp_dest 443 then udp_dest 50000
-
-// "all" means no filter.
-repacket if all then ip_tos 0
-
-// Multiple parameters are welcome.
-repacket if tcp_ack on tcp_psh on then tcp_dest 50000
-
-// Impossible combination won't be executed.
-// Error!
-repacket if tcp_cwr on then udp_check 0xcafe
-
 ```
 
-### Parameters
+:star2: "all" means no filter.
+```
+repacket if all then ip_tos 0
+```
+
+:star2: Multiple parameters are welcome.
+```
+repacket if tcp_ack on tcp_psh on then tcp_dest 50000
+```
+:star2: Impossible combination won't be executed. Error!
+```
+repacket if tcp_cwr on then udp_check 0xcafe
+```
+
+## Parameters
 Filtering rules (shown as [expression] in `Usage`) are specified using following parameter.
 
 ```
@@ -79,11 +84,11 @@ icmp_code
 icmp_check
 ```
 
-### Installation
+## Installation
 TODO
 
 
-### Respectful Implementation
+## Respectful Implementation
 [facebookincubator/katran](https://github.com/facebookincubator/katran)  
 [linux/samples/bpf](https://github.com/torvalds/linux/tree/master/samples/bpf)  
 [xdp-project/xdp-tutorial](https://github.com/xdp-project/xdp-tutorial)  
